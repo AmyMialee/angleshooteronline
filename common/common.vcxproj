@@ -95,6 +95,7 @@
   <ItemGroup>
     <ClInclude Include="main\cpp\angleshooter\PreCompiledHeaders.h" />
     <ClInclude Include="main\cpp\angleshooter\util\Util.h" />
+    <ClInclude Include="main\cpp\nlohmann\json.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
