@@ -35,3 +35,5 @@
 #include "util/Identifier.h"
 #include "util/Logger.h"
 #include "util/Util.h"
+#include "util/StackMove.h"
+#include "util/EventHandler.h"

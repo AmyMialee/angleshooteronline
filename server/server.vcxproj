@@ -109,7 +109,7 @@
       <PrecompiledHeader>Create</PrecompiledHeader>
       <PrecompiledHeaderOutputFile>$(IntDir)server.pch</PrecompiledHeaderOutputFile>
     </ClCompile>
-    <ClCompile Include="main\cpp\angleshooter\server.cpp" />
+    <ClCompile Include="main\cpp\angleshooter\Server.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main\cpp\angleshooter\PreCompiledServer.h" />

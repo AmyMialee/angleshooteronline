@@ -129,16 +129,36 @@
     <Content Include="main\resources\assets\angleshooter\textures\sfml_logo.png" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main\cpp\angleshooter\client.cpp" />
+    <ClCompile Include="main\cpp\angleshooter\Client.cpp" />
+    <ClCompile Include="main\cpp\angleshooter\managers\AudioManager.cpp" />
+    <ClCompile Include="main\cpp\angleshooter\managers\InputManager.cpp" />
+    <ClCompile Include="main\cpp\angleshooter\managers\OptionsManager.cpp" />
+    <ClCompile Include="main\cpp\angleshooter\managers\StateManager.cpp" />
+    <ClCompile Include="main\cpp\angleshooter\menu\Button.cpp" />
+    <ClCompile Include="main\cpp\angleshooter\menu\Label.cpp" />
+    <ClCompile Include="main\cpp\angleshooter\menu\Slider.cpp" />
+    <ClCompile Include="main\cpp\angleshooter\menu\Widget.cpp" />
+    <ClCompile Include="main\cpp\angleshooter\menu\WidgetContainer.cpp" />
     <ClCompile Include="main\cpp\angleshooter\PreCompiledClient.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
       <PrecompiledHeaderOutputFile>$(IntDir)client.pch</PrecompiledHeaderOutputFile>
     </ClCompile>
     <ClCompile Include="main\cpp\angleshooter\rendering\MapRenderer.cpp" />
     <ClCompile Include="main\cpp\angleshooter\resources\ResourceHolders.cpp" />
+    <ClCompile Include="main\cpp\angleshooter\states\State.cpp" />
     <ClCompile Include="main\cpp\angleshooter\util\ClientContext.cpp" />
+    <ClCompile Include="main\cpp\angleshooter\util\Keybinding.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="main\cpp\angleshooter\managers\AudioManager.h" />
+    <ClInclude Include="main\cpp\angleshooter\managers\InputManager.h" />
+    <ClInclude Include="main\cpp\angleshooter\managers\OptionsManager.h" />
+    <ClInclude Include="main\cpp\angleshooter\managers\StateManager.h" />
+    <ClInclude Include="main\cpp\angleshooter\menu\Button.h" />
+    <ClInclude Include="main\cpp\angleshooter\menu\Label.h" />
+    <ClInclude Include="main\cpp\angleshooter\menu\Slider.h" />
+    <ClInclude Include="main\cpp\angleshooter\menu\Widget.h" />
+    <ClInclude Include="main\cpp\angleshooter\menu\WidgetContainer.h" />
     <ClInclude Include="main\cpp\angleshooter\PreCompiledClient.h" />
     <ClInclude Include="main\cpp\angleshooter\rendering\MapRenderer.h" />
     <ClInclude Include="main\cpp\angleshooter\resources\ResourceHolder.h" />
@@ -146,7 +166,9 @@
     <ClInclude Include="main\cpp\angleshooter\resources\ResourceHolders.h" />
     <ClInclude Include="main\cpp\angleshooter\resources\ShaderHolder.h" />
     <ClInclude Include="main\cpp\angleshooter\resources\ShaderHolder.tpp" />
+    <ClInclude Include="main\cpp\angleshooter\states\State.h" />
     <ClInclude Include="main\cpp\angleshooter\util\ClientContext.h" />
+    <ClInclude Include="main\cpp\angleshooter\util\Keybinding.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
