@@ -62,6 +62,8 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Create</PrecompiledHeader>
       <PrecompiledHeaderFile>main/cpp/angleshooter/PreCompiledHeaders.h</PrecompiledHeaderFile>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <PrecompiledHeaderOutputFile>$(IntDir)PreCompiledHeaders.pch</PrecompiledHeaderOutputFile>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -81,7 +83,8 @@
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Create</PrecompiledHeader>
-      <PrecompiledHeaderFile>PreCompiledHeaders.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile>main/cpp/angleshooter/PreCompiledHeaders.h</PrecompiledHeaderFile>
+      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -93,11 +96,21 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="common.cpp" />
+    <ClCompile Include="main\cpp\angleshooter\resources\Map.cpp" />
+    <ClCompile Include="main\cpp\angleshooter\resources\MapLoader.cpp" />
+    <ClCompile Include="main\cpp\angleshooter\util\EventHandler.cpp" />
+    <ClCompile Include="main\cpp\angleshooter\util\Identifier.cpp" />
+    <ClCompile Include="main\cpp\angleshooter\util\Logger.cpp" />
     <ClCompile Include="main\cpp\angleshooter\util\Util.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main\cpp\angleshooter\PreCompiledHeaders.h" />
+    <ClInclude Include="main\cpp\angleshooter\resources\Map.h" />
+    <ClInclude Include="main\cpp\angleshooter\resources\MapLoader.h" />
+    <ClInclude Include="main\cpp\angleshooter\util\EventHandler.h" />
+    <ClInclude Include="main\cpp\angleshooter\util\Identifier.h" />
+    <ClInclude Include="main\cpp\angleshooter\util\Logger.h" />
+    <ClInclude Include="main\cpp\angleshooter\util\StackMove.h" />
     <ClInclude Include="main\cpp\angleshooter\util\Util.h" />
     <ClInclude Include="main\cpp\nlohmann\json.hpp" />
   </ItemGroup>
