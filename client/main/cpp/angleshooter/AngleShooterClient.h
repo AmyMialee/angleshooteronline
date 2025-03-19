@@ -5,7 +5,6 @@ class AngleShooterClient final : ClientContext {
 	sf::RenderWindow window;
 	sf::RenderTexture renderTexture;
 	World world;
-	WorldRenderer worldRenderer;
 	double tps;
 	double fps;
     sf::Text tpsText;
@@ -18,12 +17,11 @@ class AngleShooterClient final : ClientContext {
 
 public:
 	static double timePerTick;
-	const static Identifier BACKGROUND_MUSIC;
+	inline const static auto BACKGROUND_MUSIC = Identifier("backgroundmusic.ogg");
 	AngleShooterClient();
 	void run();
 
 	[[nodiscard]] sf::RenderWindow* getWindow() override;
 	[[nodiscard]] sf::RenderTexture* getRenderTexture() override;
 	[[nodiscard]] World* getWorld() override;
-	[[nodiscard]] WorldRenderer* getWorldRenderer() override;
 };

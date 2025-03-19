@@ -2,7 +2,7 @@
 
 class World {
 	Map map;
-	std::unordered_map<uint32_t, std::shared_ptr<GameObject>> gameObjects;
+	std::unordered_map<uint32_t, std::shared_ptr<Entity>> gameObjects;
 	uint32_t nextId = 0;
 
 public:
@@ -11,7 +11,7 @@ public:
 	World& operator=(const World&) = delete;
 	void tick(float deltaTime);
 	void init();
-	void addGameObject(std::shared_ptr<GameObject> gameObject);
-	[[nodiscard]] std::vector<std::shared_ptr<GameObject>> getGameObjects();
+	void addGameObject(std::shared_ptr<Entity> gameObject);
+	[[nodiscard]] std::vector<std::shared_ptr<Entity>> getGameObjects();
 	[[nodiscard]] Map& getMap();
 };

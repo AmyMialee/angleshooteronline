@@ -76,8 +76,8 @@ double OptionsManager::getTimePerFrame() {
 	return this->timePerFrame;
 }
 
-bool OptionsManager::areHitboxesEnabled() const {
-	return this->hitboxes;
+bool OptionsManager::isDebugEnabled() const {
+	return this->debug;
 }
 
 void OptionsManager::setFps(int fps) {
@@ -106,6 +106,6 @@ void OptionsManager::setOnboarded(bool onboarded) {
 	saveToFile();
 }
 
-void OptionsManager::setHitboxesEnabled(bool enabled) {
-	this->hitboxes = enabled;
+void OptionsManager::setDebugEnabled(bool enabled) {
+	this->debug = enabled;
 }

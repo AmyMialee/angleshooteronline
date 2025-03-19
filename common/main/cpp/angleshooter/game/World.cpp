@@ -11,14 +11,14 @@ void World::init() {
 }
 
 void World::tick(float deltaTime) {
-	std::vector<GameObject::Pointer> objectList;
+	std::vector<Entity::Pointer> objectList;
 	objectList.reserve(this->gameObjects.size());
 	for (const auto& value : this->gameObjects | std::views::values) objectList.push_back(value);
 	for (auto main = objectList.begin(); main != objectList.end(); ++main) main->get()->baseTick(deltaTime);
-	std::vector<GameObject::Pointer> objects;
+	std::vector<Entity::Pointer> objects;
 	objects.reserve(this->gameObjects.size());
 	for (const auto& value : this->gameObjects | std::views::values) objects.push_back(value);
-	std::vector<GameObject::Pair> pairs;
+	std::vector<Entity::Pair> pairs;
 	for (auto main = objects.begin(); main != objects.end(); ++main) {
 		for (auto sub = main + 1; sub != objects.end(); ++sub) {
 			pairs.emplace_back(main->get(), sub->get());
@@ -41,14 +41,14 @@ void World::tick(float deltaTime) {
 	}
 }
 
-void World::addGameObject(std::shared_ptr<GameObject> gameObject) {
+void World::addGameObject(std::shared_ptr<Entity> gameObject) {
 	auto id = ++this->nextId;
 	gameObject->setId(id);
 	this->gameObjects.emplace(id, std::move(gameObject));
 }
 
-std::vector<std::shared_ptr<GameObject>> World::getGameObjects() {
-	std::vector<std::shared_ptr<GameObject>> values;
+std::vector<std::shared_ptr<Entity>> World::getGameObjects() {
+	std::vector<std::shared_ptr<Entity>> values;
 	values.reserve(this->gameObjects.size());
 	for (const auto& value : this->gameObjects | std::views::values) values.push_back(value);
 	return values;

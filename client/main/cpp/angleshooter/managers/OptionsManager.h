@@ -7,7 +7,7 @@ class OptionsManager final : public Singleton<OptionsManager> {
 	int framesPerSecond = 144;
 	double timePerFrame = 1. / framesPerSecond;
 	bool onboarded = false;
-	bool hitboxes = false;
+	bool debug = false;
 	OptionsManager() = default;
 
 public:
@@ -17,13 +17,13 @@ public:
 	[[nodiscard]] bool isOnboarded() const;
 	[[nodiscard]] int getFps();
 	[[nodiscard]] double getTimePerFrame();
-	[[nodiscard]] bool areHitboxesEnabled() const;
+	[[nodiscard]] bool isDebugEnabled() const;
 	void setFps(int fps);
 	void setMasterVolume(double volume);
 	void setMusicVolume(double volume);
 	void setSoundVolume(double volume);
 	void setOnboarded(bool onboarded);
-	void setHitboxesEnabled(bool enabled);
+	void setDebugEnabled(bool enabled);
 	void saveToFile();
 	void loadFromFile();
 };

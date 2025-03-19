@@ -41,7 +41,7 @@
 #include "util/Singleton.h"
 #include "util/Consumer.h"
 #include "resources/MapLoader.h"
-#include "game/entities/GameObject.h"
+#include "game/entities/Entity.h"
 #include "game/World.h"
 #include "game/entities/Entity.h"
 #include "game/entities/PlayerEntity.h"

@@ -5,8 +5,6 @@
 
 double AngleShooterClient::timePerTick = 1. / 60.;
 
-const Identifier AngleShooterClient::BACKGROUND_MUSIC = Identifier("backgroundmusic.ogg");
-
 AngleShooterClient::AngleShooterClient() :
 	ClientContext(),
 	window(sf::VideoMode({1920, 1080}), "Angle Shooter", sf::Style::Titlebar | sf::Style::Close),
@@ -80,7 +78,7 @@ void AngleShooterClient::render(float deltaTime) {
 	sf::Sprite sprite(renderTexture.getTexture());
 	sprite.setScale({2.f, 2.f});
 	window.draw(sprite);
-	if (OptionsManager::get().areHitboxesEnabled()) {
+	if (OptionsManager::get().isDebugEnabled()) {
 		fpsText.setPosition(fpsText.getPosition() + sf::Vector2f{1.f, 1.f});
 		tpsText.setPosition(tpsText.getPosition() + sf::Vector2f{1.f, 1.f});
 		fpsText.setFillColor(sf::Color::Black);
@@ -136,7 +134,4 @@ sf::RenderTexture* AngleShooterClient::getRenderTexture() {
 
 World* AngleShooterClient::getWorld() {
 	return &world;
-}
-WorldRenderer* AngleShooterClient::getWorldRenderer() {
-	return &worldRenderer;
 }

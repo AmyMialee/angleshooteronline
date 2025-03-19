@@ -196,9 +196,6 @@
     <ClInclude Include="main\cpp\angleshooter\util\ResourceHolder.h" />
     <ClInclude Include="main\cpp\angleshooter\util\ResourceHolder.tpp" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="main\cpp\angleshooter\rendering\entities\" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

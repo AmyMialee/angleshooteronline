@@ -5,12 +5,11 @@ class BulletEntity final : public Entity {
 	bool hasHit = false;
 	[[nodiscard]] bool isMarkedForRemoval() const override;
 
-protected:
-	void render(float deltaTime) override;
-
 public:
 	explicit BulletEntity(PlayerEntity& owner);
+	inline static auto ID = Identifier("bullet");
+	const Identifier& getEntityType() const override;
 	void tick(float deltaTime) override;
-	void onCollision(GameObject& other) override;
+	void onCollision(Entity& other) override;
 	void onWallCollision() override;
 };

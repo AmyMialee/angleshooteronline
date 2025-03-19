@@ -6,46 +6,8 @@ PlayerEntity::PlayerEntity(std::string id) : id(std::move(id)) {
 	this->setScale({14, 14});
 }
 
-void PlayerEntity::render(float deltaTime) {
-	if (this->getHealth() <= 0) return;
-	static sf::Sprite player1(ClientContext::get()->getTextureHolder()->get(Identifier("player.png")));
-	static std::once_flag flag;
-	std::call_once(flag, [&] {
-		Util::centre(player1);
-		const auto textureSize1 = player1.getTexture().getSize();
-		player1.setScale(this->getScale().componentWiseDiv({static_cast<float>(textureSize1.x), static_cast<float>(textureSize1.y)}));
-	});
-	const auto pos = this->getPosition() + this->getVelocity() * deltaTime;
-	auto sprite = player1;
-	sprite.setPosition(pos);
-	sprite.setRotation(this->getRotation());
-	ClientContext::get()->getRenderTexture()->draw(sprite);
-	if (this->getImmunityTime() > 0) {
-		auto circle = sf::CircleShape(this->getScale().x / 2.f + 2);
-		circle.setPosition(pos - this->getScale() / 2.f - sf::Vector2f{2.f, 2.f});
-		circle.setFillColor(sf::Color(0, 255, 255, 120));
-		ClientContext::get()->getRenderTexture()->draw(circle);
-	}
-	const auto bound = this->getBoundingBox();
-	sf::RectangleShape shape;
-	shape.setOutlineColor(sf::Color::Black);
-	shape.setOutlineThickness(0.5f);
-	shape.setPosition(bound.position + this->getVelocity() * deltaTime + sf::Vector2f{0, bound.size.y + 2});
-	shape.setSize({bound.size.x, 2});
-	shape.setFillColor(sf::Color::Black);
-	ClientContext::get()->getRenderTexture()->draw(shape);
-	shape.setSize({bound.size.x * (static_cast<float>(this->getHealth()) / 8.f), 2});
-	shape.setFillColor(sf::Color::Green);
-	ClientContext::get()->getRenderTexture()->draw(shape);
-	if (this->getImmunityTime() <= 0 && this->getBulletCharge() < 120) {
-		shape.setPosition(bound.position + this->getVelocity() * deltaTime + sf::Vector2f{0, bound.size.y + 4.5f});
-		shape.setSize({bound.size.x, 2});
-		shape.setFillColor(sf::Color::Black);
-		ClientContext::get()->getRenderTexture()->draw(shape);
-		shape.setSize({bound.size.x * (static_cast<float>(this->getBulletCharge()) / 120.f), 2});
-		shape.setFillColor(sf::Color::Cyan);
-		ClientContext::get()->getRenderTexture()->draw(shape);
-	}
+const Identifier& PlayerEntity::getEntityType() const {
+	return ID;
 }
 
 void PlayerEntity::tick(float deltaTime) {
@@ -112,7 +74,7 @@ bool PlayerEntity::damage(PlayerEntity* source, int amount) {
 		this->onDeath(source);
 	} else {
 		static Identifier hurtSound("hurt.ogg");
-		ClientContext::get()->getAudioManager()->playSound(hurtSound, .8f, Util::randomFloat(0.8f, 1.2f));
+		AudioManager::get().playSound(hurtSound, .8f, Util::randomFloat(0.8f, 1.2f));
 	}
 	return true;
 }
@@ -134,7 +96,7 @@ void PlayerEntity::onDeath(PlayerEntity* source) {
 		}
 	}
 	static Identifier explodeSound("explode.ogg");
-	AudioManager::get()->playSound(explodeSound, .8f, Util::randomFloat(1.2f, 1.8f));
+	AudioManager::get().playSound(explodeSound, .8f, Util::randomFloat(1.2f, 1.8f));
 	if (const auto data = ClientContext::get()->getWorld()->getPlayerData(this->id); data != nullptr) {
 		data->addScore(1);
 	}
@@ -154,10 +116,6 @@ int PlayerEntity::getImmunityTime() const {
 
 int PlayerEntity::getBulletCharge() const {
 	return this->bulletCharge;
-}
-
-std::string PlayerEntity::getId() const {
-	return this->id;
 }
 
 bool PlayerEntity::isMarkedForRemoval() const {

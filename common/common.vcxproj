@@ -98,7 +98,6 @@
   <ItemGroup>
     <ClCompile Include="main\cpp\angleshooter\game\entities\BulletEntity.cpp" />
     <ClCompile Include="main\cpp\angleshooter\game\entities\Entity.cpp" />
-    <ClCompile Include="main\cpp\angleshooter\game\entities\GameObject.cpp" />
     <ClCompile Include="main\cpp\angleshooter\game\entities\PlayerEntity.cpp" />
     <ClCompile Include="main\cpp\angleshooter\game\World.cpp" />
     <ClCompile Include="main\cpp\angleshooter\resources\Map.cpp" />
@@ -111,7 +110,6 @@
   <ItemGroup>
     <ClInclude Include="main\cpp\angleshooter\game\entities\BulletEntity.h" />
     <ClInclude Include="main\cpp\angleshooter\game\entities\Entity.h" />
-    <ClInclude Include="main\cpp\angleshooter\game\entities\GameObject.h" />
     <ClInclude Include="main\cpp\angleshooter\game\entities\PlayerEntity.h" />
     <ClInclude Include="main\cpp\angleshooter\game\World.h" />
     <ClInclude Include="main\cpp\angleshooter\PreCompiledHeaders.h" />
