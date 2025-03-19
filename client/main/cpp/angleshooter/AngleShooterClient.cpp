@@ -1,8 +1,6 @@
 ﻿#include "PreCompiledClient.h"
 #include "AngleShooterClient.h"
 
-#include "resources/FontHolder.h"
-
 double AngleShooterClient::timePerTick = 1. / 60.;
 
 AngleShooterClient::AngleShooterClient() :

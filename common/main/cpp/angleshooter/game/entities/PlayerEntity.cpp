@@ -1,7 +1,7 @@
 ﻿#include "main/cpp/angleshooter/PreCompiledHeaders.h"
 #include "PlayerEntity.h"
 
-PlayerEntity::PlayerEntity(std::string id) : id(std::move(id)) {
+PlayerEntity::PlayerEntity(World* world, uint16_t id, std::string name) : Entity(world, id), name(std::move(name)) {
 	this->setDrag(0.35f);
 	this->setScale({14, 14});
 }
@@ -15,7 +15,7 @@ void PlayerEntity::tick(float deltaTime) {
 		this->deathTime--;
 		if (this->deathTime <= 0) {
 			this->health = 8;
-			this->setPosition(ClientContext::get()->getWorld()->getMap().getRandomSpawnpoint());
+			this->setPosition(this->world->getMap().getRandomSpawnpoint());
 		}
 		return;
 	}
@@ -35,8 +35,9 @@ void PlayerEntity::tick(float deltaTime) {
 	if (ClientContext::get()->getInputManager()->getRight()->isPressed()) input = input + sf::Vector2f(1, 0);
 	if (ClientContext::get()->getInputManager()->getFire()->isPressed() && this->bulletCharge >= 12) {
 		this->bulletCharge -= 12;
-		const auto world = ClientContext::get()->getWorld();
-		const auto bullet = std::make_shared<BulletEntity>(*this);
+		const auto bullet = this->world->addGameObject([this](uint16_t id) {
+			return BulletEntity(this->world, id, *this);
+		});
 		bullet->setPosition(this->getPosition());
 		bullet->setRotation(this->getRotation());
 		auto x = std::cos(this->getRotation().asRadians());
@@ -45,8 +46,10 @@ void PlayerEntity::tick(float deltaTime) {
 		y += Util::randomNormalFloat(0.025f);
 		const auto velocity = sf::Vector2f(x, y);
 		bullet->setVelocity(velocity * 8.f);
-		world->addGameObject(bullet);
-		ClientContext::get()->getAudioManager()->playSound(shootSound, .6f, Util::randomFloat(1.f, 1.6f));
+		this->world->addGameObject([this](uint16_t id) {
+			return BulletEntity(this->world, id, *this);
+		});
+		this->world->playSound(shootSound, .6f, Util::randomFloat(1.f, 1.6f));
 	}
 	if (input.length() > 0) {  // NOLINT(clang-diagnostic-undefined-func-template)
 		input = input.componentWiseDiv({input.length(), input.length()});
@@ -74,7 +77,7 @@ bool PlayerEntity::damage(PlayerEntity* source, int amount) {
 		this->onDeath(source);
 	} else {
 		static Identifier hurtSound("hurt.ogg");
-		AudioManager::get().playSound(hurtSound, .8f, Util::randomFloat(0.8f, 1.2f));
+		this->world->playSound(hurtSound, .8f, Util::randomFloat(0.8f, 1.2f));
 	}
 	return true;
 }
@@ -84,22 +87,19 @@ void PlayerEntity::onDeath(PlayerEntity* source) {
 	this->immunityTime = 120;
 	if (source != nullptr) {
 		for (auto i = 0; i < 20; i++) {
-			const auto world = ClientContext::get()->getWorld();
-			const auto bullet = std::make_shared<BulletEntity>(*source);
+			const auto bullet = this->world->addGameObject([this, source](uint16_t id) {
+				return BulletEntity(this->world, id, *source);
+			});
 			bullet->setPosition(this->getPosition());
 			const auto x = static_cast<float>(std::sin((18 * i + 25) * (std::numbers::pi / 180)));
 			const auto y = static_cast<float>(std::cos((18 * i + 25) * (std::numbers::pi / 180)));
 			const auto velocity = sf::Vector2f(x, y);
 			bullet->setVelocity(velocity * 1.28f);
 			bullet->setRotation(sf::radians(std::atan2(velocity.y, velocity.x)));
-			world->addGameObject(bullet);
 		}
 	}
 	static Identifier explodeSound("explode.ogg");
-	AudioManager::get().playSound(explodeSound, .8f, Util::randomFloat(1.2f, 1.8f));
-	if (const auto data = ClientContext::get()->getWorld()->getPlayerData(this->id); data != nullptr) {
-		data->addScore(1);
-	}
+	this->world->playSound(explodeSound, .8f, Util::randomFloat(1.2f, 1.8f));
 }
 
 int PlayerEntity::getHealth() const {

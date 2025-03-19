@@ -43,6 +43,5 @@
 #include "resources/MapLoader.h"
 #include "game/entities/Entity.h"
 #include "game/World.h"
-#include "game/entities/Entity.h"
 #include "game/entities/PlayerEntity.h"
 #include "game/entities/BulletEntity.h"

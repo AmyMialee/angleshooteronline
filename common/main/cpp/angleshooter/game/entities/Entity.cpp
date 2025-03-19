@@ -1,15 +1,7 @@
 ﻿#include "main/cpp/angleshooter/PreCompiledHeaders.h"
 #include "Entity.h"
 
-Entity::Entity() : id(0) {
-	hitbox.setFillColor(sf::Color::Transparent);
-	hitbox.setOutlineColor(sf::Color::Green);
-	hitbox.setOutlineThickness(1.f);
-}
-
-void Entity::baseTick(float deltaTime) {
-	tick(deltaTime);
-}
+Entity::Entity(World* world, uint16_t id) : world(world), id(id) {}
 
 float Entity::getX() const {
 	return this->getPosition().x;
@@ -21,10 +13,6 @@ float Entity::getY() const {
 
 uint32_t Entity::getId() const {
 	return this->id;
-}
-
-void Entity::setId(uint32_t id) {
-	this->id = id;
 }
 
 sf::FloatRect Entity::getBoundingBox() const {
@@ -48,7 +36,7 @@ bool Entity::isInWall(sf::Vector2f pos) const {
 	const auto bottom = static_cast<uint16_t>((pos.y + this->getScale().y / 2) / 16);
 	for (auto x = left; x <= right; x++) {
 		for (auto y = top; y <= bottom; y++) {
-			if (ClientContext::get()->getWorld()->getMap().isSolid(y, x)) return true;
+			if (this->world->getMap().isSolid(y, x)) return true;
 		}
 	}
 	return false;
@@ -60,13 +48,7 @@ void Entity::tick(float deltaTime) {
 	this->setVelocity(this->getVelocity().componentWiseMul({multiplier, multiplier}));
 }
 
-void Entity::render(float deltaTime) {}
-
 void Entity::onCollision(Entity& other) {}
-
-bool Entity::isMarkedForRemoval() const {
-	return false;
-}
 
 bool Entity::operator==(const Entity& other) const {
 	return this == &other;

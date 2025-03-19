@@ -5,20 +5,21 @@ World::World() : map(MapLoader::loadMap(Identifier::fromString("testmaplarge")))
 
 void World::init() {
 	this->gameObjects.clear();
-	const auto player1 = std::make_shared<PlayerEntity>("player");
-	player1->setPosition(this->map.getRandomSpawnpoint());
-	addGameObject(player1);
+	const auto player1 = addGameObject([this](uint16_t id) {
+		return PlayerEntity(this, id, "player");
+	});
+    player1->setPosition(this->map.getRandomSpawnpoint());
 }
 
 void World::tick(float deltaTime) {
-	std::vector<Entity::Pointer> objectList;
+	std::vector<std::shared_ptr<Entity>> objectList;
 	objectList.reserve(this->gameObjects.size());
 	for (const auto& value : this->gameObjects | std::views::values) objectList.push_back(value);
-	for (auto main = objectList.begin(); main != objectList.end(); ++main) main->get()->baseTick(deltaTime);
-	std::vector<Entity::Pointer> objects;
+	for (auto main = objectList.begin(); main != objectList.end(); ++main) main->get()->tick(deltaTime);
+	std::vector<std::shared_ptr<Entity>> objects;
 	objects.reserve(this->gameObjects.size());
 	for (const auto& value : this->gameObjects | std::views::values) objects.push_back(value);
-	std::vector<Entity::Pair> pairs;
+	std::vector<std::pair<Entity*, Entity*>> pairs;
 	for (auto main = objects.begin(); main != objects.end(); ++main) {
 		for (auto sub = main + 1; sub != objects.end(); ++sub) {
 			pairs.emplace_back(main->get(), sub->get());
@@ -41,10 +42,11 @@ void World::tick(float deltaTime) {
 	}
 }
 
-void World::addGameObject(std::shared_ptr<Entity> gameObject) {
+std::shared_ptr<Entity> World::addGameObject(const std::function<Entity(uint16_t)>& createEntity) {
 	auto id = ++this->nextId;
-	gameObject->setId(id);
+	auto gameObject = std::make_shared<Entity>(createEntity(id));
 	this->gameObjects.emplace(id, std::move(gameObject));
+	return gameObject;
 }
 
 std::vector<std::shared_ptr<Entity>> World::getGameObjects() {

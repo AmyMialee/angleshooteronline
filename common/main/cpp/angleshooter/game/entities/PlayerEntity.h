@@ -1,7 +1,7 @@
 ﻿#pragma once
 
 class PlayerEntity : public Entity {
-	std::string id;
+	std::string name;
 	int health = 8;
 	int deathTime = 0;
 	int immunityTime = 0;
@@ -9,7 +9,7 @@ class PlayerEntity : public Entity {
 	bool isMarkedForRemoval() const override;
 	
 public:
-	explicit PlayerEntity(std::string id);
+	explicit PlayerEntity(World* world, uint16_t id, std::string name);
 	inline static auto ID = Identifier("player");
 	const Identifier& getEntityType() const override;
 	void tick(float deltaTime) override;
