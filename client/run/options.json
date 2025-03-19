@@ -1,0 +1,14 @@
+{
+    "fps": 144,
+    "keybindings": {
+        "angleshooter:down": 18,
+        "angleshooter:fire": 40,
+        "angleshooter:left": 0,
+        "angleshooter:right": 3,
+        "angleshooter:up": 22
+    },
+    "masterVolume": 1.0,
+    "musicVolume": 0.0,
+    "onboarded": true,
+    "soundVolume": 0.0
+}

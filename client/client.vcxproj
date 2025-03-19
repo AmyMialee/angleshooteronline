@@ -129,6 +129,7 @@
     <Content Include="main\resources\assets\angleshooter\textures\sfml_logo.png" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="main\cpp\angleshooter\AngleShooterClient.cpp" />
     <ClCompile Include="main\cpp\angleshooter\Client.cpp" />
     <ClCompile Include="main\cpp\angleshooter\managers\AudioManager.cpp" />
     <ClCompile Include="main\cpp\angleshooter\managers\InputManager.cpp" />
@@ -144,12 +145,23 @@
       <PrecompiledHeaderOutputFile>$(IntDir)client.pch</PrecompiledHeaderOutputFile>
     </ClCompile>
     <ClCompile Include="main\cpp\angleshooter\rendering\MapRenderer.cpp" />
+    <ClCompile Include="main\cpp\angleshooter\rendering\shaders\BloomProcessing.cpp" />
+    <ClCompile Include="main\cpp\angleshooter\rendering\shaders\PostProcessing.cpp" />
+    <ClCompile Include="main\cpp\angleshooter\rendering\WorldRenderer.cpp" />
     <ClCompile Include="main\cpp\angleshooter\resources\ResourceHolders.cpp" />
+    <ClCompile Include="main\cpp\angleshooter\states\GameOverState.cpp" />
+    <ClCompile Include="main\cpp\angleshooter\states\GameState.cpp" />
+    <ClCompile Include="main\cpp\angleshooter\states\MenuState.cpp" />
+    <ClCompile Include="main\cpp\angleshooter\states\OnboardingState.cpp" />
+    <ClCompile Include="main\cpp\angleshooter\states\PauseState.cpp" />
+    <ClCompile Include="main\cpp\angleshooter\states\SettingsState.cpp" />
+    <ClCompile Include="main\cpp\angleshooter\states\SplashState.cpp" />
     <ClCompile Include="main\cpp\angleshooter\states\State.cpp" />
     <ClCompile Include="main\cpp\angleshooter\util\ClientContext.cpp" />
     <ClCompile Include="main\cpp\angleshooter\util\Keybinding.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="main\cpp\angleshooter\AngleShooterClient.h" />
     <ClInclude Include="main\cpp\angleshooter\managers\AudioManager.h" />
     <ClInclude Include="main\cpp\angleshooter\managers\InputManager.h" />
     <ClInclude Include="main\cpp\angleshooter\managers\OptionsManager.h" />
@@ -161,11 +173,21 @@
     <ClInclude Include="main\cpp\angleshooter\menu\WidgetContainer.h" />
     <ClInclude Include="main\cpp\angleshooter\PreCompiledClient.h" />
     <ClInclude Include="main\cpp\angleshooter\rendering\MapRenderer.h" />
+    <ClInclude Include="main\cpp\angleshooter\rendering\shaders\BloomProcessing.h" />
+    <ClInclude Include="main\cpp\angleshooter\rendering\shaders\PostProcessing.h" />
+    <ClInclude Include="main\cpp\angleshooter\rendering\WorldRenderer.h" />
     <ClInclude Include="main\cpp\angleshooter\resources\ResourceHolder.h" />
     <ClInclude Include="main\cpp\angleshooter\resources\ResourceHolder.tpp" />
     <ClInclude Include="main\cpp\angleshooter\resources\ResourceHolders.h" />
     <ClInclude Include="main\cpp\angleshooter\resources\ShaderHolder.h" />
     <ClInclude Include="main\cpp\angleshooter\resources\ShaderHolder.tpp" />
+    <ClInclude Include="main\cpp\angleshooter\states\GameOverState.h" />
+    <ClInclude Include="main\cpp\angleshooter\states\GameState.h" />
+    <ClInclude Include="main\cpp\angleshooter\states\MenuState.h" />
+    <ClInclude Include="main\cpp\angleshooter\states\OnboardingState.h" />
+    <ClInclude Include="main\cpp\angleshooter\states\PauseState.h" />
+    <ClInclude Include="main\cpp\angleshooter\states\SettingsState.h" />
+    <ClInclude Include="main\cpp\angleshooter\states\SplashState.h" />
     <ClInclude Include="main\cpp\angleshooter\states\State.h" />
     <ClInclude Include="main\cpp\angleshooter\util\ClientContext.h" />
     <ClInclude Include="main\cpp\angleshooter\util\Keybinding.h" />

@@ -96,6 +96,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="main\cpp\angleshooter\game\GameObject.cpp" />
+    <ClCompile Include="main\cpp\angleshooter\game\PlayerData.cpp" />
+    <ClCompile Include="main\cpp\angleshooter\game\World.cpp" />
     <ClCompile Include="main\cpp\angleshooter\resources\Map.cpp" />
     <ClCompile Include="main\cpp\angleshooter\resources\MapLoader.cpp" />
     <ClCompile Include="main\cpp\angleshooter\util\EventHandler.cpp" />
@@ -104,6 +107,9 @@
     <ClCompile Include="main\cpp\angleshooter\util\Util.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="main\cpp\angleshooter\game\GameObject.h" />
+    <ClInclude Include="main\cpp\angleshooter\game\PlayerData.h" />
+    <ClInclude Include="main\cpp\angleshooter\game\World.h" />
     <ClInclude Include="main\cpp\angleshooter\PreCompiledHeaders.h" />
     <ClInclude Include="main\cpp\angleshooter\resources\Map.h" />
     <ClInclude Include="main\cpp\angleshooter\resources\MapLoader.h" />

@@ -37,3 +37,7 @@
 #include "util/Util.h"
 #include "util/StackMove.h"
 #include "util/EventHandler.h"
+#include "resources/MapLoader.h"
+#include "game/GameObject.h"
+#include "game/PlayerData.h"
+#include "game/World.h"
