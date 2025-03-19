@@ -15,6 +15,8 @@
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
+#include <algorithm>
+#include <numbers>
 
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio/SoundBuffer.hpp>
@@ -36,8 +38,11 @@
 #include "util/Logger.h"
 #include "util/Util.h"
 #include "util/StackMove.h"
-#include "util/EventHandler.h"
+#include "util/Singleton.h"
+#include "util/Consumer.h"
 #include "resources/MapLoader.h"
-#include "game/GameObject.h"
-#include "game/PlayerData.h"
+#include "game/entities/GameObject.h"
 #include "game/World.h"
+#include "game/entities/Entity.h"
+#include "game/entities/PlayerEntity.h"
+#include "game/entities/BulletEntity.h"

@@ -22,6 +22,7 @@ public:
 	[[nodiscard]] bool isInWall(sf::Vector2f pos) const;
 	[[nodiscard]] virtual bool isMarkedForRemoval() const;
 	virtual void onCollision(GameObject& other);
+	virtual const Identifier& getEntityType() const = 0;
 	bool operator==(const GameObject& other) const;
 	bool operator!=(const GameObject& other) const;
 

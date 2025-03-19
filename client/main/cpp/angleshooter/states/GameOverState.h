@@ -1,5 +1,4 @@
 #pragma once
-#include "State.h"
 
 class GameOverState final : public State {
 	WidgetContainer gui;

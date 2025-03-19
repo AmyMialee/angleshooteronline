@@ -1,12 +1,11 @@
 #include "PreCompiledClient.h"
 #include "MapRenderer.h"
-#include "../util/ClientContext.h"
 
 MapRenderer::MapRenderer(Map& map) : mapSprite(sf::Sprite(sf::RenderTexture({1, 1}).getTexture())) {
 	this->mapTexture = sf::RenderTexture({static_cast<unsigned int>(map.getColumns() * 16), static_cast<unsigned int>(map.getRows() * 16)});
 	for (uint16_t row = 0; row < map.getRows(); ++row) {
 		for (uint16_t column = 0; column < map.getColumns(); ++column) {
-			sf::Sprite tile(ClientContext::get()->getTextureHolder()->get(map.getTextures()[map.getTextureGrid()[row][column]]));
+			sf::Sprite tile(TextureHolder::get().get(map.getTextures()[map.getTextureGrid()[row][column]]));
 			tile.setPosition({static_cast<float>(column * 16), static_cast<float>(row * 16)});
 			const auto tileSize = tile.getTexture().getSize();
 			tile.setScale({16.f / static_cast<float>(tileSize.x), 16.f / static_cast<float>(tileSize.y)});

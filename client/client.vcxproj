@@ -132,9 +132,12 @@
     <ClCompile Include="main\cpp\angleshooter\AngleShooterClient.cpp" />
     <ClCompile Include="main\cpp\angleshooter\Client.cpp" />
     <ClCompile Include="main\cpp\angleshooter\managers\AudioManager.cpp" />
+    <ClCompile Include="main\cpp\angleshooter\managers\FontHolder.cpp"/>
     <ClCompile Include="main\cpp\angleshooter\managers\InputManager.cpp" />
     <ClCompile Include="main\cpp\angleshooter\managers\OptionsManager.cpp" />
+    <ClCompile Include="main\cpp\angleshooter\managers\SoundHolder.cpp" />
     <ClCompile Include="main\cpp\angleshooter\managers\StateManager.cpp" />
+    <ClCompile Include="main\cpp\angleshooter\managers\TextureHolder.cpp" />
     <ClCompile Include="main\cpp\angleshooter\menu\Button.cpp" />
     <ClCompile Include="main\cpp\angleshooter\menu\Label.cpp" />
     <ClCompile Include="main\cpp\angleshooter\menu\Slider.cpp" />
@@ -148,7 +151,6 @@
     <ClCompile Include="main\cpp\angleshooter\rendering\shaders\BloomProcessing.cpp" />
     <ClCompile Include="main\cpp\angleshooter\rendering\shaders\PostProcessing.cpp" />
     <ClCompile Include="main\cpp\angleshooter\rendering\WorldRenderer.cpp" />
-    <ClCompile Include="main\cpp\angleshooter\resources\ResourceHolders.cpp" />
     <ClCompile Include="main\cpp\angleshooter\states\GameOverState.cpp" />
     <ClCompile Include="main\cpp\angleshooter\states\GameState.cpp" />
     <ClCompile Include="main\cpp\angleshooter\states\MenuState.cpp" />
@@ -163,9 +165,14 @@
   <ItemGroup>
     <ClInclude Include="main\cpp\angleshooter\AngleShooterClient.h" />
     <ClInclude Include="main\cpp\angleshooter\managers\AudioManager.h" />
+    <ClInclude Include="main\cpp\angleshooter\managers\FontHolder.h" />
     <ClInclude Include="main\cpp\angleshooter\managers\InputManager.h" />
     <ClInclude Include="main\cpp\angleshooter\managers\OptionsManager.h" />
+    <ClInclude Include="main\cpp\angleshooter\managers\ShaderHolder.h" />
+    <ClInclude Include="main\cpp\angleshooter\managers\ShaderHolder.tpp" />
+    <ClInclude Include="main\cpp\angleshooter\managers\SoundHolder.h" />
     <ClInclude Include="main\cpp\angleshooter\managers\StateManager.h" />
+    <ClInclude Include="main\cpp\angleshooter\managers\TextureHolder.h" />
     <ClInclude Include="main\cpp\angleshooter\menu\Button.h" />
     <ClInclude Include="main\cpp\angleshooter\menu\Label.h" />
     <ClInclude Include="main\cpp\angleshooter\menu\Slider.h" />
@@ -176,11 +183,6 @@
     <ClInclude Include="main\cpp\angleshooter\rendering\shaders\BloomProcessing.h" />
     <ClInclude Include="main\cpp\angleshooter\rendering\shaders\PostProcessing.h" />
     <ClInclude Include="main\cpp\angleshooter\rendering\WorldRenderer.h" />
-    <ClInclude Include="main\cpp\angleshooter\resources\ResourceHolder.h" />
-    <ClInclude Include="main\cpp\angleshooter\resources\ResourceHolder.tpp" />
-    <ClInclude Include="main\cpp\angleshooter\resources\ResourceHolders.h" />
-    <ClInclude Include="main\cpp\angleshooter\resources\ShaderHolder.h" />
-    <ClInclude Include="main\cpp\angleshooter\resources\ShaderHolder.tpp" />
     <ClInclude Include="main\cpp\angleshooter\states\GameOverState.h" />
     <ClInclude Include="main\cpp\angleshooter\states\GameState.h" />
     <ClInclude Include="main\cpp\angleshooter\states\MenuState.h" />
@@ -191,6 +193,11 @@
     <ClInclude Include="main\cpp\angleshooter\states\State.h" />
     <ClInclude Include="main\cpp\angleshooter\util\ClientContext.h" />
     <ClInclude Include="main\cpp\angleshooter\util\Keybinding.h" />
+    <ClInclude Include="main\cpp\angleshooter\util\ResourceHolder.h" />
+    <ClInclude Include="main\cpp\angleshooter\util\ResourceHolder.tpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="main\cpp\angleshooter\rendering\entities\" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

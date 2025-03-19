@@ -15,7 +15,7 @@ InputManager::InputManager() :
 	this->keybindings.push_back(this->fire);
 }
 
-void InputManager::handleInput(sf::RenderWindow& window, EventHandler& states) {
+void InputManager::handleInput(sf::RenderWindow& window) {
 	while (const auto optional = window.pollEvent()) {
 		if (!optional.has_value()) continue;
 		auto event = optional.value();
@@ -27,12 +27,12 @@ void InputManager::handleInput(sf::RenderWindow& window, EventHandler& states) {
 			window.close();
 			return;
 		}
-		states.handleEvent(event);
+		StateManager::get().handleEvent(event);
 	}
 }
 void InputManager::onKeyPressed(sf::Keyboard::Scancode code) {
 	for (const auto& keybinding : keybindings) if (keybinding->getKey() == code) keybinding->onPressed();
-	if (code == sf::Keyboard::Scancode::F3) ClientContext::get()->getOptionsManager()->setHitboxesEnabled(!ClientContext::get()->getOptionsManager()->areHitboxesEnabled());
+	if (code == sf::Keyboard::Scancode::F3) OptionsManager::get().setHitboxesEnabled(!OptionsManager::get().areHitboxesEnabled());
 }
 
 void InputManager::onKeyReleased(sf::Keyboard::Scancode code) {
@@ -45,10 +45,6 @@ Keybinding* InputManager::getSelectedKeybinding() {
 
 void InputManager::setSelectedKeybinding(Keybinding* key) {
 	this->selectedKeybinding = key;
-}
-
-void InputManager::rebindKey(sf::Keyboard::Scan key, const std::function<void()>& run) {
-	
 }
 
 bool InputManager::isKeyTaken(sf::Keyboard::Scan key) {

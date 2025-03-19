@@ -7,15 +7,15 @@ void WorldRenderer::render(float deltaTime) {
 	auto minY = std::numeric_limits<float>::max();
 	auto maxX = std::numeric_limits<float>::min();
 	auto maxY = std::numeric_limits<float>::min();
-	// for (const auto& gameObject : world->getGameObjects()) {
-		// if (const auto player = dynamic_cast<PlayerEntity*>(gameObject.get()); player != nullptr) {
-			// const auto position = player->getPosition() + player->getVelocity() * deltaTime;
-			// minX = std::min(minX, position.x);
-			// minY = std::min(minY, position.y);
-			// maxX = std::max(maxX, position.x);
-			// maxY = std::max(maxY, position.y);
-		// }
-	// }
+	for (const auto& gameObject : world->getGameObjects()) {
+		if (const auto player = dynamic_cast<PlayerEntity*>(gameObject.get()); player != nullptr) {
+			const auto position = player->getPosition() + player->getVelocity() * deltaTime;
+			minX = std::min(minX, position.x);
+			minY = std::min(minY, position.y);
+			maxX = std::max(maxX, position.x);
+			maxY = std::max(maxY, position.y);
+		}
+	}
 	const sf::FloatRect newViewSize = {{minX, minY}, {maxX, maxY}};
 	const sf::FloatRect viewSize = {
 		{lastViewSize.position.x * (1 - deltaTime) + newViewSize.position.x * deltaTime, lastViewSize.position.y * (1 - deltaTime) + newViewSize.position.y * deltaTime},
@@ -27,7 +27,7 @@ void WorldRenderer::render(float deltaTime) {
 	auto average = 160 + std::max((viewSize.size.x - viewSize.position.x) / 2, (viewSize.size.y - viewSize.position.y) / 2) * 3.2f;
 	view.setSize({average, average / static_cast<float>(texture->getSize().x) * static_cast<float>(texture->getSize().y)});
 	texture->setView(view);
-	// world->getMap().render(deltaTime);
+	world->getMap().render(deltaTime);
 	for (const auto& gameObject : world->getGameObjects()) gameObject->baseRender(deltaTime);
 	static auto bloomProcessing = BloomProcessing();
 	bloomProcessing.apply(*ClientContext::get()->getRenderTexture(), *ClientContext::get()->getRenderTexture());

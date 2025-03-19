@@ -15,7 +15,7 @@ void AudioManager::playMusic(const Identifier& id, float volume, float pitch) {
 		this->musicVolume = volume;
 		this->musicPitch = pitch;
 		this->music.setPitch(pitch);
-		setMusicVolume(volume * ClientContext::get()->getOptionsManager()->getMasterVolume() * ClientContext::get()->getOptionsManager()->getMusicVolume());
+		setMusicVolume(volume * OptionsManager::get().getMasterVolume() * OptionsManager::get().getMusicVolume());
 		return;
 	}
 	if (this->music.openFromFile("main/resources/assets/" + id.getSpace() + "/music/" + id.getPath())) {
@@ -24,7 +24,7 @@ void AudioManager::playMusic(const Identifier& id, float volume, float pitch) {
 		this->musicVolume = volume;
 		this->musicPitch = pitch;
 		this->music.setPitch(pitch);
-		setMusicVolume(volume * ClientContext::get()->getOptionsManager()->getMasterVolume() * ClientContext::get()->getOptionsManager()->getMusicVolume());
+		setMusicVolume(volume * OptionsManager::get().getMasterVolume() * OptionsManager::get().getMusicVolume());
 		this->music.play();
 	} else {
 		this->musicId = Identifier::empty;
@@ -38,10 +38,10 @@ void AudioManager::playSound(const Identifier& id, float volume, float pitch, sf
 }
 
 void AudioManager::playSound3d(const Identifier& id, float volume, float pitch, sf::Vector3f position, float attenuation) {
-	const auto buffer = ClientContext::get()->getSoundHolder()->getPointer(id);
+	const auto buffer = SoundHolder::get().getPointer(id);
 	auto sound = std::make_shared<sf::Sound>(*buffer);
 	auto tuple = std::tuple(sound, volume, pitch);
-	sound->setVolume(scaleVolume(volume * ClientContext::get()->getOptionsManager()->getMasterVolume() * ClientContext::get()->getOptionsManager()->getSoundVolume()));
+	sound->setVolume(scaleVolume(volume * OptionsManager::get().getMasterVolume() * OptionsManager::get().getSoundVolume()));
 	sound->setPitch(pitch);
 	sound->setPosition(position);
 	sound->setAttenuation(attenuation);

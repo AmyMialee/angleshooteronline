@@ -8,7 +8,7 @@ float SplashState::totalTime = 4.f;
 void SplashState::completeSplash() {
     this->requestStackPop();
     this->requestStackPush(MenuState::getId());
-    if (!ClientContext::get()->getOptionsManager()->isOnboarded()) this->requestStackPush(OnboardingState::getId());
+    if (!OptionsManager::get().isOnboarded()) this->requestStackPush(OnboardingState::getId());
 }
 
 void SplashState::init() {
@@ -16,11 +16,11 @@ void SplashState::init() {
 }
 
 void SplashState::loadAssets() {
-    ClientContext::get()->getTextureHolder()->load(SPLASH_TEXTURE);
+    TextureHolder::get().load(SPLASH_TEXTURE);
 }
 
 void SplashState::render(float deltaTime) {
-    static sf::Sprite background(ClientContext::get()->getTextureHolder()->get(SPLASH_TEXTURE));
+    static sf::Sprite background(TextureHolder::get().get(SPLASH_TEXTURE));
     static std::once_flag flag;
     std::call_once(flag, [&] {
         Util::centre(background);

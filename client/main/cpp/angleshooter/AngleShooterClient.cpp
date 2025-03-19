@@ -1,6 +1,8 @@
 ﻿#include "PreCompiledClient.h"
 #include "AngleShooterClient.h"
 
+#include "resources/FontHolder.h"
+
 double AngleShooterClient::timePerTick = 1. / 60.;
 
 const Identifier AngleShooterClient::BACKGROUND_MUSIC = Identifier("backgroundmusic.ogg");
@@ -9,14 +11,10 @@ AngleShooterClient::AngleShooterClient() :
 	ClientContext(),
 	window(sf::VideoMode({1920, 1080}), "Angle Shooter", sf::Style::Titlebar | sf::Style::Close),
 	renderTexture({960, 540}),
-	textureHolder(ResourceHolders::makeTextureHolder()),
-	fontHolder(ResourceHolders::makeFontHolder()),
-	soundHolder(ResourceHolders::makeSoundHolder()),
-	shaderHolder(ResourceHolders::makeShaderHolder()),
 	tps(static_cast<int>(1 / timePerTick)),
 	fps(144),
-	tpsText(fontHolder.getDefault(), "", 12),
-	fpsText(fontHolder.getDefault(), "", 12) {
+	tpsText(FontHolder::get().getDefault(), "", 12),
+	fpsText(FontHolder::get().getDefault(), "", 12) {
 	set(this);
 	window.clear();
 	window.setKeyRepeatEnabled(false);
@@ -24,8 +22,8 @@ AngleShooterClient::AngleShooterClient() :
 	loadAssets();
 	tpsText.setPosition({4.f, 4.f + 14});
 	fpsText.setPosition({4.f, 4.f});
-	states.push(SplashState::getId());
-	options.loadFromFile();
+	StateManager::get().push(SplashState::getId());
+	OptionsManager::get().loadFromFile();
 }
 
 void AngleShooterClient::run() {
@@ -41,7 +39,7 @@ void AngleShooterClient::run() {
 		tickTime += deltaTime;
 		frameTime += deltaTime;
 		secondTime += deltaTime;
-		inputManager.handleInput(window, states);
+		InputManager::get().handleInput(window);
 		if (tickTime > 1.) {
 			Logger::warn("AngleShooter::run: Lagging behind by " + Util::toRoundedString(tickTime / timePerTick, 2) + " ticks (" + Util::toRoundedString(tickTime, 2) + " seconds), skipping ahead");
 			tickTime = timePerTick;
@@ -51,7 +49,7 @@ void AngleShooterClient::run() {
 			tick(static_cast<float>(tickTime / timePerTick));
 			++ticks;
 		}
-		if (const auto timePerFrame = options.getTimePerFrame(); frameTime >= timePerFrame) {
+		if (const auto timePerFrame = OptionsManager::get().getTimePerFrame(); frameTime >= timePerFrame) {
 			frameTime -= timePerFrame;
 			render(static_cast<float>(tickTime / timePerTick));
 			while (frameTime >= timePerFrame) frameTime -= timePerFrame;
@@ -70,19 +68,19 @@ void AngleShooterClient::run() {
 }
 
 void AngleShooterClient::tick(float deltaTime) {
-	audio.tick(deltaTime);
-	states.tick(deltaTime);
+	AudioManager::get().tick(deltaTime);
+	StateManager::get().tick(deltaTime);
 }
 
 void AngleShooterClient::render(float deltaTime) {
 	window.clear();
 	renderTexture.clear();
-	states.render(deltaTime);
+	StateManager::get().render(deltaTime);
 	renderTexture.display();
 	sf::Sprite sprite(renderTexture.getTexture());
 	sprite.setScale({2.f, 2.f});
 	window.draw(sprite);
-	if (this->options.areHitboxesEnabled()) {
+	if (OptionsManager::get().areHitboxesEnabled()) {
 		fpsText.setPosition(fpsText.getPosition() + sf::Vector2f{1.f, 1.f});
 		tpsText.setPosition(tpsText.getPosition() + sf::Vector2f{1.f, 1.f});
 		fpsText.setFillColor(sf::Color::Black);
@@ -96,11 +94,11 @@ void AngleShooterClient::render(float deltaTime) {
 		window.draw(fpsText);
 		window.draw(tpsText);
 	}
-	if (states.getStateId() == GameState::getId()) {
+	if (StateManager::get().getStateId() == GameState::getId()) {
 		const auto center = sf::Vector2f{window.getView().getCenter().x, 16.f};
 		auto offset = 0.f;
 		for (auto data = this->world.getPlayerData(); const auto& playerData : data | std::views::values) {
-			auto text = sf::Text(fontHolder.getDefault(), std::to_string(playerData.getScore()), 56);
+			auto text = sf::Text(FontHolder::get().getDefault(), std::to_string(playerData.getScore()), 56);
 			text.setPosition(center + sf::Vector2f{10.f, offset + 0.f});
 			text.setFillColor(sf::Color::Cyan);
 			window.draw(text);
@@ -115,17 +113,17 @@ void AngleShooterClient::render(float deltaTime) {
 }
 
 void AngleShooterClient::registerStates() {
-	states.registerState<SplashState>(SplashState::getId());
-	states.registerState<MenuState>(MenuState::getId());
-	states.registerState<SettingsState>(SettingsState::getId());
-	states.registerState<OnboardingState>(OnboardingState::getId());
-	states.registerState<GameState>(GameState::getId());
-	states.registerState<PauseState>(PauseState::getId());
-	states.registerState<GameOverState>(GameOverState::getId());
+	StateManager::get().registerState<SplashState>(SplashState::getId());
+	StateManager::get().registerState<MenuState>(MenuState::getId());
+	StateManager::get().registerState<SettingsState>(SettingsState::getId());
+	StateManager::get().registerState<OnboardingState>(OnboardingState::getId());
+	StateManager::get().registerState<GameState>(GameState::getId());
+	StateManager::get().registerState<PauseState>(PauseState::getId());
+	StateManager::get().registerState<GameOverState>(GameOverState::getId());
 }
 
 void AngleShooterClient::loadAssets() {
-	states.loadAssets();
+	StateManager::get().loadAssets();
 }
 
 sf::RenderWindow* AngleShooterClient::getWindow() {
@@ -134,38 +132,6 @@ sf::RenderWindow* AngleShooterClient::getWindow() {
 
 sf::RenderTexture* AngleShooterClient::getRenderTexture() {
 	return &renderTexture;
-}
-
-AudioManager* AngleShooterClient::getAudioManager() {
-	return &audio;
-}
-
-InputManager* AngleShooterClient::getInputManager() {
-	return &inputManager;
-}
-
-OptionsManager* AngleShooterClient::getOptionsManager() {
-	return &options;
-}
-
-StateManager* AngleShooterClient::getStateManager() {
-	return &states;
-}
-
-FontHolder* AngleShooterClient::getFontHolder() {
-	return &fontHolder;
-}
-
-TextureHolder* AngleShooterClient::getTextureHolder() {
-	return &textureHolder;
-}
-
-SoundHolder* AngleShooterClient::getSoundHolder() {
-	return &soundHolder;
-}
-
-ShaderHolder* AngleShooterClient::getShaderHolder() {
-	return &shaderHolder;
 }
 
 World* AngleShooterClient::getWorld() {

@@ -6,19 +6,19 @@ const Identifier GameState::GAME_ID("game");
 void GameState::init() {
 	static const auto GAME_MUSIC = Identifier("gamemusic.ogg");
 	ClientContext::get()->getWorld()->init();
-	ClientContext::get()->getAudioManager()->playMusic(GAME_MUSIC);
+	AudioManager::get().playMusic(GAME_MUSIC);
 }
 
 void GameState::loadAssets() {
-	ClientContext::get()->getTextureHolder()->load(Map::DEFAULT_TILE);
-	ClientContext::get()->getTextureHolder()->load(Identifier("cobble.png"));
-	ClientContext::get()->getTextureHolder()->load(Identifier("player.png"));
-	ClientContext::get()->getTextureHolder()->load(Identifier("player2.png"));
-	ClientContext::get()->getTextureHolder()->load(Identifier("bullet.png"));
-	ClientContext::get()->getTextureHolder()->load(Identifier("bullet2.png"));
-	ClientContext::get()->getSoundHolder()->load(Identifier("bullet.ogg"));
-	ClientContext::get()->getSoundHolder()->load(Identifier("hurt.ogg"));
-	ClientContext::get()->getSoundHolder()->load(Identifier("explode.ogg"));
+	TextureHolder::get().load(Map::DEFAULT_TILE);
+	TextureHolder::get().load(Identifier("cobble.png"));
+	TextureHolder::get().load(Identifier("player.png"));
+	TextureHolder::get().load(Identifier("player2.png"));
+	TextureHolder::get().load(Identifier("bullet.png"));
+	TextureHolder::get().load(Identifier("bullet2.png"));
+	SoundHolder::get().load(Identifier("bullet.ogg"));
+	SoundHolder::get().load(Identifier("hurt.ogg"));
+	SoundHolder::get().load(Identifier("explode.ogg"));
 }
 
 void GameState::render(float deltaTime) {

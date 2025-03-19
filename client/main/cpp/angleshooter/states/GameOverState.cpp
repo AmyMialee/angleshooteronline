@@ -33,7 +33,7 @@ void GameOverState::render(float deltaTime) {
 	auto data = ClientContext::get()->getWorld()->getPlayerData();
 	for (auto it = data.begin(); it != data.end(); ++it) {
 		auto playerData = it->second;
-		auto text = sf::Text(ClientContext::get()->getFontHolder()->getDefault(), std::to_string(playerData.getScore()), 56);
+		auto text = sf::Text(FontHolder::get().getDefault(), std::to_string(playerData.getScore()), 56);
 		text.setPosition(center + sf::Vector2f{10.f, offset + 0.f});
 		text.setFillColor(sf::Color::Cyan);
 		ClientContext::get()->getWindow()->draw(text);

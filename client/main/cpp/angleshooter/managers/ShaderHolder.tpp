@@ -2,20 +2,23 @@
 #include "ShaderHolder.h"  // NOLINT(misc-header-include-cycle)
 #include <angleshooter/util/Logger.h>
 
-inline ShaderHolder::ShaderHolder(std::string directory) : directory(std::move(directory)) {}
+inline ShaderHolder& ShaderHolder::get() {
+    static ShaderHolder instance;
+    return instance;
+}
 
 inline void ShaderHolder::load(const Identifier& id, const Identifier& filename, const Identifier& parameter) {
     this->load(id,
-        "main/resources/assets/" + filename.getSpace() + "/" + directory + "/" + filename.getPath(),
-        "main/resources/assets/" + parameter.getSpace() + "/" + directory + "/" + parameter.getPath());
+        "main/resources/assets/" + filename.getSpace() + "/shader/" + filename.getPath(),
+        "main/resources/assets/" + parameter.getSpace() + "/shader/" + parameter.getPath());
 }
 
 inline void ShaderHolder::load(const Identifier& id, const std::string& filename, const Identifier& parameter) {
-    this->load(id, filename, "main/resources/assets/" + parameter.getSpace() + "/" + directory + "/" + parameter.getPath());
+    this->load(id, filename, "main/resources/assets/" + parameter.getSpace() + "/shader/" + parameter.getPath());
 }
 
 inline void ShaderHolder::load(const Identifier& id, const Identifier& filename, const std::string& parameter) {
-    this->load(id, "main/resources/assets/" + filename.getSpace() + "/" + directory + "/" + filename.getPath(), parameter);
+    this->load(id, "main/resources/assets/" + filename.getSpace() + "/shader/" + filename.getPath(), parameter);
 }
 
 inline void ShaderHolder::load(const Identifier& id, const std::string& filename, const std::string& parameter) {

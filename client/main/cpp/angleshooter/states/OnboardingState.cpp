@@ -9,14 +9,14 @@ void OnboardingState::init() {
 	masterSlider->setTextFunction([](double value) {
 		return "Master Volume : " + std::to_string(static_cast<int>(value * 100.));
 	});
-	masterSlider->setConstantCallback([this](double value) {
-		ClientContext::get()->getAudioManager()->setMusicVolume(ClientContext::get()->getOptionsManager()->getMusicVolume() * value);
-		ClientContext::get()->getAudioManager()->setSoundVolume(ClientContext::get()->getOptionsManager()->getSoundVolume() * value);
+	masterSlider->setConstantCallback([](double value) {
+		AudioManager::get().setMusicVolume(OptionsManager::get().getMusicVolume() * value);
+		AudioManager::get().setSoundVolume(OptionsManager::get().getSoundVolume() * value);
 	});
-	masterSlider->setFinalCallback([this](double value) {
-		ClientContext::get()->getOptionsManager()->setMasterVolume(value);
+	masterSlider->setFinalCallback([](double value) {
+		OptionsManager::get().setMasterVolume(value);
 	});
-	masterSlider->setValue(ClientContext::get()->getOptionsManager()->getMasterVolume());
+	masterSlider->setValue(OptionsManager::get().getMasterVolume());
 	gui.pack(masterSlider);
 	const auto musicSlider = std::make_shared<Slider>();
 	musicSlider->setPosition({ClientContext::get()->getRenderTexture()->getView().getSize().x / 2 - 100, 232.f});
@@ -24,12 +24,12 @@ void OnboardingState::init() {
 		return "Music Volume : " + std::to_string(static_cast<int>(value * 100.));
 	});
 	musicSlider->setConstantCallback([this](double value) {
-		ClientContext::get()->getAudioManager()->setMusicVolume(value * ClientContext::get()->getOptionsManager()->getMasterVolume());
+		AudioManager::get().setMusicVolume(value * OptionsManager::get().getMasterVolume());
 	});
 	musicSlider->setFinalCallback([this](double value) {
-		ClientContext::get()->getOptionsManager()->setMusicVolume(value);
+		OptionsManager::get().setMusicVolume(value);
 	});
-	musicSlider->setValue(ClientContext::get()->getOptionsManager()->getMusicVolume());
+	musicSlider->setValue(OptionsManager::get().getMusicVolume());
 	gui.pack(musicSlider);
 	const auto soundSlider = std::make_shared<Slider>();
 	soundSlider->setPosition({ClientContext::get()->getRenderTexture()->getView().getSize().x / 2 - 100, 264.f});
@@ -37,26 +37,26 @@ void OnboardingState::init() {
 		return "Sound Volume : " + std::to_string(static_cast<int>(value * 100.));
 	});
 	soundSlider->setConstantCallback([this](double value) {
-		ClientContext::get()->getAudioManager()->setSoundVolume(value * ClientContext::get()->getOptionsManager()->getMasterVolume());
+		AudioManager::get().setSoundVolume(value * OptionsManager::get().getMasterVolume());
 	});
 	soundSlider->setFinalCallback([this](double value) {
-		ClientContext::get()->getOptionsManager()->setSoundVolume(value);
+		OptionsManager::get().setSoundVolume(value);
 	});
-	soundSlider->setValue(ClientContext::get()->getOptionsManager()->getSoundVolume());
+	soundSlider->setValue(OptionsManager::get().getSoundVolume());
 	gui.pack(soundSlider);
 	const auto backButton = std::make_shared<Button>();
 	backButton->setPosition({ClientContext::get()->getRenderTexture()->getView().getSize().x / 2 - 100, 475.f});
 	backButton->setText("Back");
 	backButton->setCallback([this] { requestStackPop(); });
 	gui.pack(backButton);
-	ClientContext::get()->getOptionsManager()->setOnboarded(true);
-	ClientContext::get()->getAudioManager()->playMusic(AngleShooterClient::BACKGROUND_MUSIC);
+	OptionsManager::get().setOnboarded(true);
+	AudioManager::get().playMusic(AngleShooterClient::BACKGROUND_MUSIC);
 }
 
 void OnboardingState::loadAssets() {}
 
 void OnboardingState::render(float deltaTime) {
-	static sf::Sprite background(ClientContext::get()->getTextureHolder()->get(MenuState::MENU_TEXTURE));
+	static sf::Sprite background(TextureHolder::get().get(MenuState::MENU_TEXTURE));
 	static std::once_flag flag;
 	std::call_once(flag, [&] {
 		Util::centre(background);

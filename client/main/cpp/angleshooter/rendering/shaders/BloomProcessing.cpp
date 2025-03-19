@@ -7,12 +7,11 @@ const Identifier BloomProcessing::GAUSSIAN = Identifier("gaussian");
 const Identifier BloomProcessing::ADD = Identifier("add");
 
 BloomProcessing::BloomProcessing() {
-	const auto holder = ClientContext::get()->getShaderHolder();
 	const auto fullpass = Identifier("fullpass.vert");
-	holder->load(BRIGHTNESS, fullpass, Identifier("brightness.frag"));
-	holder->load(DOWNSAMPLE, fullpass, Identifier("downsample.frag"));
-	holder->load(GAUSSIAN, fullpass, Identifier("gaussian.frag"));
-	holder->load(ADD, fullpass, Identifier("add.frag"));
+	ShaderHolder::get().load(BRIGHTNESS, fullpass, Identifier("brightness.frag"));
+	ShaderHolder::get().load(DOWNSAMPLE, fullpass, Identifier("downsample.frag"));
+	ShaderHolder::get().load(GAUSSIAN, fullpass, Identifier("gaussian.frag"));
+	ShaderHolder::get().load(ADD, fullpass, Identifier("add.frag"));
 }
 
 void BloomProcessing::prepareTextures(sf::Vector2u size) {
@@ -31,7 +30,7 @@ void BloomProcessing::prepareTextures(sf::Vector2u size) {
 }
 
 void BloomProcessing::filterBright(const sf::RenderTexture& input, sf::RenderTexture& output) {
-	const auto brightness = ClientContext::get()->getShaderHolder()->getPointer(BRIGHTNESS);
+	const auto brightness = ShaderHolder::get().getPointer(BRIGHTNESS);
 	brightness->setUniform("source", input.getTexture());
 	applyShader(*brightness, output);
 	output.display();
@@ -46,7 +45,7 @@ void BloomProcessing::blurMultiPass(RenderTextureArray& renderTextures) {
 }
 
 void BloomProcessing::blur(const sf::RenderTexture& input, sf::RenderTexture& output, sf::Vector2f offsetFactor) {
-	const auto gaussianBlur = ClientContext::get()->getShaderHolder()->getPointer(GAUSSIAN);
+	const auto gaussianBlur = ShaderHolder::get().getPointer(GAUSSIAN);
 	gaussianBlur->setUniform("source", input.getTexture());
 	gaussianBlur->setUniform("offsetFactor", offsetFactor);
 	applyShader(*gaussianBlur, output);
@@ -54,7 +53,7 @@ void BloomProcessing::blur(const sf::RenderTexture& input, sf::RenderTexture& ou
 }
 
 void BloomProcessing::downSample(const sf::RenderTexture& input, sf::RenderTexture& output) {
-	const auto downSampler = ClientContext::get()->getShaderHolder()->getPointer(DOWNSAMPLE);
+	const auto downSampler = ShaderHolder::get().getPointer(DOWNSAMPLE);
 	downSampler->setUniform("source", input.getTexture());
 	downSampler->setUniform("sourceSize", sf::Vector2f(input.getSize()));
 	applyShader(*downSampler, output);
@@ -62,7 +61,7 @@ void BloomProcessing::downSample(const sf::RenderTexture& input, sf::RenderTextu
 }
 
 void BloomProcessing::add(const sf::RenderTexture& source, const sf::RenderTexture& bloom, sf::RenderTarget& target) {
-	const auto adder = ClientContext::get()->getShaderHolder()->getPointer(ADD);
+	const auto adder = ShaderHolder::get().getPointer(ADD);
 	adder->setUniform("source", source.getTexture());
 	adder->setUniform("bloom", bloom.getTexture());
 	applyShader(*adder, target);

@@ -1,7 +1,6 @@
 ﻿#pragma once
 
-class OptionsManager {
-	static std::string fileName;
+class OptionsManager final : public Singleton<OptionsManager> {
 	double masterVolume = 1.;
 	double musicVolume = 0.;
 	double soundVolume = 0.;
@@ -9,6 +8,7 @@ class OptionsManager {
 	double timePerFrame = 1. / framesPerSecond;
 	bool onboarded = false;
 	bool hitboxes = false;
+	OptionsManager() = default;
 
 public:
 	[[nodiscard]] double getMasterVolume() const;

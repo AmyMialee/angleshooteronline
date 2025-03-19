@@ -38,7 +38,7 @@ void Keybinding::loadBinding(sf::Keyboard::Scancode scan) {
 	this->key = scan;
 }
 
-void Keybinding::rebind(OptionsManager* options, sf::Keyboard::Scancode scan) {
+void Keybinding::rebind(sf::Keyboard::Scancode scan) {
 	this->key = scan;
-	options->saveToFile();
+	OptionsManager::get().saveToFile();
 }

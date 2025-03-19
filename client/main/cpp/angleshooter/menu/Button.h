@@ -2,10 +2,10 @@
 
 class Button : public Widget {
 public:
-	static Identifier defaultTexture;
-	static Identifier selectedTexture;
-	static Identifier pressedTexture;
-	static Identifier buttonSound;
+	inline static auto defaultTexture = Identifier("buttonnormal.png");
+	inline static auto selectedTexture = Identifier("buttonselected.png");
+	inline static auto pressedTexture = Identifier("buttonpressed.png");
+	inline static auto buttonSound = Identifier("ui_button_click.ogg");
 
 	typedef std::shared_ptr<Button> Pointer;
 	typedef std::function<void()> Callback;
@@ -27,6 +27,5 @@ private:
 	sf::Sprite sprite;
 	sf::Text text;
 	bool isToggle;
-
 	void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
 };

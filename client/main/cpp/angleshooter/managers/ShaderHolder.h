@@ -1,16 +1,11 @@
 ﻿#pragma once
-#include <map>
-#include <memory>
-#include <string>
-#include <SFML/Graphics/Shader.hpp>
-#include <angleshooter/util/Identifier.h>
 
-class ShaderHolder {
+class ShaderHolder final : public Singleton<ShaderHolder> {
     std::map<int, std::unique_ptr<sf::Shader>> resourceMap;
-    std::string directory;
+    ShaderHolder() = default;
 
 public:
-    explicit ShaderHolder(std::string directory);
+	static ShaderHolder& get();
     void load(const Identifier& id, const Identifier& filename, const Identifier& parameter);
     void load(const Identifier& id, const std::string& filename, const Identifier& parameter);
     void load(const Identifier& id, const Identifier& filename, const std::string& parameter);

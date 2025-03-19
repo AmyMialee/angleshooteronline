@@ -17,5 +17,5 @@ public:
 	void onPressed();
 	void onReleased();
 	void loadBinding(sf::Keyboard::Scancode scan);
-	void rebind(OptionsManager* options, sf::Keyboard::Scancode scan);
+	void rebind(sf::Keyboard::Scancode scan);
 };

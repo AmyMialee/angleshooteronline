@@ -10,11 +10,11 @@ void Slider::setTextFunction(const std::function<std::string(double)>& textFunct
 	this->textFunction = textFunction;
 }
 
-void Slider::setConstantCallback(const Callback& textCallback) {
+void Slider::setConstantCallback(const Consumer<double>& textCallback) {
 	this->constantCallback = textCallback;
 }
 
-void Slider::setFinalCallback(const Callback& callback) {
+void Slider::setFinalCallback(const Consumer<double>& callback) {
 	this->finalCallback = callback;
 }
 

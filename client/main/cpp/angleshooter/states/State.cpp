@@ -4,13 +4,13 @@
 void State::destroy() {}
 
 void State::requestStackPush(const Identifier& id) {
-	ClientContext::get()->getStateManager()->push(id);
+	StateManager::get().push(id);
 }
 
 void State::requestStackPop() {
-	ClientContext::get()->getStateManager()->pop();
+	StateManager::get().pop();
 }
 
 void State::requestStackClear() {
-	ClientContext::get()->getStateManager()->clear();
+	StateManager::get().clear();
 }

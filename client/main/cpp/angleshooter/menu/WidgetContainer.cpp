@@ -3,7 +3,7 @@
 
 WidgetContainer::WidgetContainer() : selectedChild(-1) {}
 
-void WidgetContainer::pack(const Widget::Pointer& widget) {
+void WidgetContainer::pack(const std::shared_ptr<Widget>& widget) {
     children.emplace_back(widget);
     if (!hasSelection() && widget->canBeSelected()) select(children.size() - 1);
 }

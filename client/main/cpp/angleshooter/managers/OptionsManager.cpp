@@ -1,7 +1,9 @@
 ﻿#include "PreCompiledClient.h"
 #include "OptionsManager.h"
 
-std::string OptionsManager::fileName("run/options.json");
+namespace {
+	auto fileName("run/options.json");
+}
 
 void OptionsManager::saveToFile() {
 	nlohmann::json json;
@@ -10,7 +12,7 @@ void OptionsManager::saveToFile() {
 	json["soundVolume"] = soundVolume;
 	json["onboarded"] = onboarded;
 	json["fps"] = framesPerSecond;
-	for (const auto& keybinding : ClientContext::get()->getInputManager()->getKeybindings()) {
+	for (const auto& keybinding : InputManager::get().getKeybindings()) {
 		json["keybindings"][keybinding->getId()->toString()] = keybinding->getKey();
 	}
 	std::filesystem::create_directories("run");
@@ -36,7 +38,7 @@ void OptionsManager::loadFromFile() {
 			onboarded = json.value("onboarded", false);
 			framesPerSecond = json.value("fps", 144);
 			timePerFrame = 1. / framesPerSecond;
-			for (const auto& keybinding : ClientContext::get()->getInputManager()->getKeybindings()) {
+			for (const auto& keybinding : InputManager::get().getKeybindings()) {
 				keybinding->loadBinding(json.value("keybindings", nlohmann::json()).value(keybinding->getId()->toString(), keybinding->getDefaultKey()));
 			}
 		} catch (const nlohmann::json::exception& e) {

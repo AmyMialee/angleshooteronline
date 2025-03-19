@@ -1,17 +1,12 @@
 #include "PreCompiledClient.h"
 #include "Button.h"
 
-Identifier Button::defaultTexture("buttonnormal.png");
-Identifier Button::selectedTexture("buttonselected.png");
-Identifier Button::pressedTexture("buttonpressed.png");
-Identifier Button::buttonSound("ui_button_click.ogg");
-
 Button::Button() :
-    defaultTextureRef(ClientContext::get()->getTextureHolder()->get(defaultTexture)),
-    selectedTextureRef(ClientContext::get()->getTextureHolder()->get(selectedTexture)),
-    pressedTextureRef(ClientContext::get()->getTextureHolder()->get(pressedTexture)),
+    defaultTextureRef(TextureHolder::get().get(defaultTexture)),
+    selectedTextureRef(TextureHolder::get().get(selectedTexture)),
+    pressedTextureRef(TextureHolder::get().get(pressedTexture)),
     sprite(defaultTextureRef),
-    text(ClientContext::get()->getFontHolder()->getDefault(), "", 16),
+    text(FontHolder::get().getDefault(), "", 16),
     isToggle(false)
 {
     const auto bounds = sprite.getLocalBounds();
@@ -49,11 +44,11 @@ void Button::setPressed(bool pressed) {
         if (isToggle) sprite.setTexture(pressedTextureRef);
         if (callback) callback();
         if (!isToggle) setPressed(false);
-        ClientContext::get()->getAudioManager()->playSound(buttonSound);
+        AudioManager::get().playSound(buttonSound);
     } else {
         if (!isToggle) return;
         sprite.setTexture(this->isSelected() ? selectedTextureRef : defaultTextureRef);
-        ClientContext::get()->getAudioManager()->playSound(buttonSound, 1.0f, 0.8f);
+        AudioManager::get().playSound(buttonSound, 1.0f, 0.8f);
     }
 }
 

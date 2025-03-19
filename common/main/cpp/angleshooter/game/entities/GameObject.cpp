@@ -12,24 +12,24 @@ void GameObject::baseTick(float deltaTime) {
 }
 
 void GameObject::baseRender(float deltaTime) {
-	// render(deltaTime);
-	// if (ClientContext::get()->getOptionsManager()->areHitboxesEnabled()) this->renderHitbox(deltaTime);
+	render(deltaTime);
+	if (OptionsManager::get().areHitboxesEnabled()) this->renderHitbox(deltaTime);
 }
 
 void GameObject::renderHitbox(float deltaTime) {
-	// const auto rect = this->getBoundingBox();
-	// if (hitbox.getPosition() != rect.position) hitbox.setPosition(rect.position);
-	// if (hitbox.getSize() != rect.size) hitbox.setSize(rect.size);
-	// ClientContext::get()->getRenderTexture()->draw(hitbox);
-	// const auto center = this->getPosition();
-	// const auto rotation = this->getRotation().asRadians();
-	// const auto endPoint = center + sf::Vector2f(std::cos(rotation) * 16, std::sin(rotation) * 16);
-	// sf::VertexArray line(sf::PrimitiveType::Lines, 2);
-	// line[0].position = center;
-	// line[0].color = sf::Color::Red;
-	// line[1].position = endPoint;
-	// line[1].color = sf::Color::Red;
-	// ClientContext::get()->getRenderTexture()->draw(line);
+	const auto rect = this->getBoundingBox();
+	if (hitbox.getPosition() != rect.position) hitbox.setPosition(rect.position);
+	if (hitbox.getSize() != rect.size) hitbox.setSize(rect.size);
+	ClientContext::get()->getRenderTexture()->draw(hitbox);
+	const auto center = this->getPosition();
+	const auto rotation = this->getRotation().asRadians();
+	const auto endPoint = center + sf::Vector2f(std::cos(rotation) * 16, std::sin(rotation) * 16);
+	sf::VertexArray line(sf::PrimitiveType::Lines, 2);
+	line[0].position = center;
+	line[0].color = sf::Color::Red;
+	line[1].position = endPoint;
+	line[1].color = sf::Color::Red;
+	ClientContext::get()->getRenderTexture()->draw(line);
 }
 
 float GameObject::getX() const {
@@ -69,7 +69,7 @@ bool GameObject::isInWall(sf::Vector2f pos) const {
 	const auto bottom = static_cast<uint16_t>((pos.y + this->getScale().y / 2) / 16);
 	for (auto x = left; x <= right; x++) {
 		for (auto y = top; y <= bottom; y++) {
-			// if (ClientContext::get()->getWorld()->getMap().isSolid(y, x)) return true;
+			if (ClientContext::get()->getWorld()->getMap().isSolid(y, x)) return true;
 		}
 	}
 	return false;

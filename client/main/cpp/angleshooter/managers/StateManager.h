@@ -1,6 +1,6 @@
 #pragma once
 
-class StateManager final : public EventHandler {
+class StateManager final : public Singleton<StateManager> {
 	struct PendingChange {
 		explicit PendingChange(StackMove action, Identifier id = Identifier::empty);
 		StackMove action;
@@ -10,16 +10,16 @@ class StateManager final : public EventHandler {
 	std::map<Identifier, std::function<State::Pointer()>> stateMap;
 	std::vector<std::pair<State::Pointer, bool>> stack;
 	std::vector<PendingChange> pending;
-
 	State::Pointer create(const Identifier& id);
 	void applyChanges();
+	StateManager() = default;
 	
 public:
 	template<typename T> void registerState(const Identifier& id);
 	void loadAssets();
 	void tick(float deltaTime);
 	void render(float deltaTime);
-	void handleEvent(const sf::Event& event) override;
+	void handleEvent(const sf::Event& event);
 	[[nodiscard]] Identifier getStateId() const;
 
 	void push(const Identifier& id);

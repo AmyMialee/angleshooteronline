@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-class AudioManager {
+class AudioManager final : public Singleton<AudioManager> {
 	sf::Music music;
 	Identifier musicId = Identifier::empty;
 	float musicVolume = 1.f;
@@ -8,6 +8,7 @@ class AudioManager {
 	std::vector<std::tuple<std::shared_ptr<sf::Sound>, float, float>> sounds;
 	int tickIndex = 0;
 	float scaleVolume(double volume);
+	AudioManager() = default;
 
 public:
 	void playMusic(const Identifier& id, float volume = 1.f, float pitch = 1.f);

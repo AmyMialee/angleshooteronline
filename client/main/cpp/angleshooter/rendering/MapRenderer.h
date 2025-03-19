@@ -1,5 +1,4 @@
 #pragma once
-#include <angleshooter/resources/Map.h>
 
 class MapRenderer {
 	sf::RenderTexture mapTexture;

@@ -5,11 +5,9 @@ World::World() : map(MapLoader::loadMap(Identifier::fromString("testmaplarge")))
 
 void World::init() {
 	this->gameObjects.clear();
-	// const auto player1 = std::make_shared<PlayerEntity>("player");
-	// player1->setPosition(this->map.getRandomSpawnpoint());
-	// addGameObject(player1);
-	this->playerData.clear();
-	this->playerData.emplace("player", PlayerData());
+	const auto player1 = std::make_shared<PlayerEntity>("player");
+	player1->setPosition(this->map.getRandomSpawnpoint());
+	addGameObject(player1);
 }
 
 void World::tick(float deltaTime) {
@@ -58,14 +56,4 @@ std::vector<std::shared_ptr<GameObject>> World::getGameObjects() {
 
 Map& World::getMap() {
 	return this->map;
-}
-
-PlayerData* World::getPlayerData(const std::string& id) {
-	const auto it = this->playerData.find(id);
-	if (it == this->playerData.end()) return nullptr;
-	return &it->second;
-}
-
-std::unordered_map<std::string, PlayerData> World::getPlayerData() {
-	return this->playerData;
 }

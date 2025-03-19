@@ -27,19 +27,19 @@ void MenuState::init() {
 	gui.pack(playButton);
 	gui.pack(settingsButton);
 	gui.pack(exitButton);
-	ClientContext::get()->getAudioManager()->playMusic(AngleShooterClient::BACKGROUND_MUSIC);
+	AudioManager::get().playMusic(AngleShooterClient::BACKGROUND_MUSIC);
 }
 
 void MenuState::loadAssets() {
-	ClientContext::get()->getTextureHolder()->load(MENU_TEXTURE);
-	ClientContext::get()->getTextureHolder()->load(Button::defaultTexture);
-	ClientContext::get()->getTextureHolder()->load(Button::pressedTexture);
-	ClientContext::get()->getTextureHolder()->load(Button::selectedTexture);
-	ClientContext::get()->getSoundHolder()->load(Button::buttonSound);
+	TextureHolder::get().load(MENU_TEXTURE);
+	TextureHolder::get().load(Button::defaultTexture);
+	TextureHolder::get().load(Button::pressedTexture);
+	TextureHolder::get().load(Button::selectedTexture);
+	SoundHolder::get().load(Button::buttonSound);
 }
 
 void MenuState::render(float deltaTime) {
-	static sf::Sprite background(ClientContext::get()->getTextureHolder()->get(MENU_TEXTURE));
+	static sf::Sprite background(TextureHolder::get().get(MENU_TEXTURE));
 	static std::once_flag flag;
 	std::call_once(flag, [&] {
 		Util::centre(background);
