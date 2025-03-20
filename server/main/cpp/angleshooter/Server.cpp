@@ -1,6 +1,6 @@
 #include "PreCompiledServer.h"
 
-int main(int argc, char* argv[]) {
+int main(int, char*[]) {
     try {
         Logger::debug("Starting Angle Shooter Server");
         // AngleShooterServer app;
