@@ -1,4 +1,4 @@
 #pragma once
 
 template <typename T>
-class Consumer : std::function<void(T)> {};
+class Consumer : public std::function<void(T)> {};

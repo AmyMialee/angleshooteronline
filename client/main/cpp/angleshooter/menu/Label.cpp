@@ -1,7 +1,7 @@
 #include "PreCompiledClient.h"
 #include "Label.h"
 
-Label::Label(const std::string& text) : text(FontHolder::get().getDefault(), text, 16) {}
+Label::Label(const std::string& text) : text(FontHolder::getInstance().getDefault(), text, 16) {}
 
 void Label::setText(const std::string& string) {
     this->text.setString(string);

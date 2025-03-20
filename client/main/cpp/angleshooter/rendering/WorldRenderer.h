@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 class WorldRenderer final : public Singleton<WorldRenderer> {
+	friend class Singleton<WorldRenderer>;
 	sf::FloatRect lastViewSize = {{0, 0}, {0, 0}};
 	std::unordered_map<int, std::function<void(std::shared_ptr<Entity>, float)>> renderRegistry;
 	WorldRenderer();

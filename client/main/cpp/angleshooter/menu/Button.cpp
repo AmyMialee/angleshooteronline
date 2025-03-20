@@ -2,11 +2,11 @@
 #include "Button.h"
 
 Button::Button() :
-    defaultTextureRef(TextureHolder::get().get(defaultTexture)),
-    selectedTextureRef(TextureHolder::get().get(selectedTexture)),
-    pressedTextureRef(TextureHolder::get().get(pressedTexture)),
+    defaultTextureRef(TextureHolder::getInstance().get(defaultTexture)),
+    selectedTextureRef(TextureHolder::getInstance().get(selectedTexture)),
+    pressedTextureRef(TextureHolder::getInstance().get(pressedTexture)),
     sprite(defaultTextureRef),
-    text(FontHolder::get().getDefault(), "", 16),
+    text(FontHolder::getInstance().getDefault(), "", 16),
     isToggle(false)
 {
     const auto bounds = sprite.getLocalBounds();

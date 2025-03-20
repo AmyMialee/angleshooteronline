@@ -31,15 +31,15 @@ void MenuState::init() {
 }
 
 void MenuState::loadAssets() {
-	TextureHolder::get().load(MENU_TEXTURE);
-	TextureHolder::get().load(Button::defaultTexture);
-	TextureHolder::get().load(Button::pressedTexture);
-	TextureHolder::get().load(Button::selectedTexture);
-	SoundHolder::get().load(Button::buttonSound);
+	TextureHolder::getInstance().load(MENU_TEXTURE);
+	TextureHolder::getInstance().load(Button::defaultTexture);
+	TextureHolder::getInstance().load(Button::pressedTexture);
+	TextureHolder::getInstance().load(Button::selectedTexture);
+	SoundHolder::getInstance().load(Button::buttonSound);
 }
 
 void MenuState::render(float deltaTime) {
-	static sf::Sprite background(TextureHolder::get().get(MENU_TEXTURE));
+	static sf::Sprite background(TextureHolder::getInstance().get(MENU_TEXTURE));
 	static std::once_flag flag;
 	std::call_once(flag, [&] {
 		Util::centre(background);

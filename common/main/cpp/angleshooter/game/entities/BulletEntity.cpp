@@ -1,7 +1,7 @@
 ﻿#include "main/cpp/angleshooter/PreCompiledHeaders.h"
 #include "BulletEntity.h"
 
-BulletEntity::BulletEntity(World* world, uint16_t id, PlayerEntity& owner) : Entity(world, id), owner(owner) {
+BulletEntity::BulletEntity(World* world, PlayerEntity& owner) : Entity(world), owner(owner) {
 	this->setDrag(0.f);
 	this->setScale({6, 6});
 }

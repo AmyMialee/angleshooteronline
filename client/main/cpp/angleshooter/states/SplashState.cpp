@@ -16,11 +16,11 @@ void SplashState::init() {
 }
 
 void SplashState::loadAssets() {
-    TextureHolder::get().load(SPLASH_TEXTURE);
+    TextureHolder::getInstance().load(SPLASH_TEXTURE);
 }
 
 void SplashState::render(float deltaTime) {
-    static sf::Sprite background(TextureHolder::get().get(SPLASH_TEXTURE));
+    static sf::Sprite background(TextureHolder::getInstance().get(SPLASH_TEXTURE));
     static std::once_flag flag;
     std::call_once(flag, [&] {
         Util::centre(background);

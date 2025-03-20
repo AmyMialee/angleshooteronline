@@ -104,7 +104,6 @@
     <ClCompile Include="main\cpp\angleshooter\resources\MapLoader.cpp" />
     <ClCompile Include="main\cpp\angleshooter\util\Identifier.cpp" />
     <ClCompile Include="main\cpp\angleshooter\util\Logger.cpp" />
-    <ClCompile Include="main\cpp\angleshooter\util\Singleton.cpp" />
     <ClCompile Include="main\cpp\angleshooter\util\Util.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -117,6 +116,7 @@
     <ClInclude Include="main\cpp\angleshooter\resources\MapLoader.h" />
     <ClInclude Include="main\cpp\angleshooter\util\Consumer.h" />
     <ClInclude Include="main\cpp\angleshooter\util\Identifier.h" />
+    <ClInclude Include="main\cpp\angleshooter\util\InstancedSingleton.h" />
     <ClInclude Include="main\cpp\angleshooter\util\Logger.h" />
     <ClInclude Include="main\cpp\angleshooter\util\Singleton.h" />
     <ClInclude Include="main\cpp\angleshooter\util\StackMove.h" />

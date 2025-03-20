@@ -10,7 +10,7 @@ protected:
 	World* world;
 	
 public:
-	explicit Entity(World* world, uint16_t id);
+	explicit Entity(World* world);
 	~Entity() override = default;
 	Entity(const Entity&) = delete;
 	Entity& operator=(const Entity&) = delete;

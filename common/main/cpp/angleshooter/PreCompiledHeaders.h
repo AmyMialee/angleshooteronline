@@ -39,6 +39,7 @@
 #include "util/Util.h"
 #include "util/StackMove.h"
 #include "util/Singleton.h"
+#include "util/InstancedSingleton.h"
 #include "util/Consumer.h"
 #include "resources/MapLoader.h"
 #include "game/entities/Entity.h"

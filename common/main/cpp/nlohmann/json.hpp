@@ -23284,7 +23284,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
         o.width(0);
 
         // do the actual serialization
-        serializer s(detail::output_adapter<char>(o), o.fill());
+        serializer s(detail::output_adapter(o), o.fill());
         s.dump(j, pretty_print, false, static_cast<unsigned int>(indentation));
         return o;
     }

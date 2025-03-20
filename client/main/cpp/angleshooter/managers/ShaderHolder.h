@@ -1,6 +1,7 @@
 ﻿#pragma once
 
-class ShaderHolder final : public Singleton<ShaderHolder> {
+class ShaderHolder final : public InstancedSingleton<ShaderHolder> {
+	friend class InstancedSingleton<ShaderHolder>;
     std::map<int, std::unique_ptr<sf::Shader>> resourceMap;
     ShaderHolder() = default;
 

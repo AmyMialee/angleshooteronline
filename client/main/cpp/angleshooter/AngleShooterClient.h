@@ -4,7 +4,6 @@ class AngleShooterClient final : ClientContext {
 	static AngleShooterClient* instance;
 	sf::RenderWindow window;
 	sf::RenderTexture renderTexture;
-	World world;
 	double tps;
 	double fps;
     sf::Text tpsText;
@@ -23,5 +22,4 @@ public:
 
 	[[nodiscard]] sf::RenderWindow* getWindow() override;
 	[[nodiscard]] sf::RenderTexture* getRenderTexture() override;
-	[[nodiscard]] World* getWorld() override;
 };

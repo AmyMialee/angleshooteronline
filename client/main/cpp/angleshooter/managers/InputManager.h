@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 class InputManager final : public Singleton<InputManager> {
+	friend class Singleton;
 	std::vector<std::shared_ptr<Keybinding>> keybindings;
 	Keybinding* selectedKeybinding = nullptr;
 	std::shared_ptr<Keybinding> up;
@@ -9,7 +10,7 @@ class InputManager final : public Singleton<InputManager> {
 	std::shared_ptr<Keybinding> right;
 	std::shared_ptr<Keybinding> fire;
 	InputManager();
-	
+
 public:
 	void handleInput(sf::RenderWindow& window);
 	void onKeyPressed(sf::Keyboard::Scancode code);

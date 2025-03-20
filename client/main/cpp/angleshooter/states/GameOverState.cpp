@@ -28,21 +28,21 @@ void GameOverState::render(float deltaTime) {
 	texture.draw(backgroundShape);
 	texture.setView(texture.getDefaultView());
 	texture.draw(gui);
-	const auto center = sf::Vector2f{texture.getView().getCenter().x, 164.f};
-	auto offset = 0.f;
-	auto data = ClientContext::get()->getWorld()->getPlayerData();
-	for (auto it = data.begin(); it != data.end(); ++it) {
-		auto playerData = it->second;
-		auto text = sf::Text(FontHolder::get().getDefault(), std::to_string(playerData.getScore()), 56);
-		text.setPosition(center + sf::Vector2f{10.f, offset + 0.f});
-		text.setFillColor(sf::Color::Cyan);
-		ClientContext::get()->getWindow()->draw(text);
-		text.setPosition(center + sf::Vector2f{8.f, offset + -5.f});
-		text.setCharacterSize(48);
-		text.setFillColor(sf::Color::White);
-		ClientContext::get()->getWindow()->draw(text);
-		offset += 56;
-	}
+	// const auto center = sf::Vector2f{texture.getView().getCenter().x, 164.f};
+	// auto offset = 0.f;
+	// auto data = ClientWorld::get().getPlayerData();
+	// for (auto it = data.begin(); it != data.end(); ++it) {
+		// auto playerData = it->second;
+		// auto text = sf::Text(FontHolder::getInstance().getDefault(), std::to_string(playerData.getScore()), 56);
+		// text.setPosition(center + sf::Vector2f{10.f, offset + 0.f});
+		// text.setFillColor(sf::Color::Cyan);
+		// ClientContext::get()->getWindow()->draw(text);
+		// text.setPosition(center + sf::Vector2f{8.f, offset + -5.f});
+		// text.setCharacterSize(48);
+		// text.setFillColor(sf::Color::White);
+		// ClientContext::get()->getWindow()->draw(text);
+		// offset += 56;
+	// }
 }
 
 bool GameOverState::shouldRenderNextState() const {

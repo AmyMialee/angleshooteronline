@@ -1,7 +1,7 @@
 ﻿#include "main/cpp/angleshooter/PreCompiledHeaders.h"
 #include "Entity.h"
 
-Entity::Entity(World* world, uint16_t id) : world(world), id(id) {}
+Entity::Entity(World* world) : id(world->getNextId()), world(world) {}
 
 float Entity::getX() const {
 	return this->getPosition().x;

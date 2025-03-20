@@ -6,7 +6,7 @@ class BulletEntity final : public Entity {
 	[[nodiscard]] bool isMarkedForRemoval() const override;
 
 public:
-	explicit BulletEntity(World* world, uint16_t id, PlayerEntity& owner);
+	explicit BulletEntity(World* world, PlayerEntity& owner);
 	inline static auto ID = Identifier("bullet");
 	const Identifier& getEntityType() const override;
 	void tick(float deltaTime) override;

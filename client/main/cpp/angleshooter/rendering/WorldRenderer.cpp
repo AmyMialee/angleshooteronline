@@ -1,10 +1,12 @@
 ﻿#include "PreCompiledClient.h"
 #include "WorldRenderer.h"
 
+#include "../game/ClientWorld.h"
+
 WorldRenderer::WorldRenderer() {
 	registerRenderer<PlayerEntity>(PlayerEntity::ID, [this](const std::shared_ptr<PlayerEntity>& player, float deltaTime) {
 		if (player->getHealth() <= 0) return;
-		static sf::Sprite player1(TextureHolder::get(Identifier("player.png")));
+		static sf::Sprite player1(TextureHolder::getInstance().get(Identifier("player.png")));
 		static std::once_flag flag;
 		std::call_once(flag, [&] {
 			Util::centre(player1);
@@ -44,7 +46,7 @@ WorldRenderer::WorldRenderer() {
 		}
 	});
 	registerRenderer<BulletEntity>(BulletEntity::ID, [this](const std::shared_ptr<BulletEntity>& bullet, float deltaTime) {
-		static sf::Sprite bullet1(TextureHolder::get(Identifier("bullet.png")));
+		static sf::Sprite bullet1(TextureHolder::getInstance().get(Identifier("bullet.png")));
 		static std::once_flag flag;
 		std::call_once(flag, [&] {
 			Util::centre(bullet1);
@@ -60,12 +62,11 @@ WorldRenderer::WorldRenderer() {
 }
 
 void WorldRenderer::render(float deltaTime) {
-	const auto world = ClientContext::get()->getWorld();
 	auto minX = std::numeric_limits<float>::max();
 	auto minY = std::numeric_limits<float>::max();
 	auto maxX = std::numeric_limits<float>::min();
 	auto maxY = std::numeric_limits<float>::min();
-	for (const auto& gameObject : world->getGameObjects()) {
+	for (const auto& gameObject : ClientWorld::get().getEntities()) {
 		if (const auto player = dynamic_cast<PlayerEntity*>(gameObject.get()); player != nullptr) {
 			const auto position = player->getPosition() + player->getVelocity() * deltaTime;
 			minX = std::min(minX, position.x);
@@ -85,8 +86,8 @@ void WorldRenderer::render(float deltaTime) {
 	auto average = 160 + std::max((viewSize.size.x - viewSize.position.x) / 2, (viewSize.size.y - viewSize.position.y) / 2) * 3.2f;
 	view.setSize({average, average / static_cast<float>(texture->getSize().x) * static_cast<float>(texture->getSize().y)});
 	texture->setView(view);
-	world->getMap().render(deltaTime);
-	for (const auto entity : world->getGameObjects()) {
+	// ClientWorld::get().getMap().render(deltaTime);
+	for (const auto entity : ClientWorld::get().getEntities()) {
 		if (auto renderer = renderRegistry.find(entity->getEntityType().getHash()); renderer != renderRegistry.end()) renderer->second(entity, deltaTime);
 	}
 	if (OptionsManager::get().isDebugEnabled()) {
@@ -94,7 +95,7 @@ void WorldRenderer::render(float deltaTime) {
 		shape.setFillColor(sf::Color::Transparent);
 		shape.setOutlineColor(sf::Color::Green);
 		shape.setOutlineThickness(1.f);
-		for (const auto entity : world->getGameObjects()) {
+		for (const auto entity : ClientWorld::get().getEntities()) {
 			const auto rect = entity->getBoundingBox();
 			shape.setPosition(rect.position);
 			shape.setSize(rect.size);
@@ -115,7 +116,7 @@ void WorldRenderer::render(float deltaTime) {
 }
 
 template<typename T> void WorldRenderer::registerRenderer(const Identifier& id, std::function<void(std::shared_ptr<T>, float)> renderer) {
-	renderRegistry[id.getHash()] = [this, renderer](std::shared_ptr<Entity> gameObject) {
-		renderer(static_cast<std::shared_ptr<T>>(gameObject));
-	};
+    // renderRegistry[id.getHash()] = [renderer](const std::shared_ptr<Entity>& entity, float deltaTime) {
+        // renderer(std::static_pointer_cast<T>(entity), deltaTime);
+    // };
 }

@@ -5,9 +5,8 @@ World::World() : map(MapLoader::loadMap(Identifier::fromString("testmaplarge")))
 
 void World::init() {
 	this->gameObjects.clear();
-	const auto player1 = addGameObject([this](uint16_t id) {
-		return PlayerEntity(this, id, "player");
-	});
+	const auto player1 = std::make_shared<PlayerEntity>(this, "player");
+	spawnEntity(player1);
     player1->setPosition(this->map.getRandomSpawnpoint());
 }
 
@@ -42,14 +41,12 @@ void World::tick(float deltaTime) {
 	}
 }
 
-std::shared_ptr<Entity> World::addGameObject(const std::function<Entity(uint16_t)>& createEntity) {
-	auto id = ++this->nextId;
-	auto gameObject = std::make_shared<Entity>(createEntity(id));
-	this->gameObjects.emplace(id, std::move(gameObject));
-	return gameObject;
+std::shared_ptr<Entity> World::spawnEntity(std::shared_ptr<Entity> entity) {
+	this->gameObjects.emplace(entity->getId(), std::move(entity));
+	return entity;
 }
 
-std::vector<std::shared_ptr<Entity>> World::getGameObjects() {
+std::vector<std::shared_ptr<Entity>> World::getEntities() {
 	std::vector<std::shared_ptr<Entity>> values;
 	values.reserve(this->gameObjects.size());
 	for (const auto& value : this->gameObjects | std::views::values) values.push_back(value);
@@ -58,4 +55,8 @@ std::vector<std::shared_ptr<Entity>> World::getGameObjects() {
 
 Map& World::getMap() {
 	return this->map;
+}
+
+uint16_t World::getNextId() {
+	return ++this->nextId;
 }

@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 class AudioManager final : public Singleton<AudioManager> {
+	friend class Singleton;
 	sf::Music music;
 	Identifier musicId = Identifier::empty;
 	float musicVolume = 1.f;

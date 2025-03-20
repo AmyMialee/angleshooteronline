@@ -1,6 +1,7 @@
 #pragma once
 
 class StateManager final : public Singleton<StateManager> {
+	friend class Singleton<StateManager>;
 	struct PendingChange {
 		explicit PendingChange(StackMove action, Identifier id = Identifier::empty);
 		StackMove action;

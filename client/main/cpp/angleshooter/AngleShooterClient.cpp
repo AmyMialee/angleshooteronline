@@ -1,6 +1,8 @@
 ﻿#include "PreCompiledClient.h"
 #include "AngleShooterClient.h"
 
+#include "game/ClientWorld.h"
+
 double AngleShooterClient::timePerTick = 1. / 60.;
 
 AngleShooterClient::AngleShooterClient() :
@@ -9,8 +11,8 @@ AngleShooterClient::AngleShooterClient() :
 	renderTexture({960, 540}),
 	tps(static_cast<int>(1 / timePerTick)),
 	fps(144),
-	tpsText(FontHolder::get().getDefault(), "", 12),
-	fpsText(FontHolder::get().getDefault(), "", 12) {
+	tpsText(FontHolder::getInstance().getDefault(), "", 12),
+	fpsText(FontHolder::getInstance().getDefault(), "", 12) {
 	set(this);
 	window.clear();
 	window.setKeyRepeatEnabled(false);
@@ -23,7 +25,7 @@ AngleShooterClient::AngleShooterClient() :
 }
 
 void AngleShooterClient::run() {
-	this->world.init();
+	ClientWorld::get().init();
 	sf::Clock deltaClock;
 	auto tickTime = 0.;
 	auto frameTime = 0.;
@@ -90,21 +92,21 @@ void AngleShooterClient::render(float deltaTime) {
 		window.draw(fpsText);
 		window.draw(tpsText);
 	}
-	if (StateManager::get().getStateId() == GameState::getId()) {
-		const auto center = sf::Vector2f{window.getView().getCenter().x, 16.f};
-		auto offset = 0.f;
-		for (auto data = this->world.getPlayerData(); const auto& playerData : data | std::views::values) {
-			auto text = sf::Text(FontHolder::get().getDefault(), std::to_string(playerData.getScore()), 56);
-			text.setPosition(center + sf::Vector2f{10.f, offset + 0.f});
-			text.setFillColor(sf::Color::Cyan);
-			window.draw(text);
-			text.setPosition(center + sf::Vector2f{8.f, offset + -5.f});
-			text.setCharacterSize(48);
-			text.setFillColor(sf::Color::White);
-			window.draw(text);
-			offset += 56;
-		}
-	}
+	// if (StateManager::get().getStateId() == GameState::getId()) {
+		// const auto center = sf::Vector2f{window.getView().getCenter().x, 16.f};
+		// auto offset = 0.f;
+		// for (auto data = ClientWorld::get().getPlayerData(); const auto& playerData : data | std::views::values) {
+			// auto text = sf::Text(FontHolder::get().getDefault(), std::to_string(playerData.getScore()), 56);
+			// text.setPosition(center + sf::Vector2f{10.f, offset + 0.f});
+			// text.setFillColor(sf::Color::Cyan);
+			// window.draw(text);
+			// text.setPosition(center + sf::Vector2f{8.f, offset + -5.f});
+			// text.setCharacterSize(48);
+			// text.setFillColor(sf::Color::White);
+			// window.draw(text);
+			// offset += 56;
+		// }
+	// }
 	window.display();
 }
 
@@ -128,8 +130,4 @@ sf::RenderWindow* AngleShooterClient::getWindow() {
 
 sf::RenderTexture* AngleShooterClient::getRenderTexture() {
 	return &renderTexture;
-}
-
-World* AngleShooterClient::getWorld() {
-	return &world;
 }

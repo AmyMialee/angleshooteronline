@@ -9,34 +9,34 @@ void SettingsState::init() {
 	const auto masterSlider = std::make_shared<Slider>();
 	masterSlider->setPosition({80.f, 100.f + offset * 3});
 	masterSlider->setTextFunction([](double value) { return "Master Volume : " + std::to_string(static_cast<int>(value * 100.)); });
-	masterSlider->setConstantCallback([this](double value) {
+	masterSlider->setConstantCallback(Consumer<double>([this](double value) {
 		AudioManager::get().setMusicVolume(OptionsManager::get().getMusicVolume() * value);
 		AudioManager::get().setSoundVolume(OptionsManager::get().getSoundVolume() * value);
-	});
-	masterSlider->setFinalCallback([this](double value) { OptionsManager::get().setMasterVolume(value); });
+	}));
+	masterSlider->setFinalCallback(Consumer<double>([this](double value) { OptionsManager::get().setMasterVolume(value); }));
 	masterSlider->setValue(OptionsManager::get().getMasterVolume());
 	gui.pack(masterSlider);
 	
 	const auto soundSlider = std::make_shared<Slider>();
 	soundSlider->setPosition({80.f, 100.f + offset * 4});
 	soundSlider->setTextFunction([](double value) { return "Sound Volume : " + std::to_string(static_cast<int>(value * 100.)); });
-	soundSlider->setConstantCallback([this](double value) { AudioManager::get().setSoundVolume(value * OptionsManager::get().getMasterVolume()); });
-	soundSlider->setFinalCallback([this](double value) { OptionsManager::get().setSoundVolume(value); });
+	soundSlider->setConstantCallback(Consumer<double>([this](double value) { AudioManager::get().setSoundVolume(value * OptionsManager::get().getMasterVolume()); }));
+	soundSlider->setFinalCallback(Consumer<double>([this](double value) { OptionsManager::get().setSoundVolume(value); }));
 	soundSlider->setValue(OptionsManager::get().getSoundVolume());
 	gui.pack(soundSlider);
 	
 	const auto musicSlider = std::make_shared<Slider>();
 	musicSlider->setPosition({80.f, 100.f + offset * 5});
 	musicSlider->setTextFunction([](double value) { return "Music Volume : " + std::to_string(static_cast<int>(value * 100.)); });
-	musicSlider->setConstantCallback([this](double value) { AudioManager::get().setMusicVolume(value * OptionsManager::get().getMasterVolume()); });
-	musicSlider->setFinalCallback([this](double value) { OptionsManager::get().setMusicVolume(value); });
+	musicSlider->setConstantCallback(Consumer<double>([this](double value) { AudioManager::get().setMusicVolume(value * OptionsManager::get().getMasterVolume()); }));
+	musicSlider->setFinalCallback(Consumer<double>([this](double value) { OptionsManager::get().setMusicVolume(value); }));
 	musicSlider->setValue(OptionsManager::get().getMusicVolume());
 	gui.pack(musicSlider);
 	
 	const auto fpsSlider = std::make_shared<Slider>();
 	fpsSlider->setPosition({80.f, 100.f + offset * 7});
 	fpsSlider->setTextFunction([](double value) { return "FPS : " + std::to_string(static_cast<int>(value * 144.)); });
-	fpsSlider->setFinalCallback([this](double value) { OptionsManager::get().setFps(static_cast<int>(value * 144.)); });
+	fpsSlider->setFinalCallback(Consumer<double>([this](double value) { OptionsManager::get().setFps(static_cast<int>(value * 144.)); }));
 	fpsSlider->setValue(OptionsManager::get().getFps() / 144.);
 	gui.pack(fpsSlider);
 
@@ -66,7 +66,7 @@ void SettingsState::init() {
 void SettingsState::loadAssets() {}
 
 void SettingsState::render(float deltaTime) {
-	static sf::Sprite background(TextureHolder::get().get(MenuState::MENU_TEXTURE));
+	static sf::Sprite background(TextureHolder::getInstance().get(MenuState::MENU_TEXTURE));
 	static std::once_flag flag;
 	std::call_once(flag, [&] {
 		background.setColor({200, 255, 255, 255});

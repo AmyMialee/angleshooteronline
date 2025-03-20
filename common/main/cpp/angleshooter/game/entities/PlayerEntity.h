@@ -9,7 +9,7 @@ class PlayerEntity : public Entity {
 	bool isMarkedForRemoval() const override;
 	
 public:
-	explicit PlayerEntity(World* world, uint16_t id, std::string name);
+	explicit PlayerEntity(World* world, std::string name);
 	inline static auto ID = Identifier("player");
 	const Identifier& getEntityType() const override;
 	void tick(float deltaTime) override;
