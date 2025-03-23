@@ -107,6 +107,7 @@
     <ClCompile Include="main\cpp\angleshooter\util\Util.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="main\cpp\angleshooter\AngleShooterCommon.h" />
     <ClInclude Include="main\cpp\angleshooter\game\entities\BulletEntity.h" />
     <ClInclude Include="main\cpp\angleshooter\game\entities\Entity.h" />
     <ClInclude Include="main\cpp\angleshooter\game\entities\PlayerEntity.h" />

@@ -105,6 +105,8 @@
     <Content Include="main\resources\data\angleshooter\maps\testmaplarge.json" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="main\cpp\angleshooter\AngleShooterServer.cpp" />
+    <ClCompile Include="main\cpp\angleshooter\game\PlayerHandler.cpp" />
     <ClCompile Include="main\cpp\angleshooter\game\ServerWorld.cpp" />
     <ClCompile Include="main\cpp\angleshooter\PreCompiledServer.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
@@ -113,6 +115,8 @@
     <ClCompile Include="main\cpp\angleshooter\Server.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="main\cpp\angleshooter\AngleShooterServer.h" />
+    <ClInclude Include="main\cpp\angleshooter\game\PlayerHandler.h" />
     <ClInclude Include="main\cpp\angleshooter\game\ServerWorld.h" />
     <ClInclude Include="main\cpp\angleshooter\PreCompiledServer.h" />
   </ItemGroup>

@@ -17,6 +17,7 @@
 #include <vector>
 #include <algorithm>
 #include <numbers>
+#include <thread>
 
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio/SoundBuffer.hpp>
@@ -31,9 +32,13 @@
 #include <SFML/Graphics/Texture.hpp>
 #include <SFML/System/Vector2.hpp>
 #include <SFML/Window/Event.hpp>
+#include <SFML/Network/TcpSocket.hpp>
+#include <SFML/Network/TcpListener.hpp>
+#include <SFML/Network/Packet.hpp>
 
 #include "../nlohmann/json.hpp"
 
+#include "AngleShooterCommon.h"
 #include "util/Identifier.h"
 #include "util/Logger.h"
 #include "util/Util.h"
