@@ -15,7 +15,7 @@ void PlayerEntity::tick(float deltaTime) {
 		this->deathTime--;
 		if (this->deathTime <= 0) {
 			this->health = 8;
-			this->setPosition(this->world->getMap().getRandomSpawnpoint());
+			this->setPosition(this->world->getMap()->getRandomSpawnpoint());
 		}
 		return;
 	}

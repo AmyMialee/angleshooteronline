@@ -3,8 +3,7 @@
 
 Identifier Identifier::empty = Identifier();
 
-Identifier::Identifier() :
-    hash(static_cast<int>(std::hash<std::string>()(this->space + this->path))) {}
+Identifier::Identifier() : hash(static_cast<int>(std::hash<std::string>()(this->space + this->path))) {}
 
 Identifier::Identifier(const std::string& path) : Identifier("angleshooter", path) {}
 

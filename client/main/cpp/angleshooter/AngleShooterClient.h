@@ -15,7 +15,6 @@ class AngleShooterClient final : ClientContext {
 	void loadAssets();
 
 public:
-	static double timePerTick;
 	inline const static auto BACKGROUND_MUSIC = Identifier("backgroundmusic.ogg");
 	AngleShooterClient();
 	void run();

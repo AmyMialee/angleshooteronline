@@ -112,6 +112,7 @@
     <ClInclude Include="main\cpp\angleshooter\game\entities\Entity.h" />
     <ClInclude Include="main\cpp\angleshooter\game\entities\PlayerEntity.h" />
     <ClInclude Include="main\cpp\angleshooter\game\World.h" />
+    <ClInclude Include="main\cpp\angleshooter\NetworkProtocol.hpp" />
     <ClInclude Include="main\cpp\angleshooter\PreCompiledHeaders.h" />
     <ClInclude Include="main\cpp\angleshooter\resources\Map.h" />
     <ClInclude Include="main\cpp\angleshooter\resources\MapLoader.h" />

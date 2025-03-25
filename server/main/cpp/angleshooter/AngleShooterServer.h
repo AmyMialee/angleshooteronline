@@ -5,32 +5,29 @@ class AngleShooterServer {
 		RemotePeer();
 		sf::TcpSocket socket;
 		sf::Time lastPacketTime;
-		std::vector<std::int32_t> mAircraftIdentifiers;
 		bool ready;
 		bool timedOut;
 	};
 
-	typedef std::unique_ptr<RemotePeer> PeerPtr;
+	std::map<int, std::function<void(sf::Packet& packet, RemotePeer& receivingPeer, bool& detectedTimeout)>> packetHandlers;
 
 	std::thread thread;
-	sf::Clock clock;
 	sf::TcpListener listenerSocket;
+	sf::Clock clock;
 	bool listeningState;
 	sf::Time clientTimeout;
 
-	std::size_t maxConnectedPlayers;
-	std::size_t connectedPlayers;
+	std::uint16_t maxConnectedPlayers;
+	std::uint16_t connectedPlayers;
 
-	// std::size_t aircraftCount;
-	// std::map<std::int32_t, AircraftInfo> aircraftInfo;
-
-	std::vector<PeerPtr> peers;
-	std::int32_t aircraftIdentifierCounter;
+	std::vector<std::unique_ptr<RemotePeer>> peers;
 	bool waitingThreadEnd;
+
+	double tps;
 
 	void setListening(bool enable);
 	void executionThread();
-	void tick();
+	void tick(float deltaTime);
 	[[nodiscard]] sf::Time now() const;
 
 	void handleIncomingPackets();

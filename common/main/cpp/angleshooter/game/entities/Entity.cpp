@@ -36,7 +36,7 @@ bool Entity::isInWall(sf::Vector2f pos) const {
 	const auto bottom = static_cast<uint16_t>((pos.y + this->getScale().y / 2) / 16);
 	for (auto x = left; x <= right; x++) {
 		for (auto y = top; y <= bottom; y++) {
-			if (this->world->getMap().isSolid(y, x)) return true;
+			if (this->world->getMap()->isSolid(y, x)) return true;
 		}
 	}
 	return false;

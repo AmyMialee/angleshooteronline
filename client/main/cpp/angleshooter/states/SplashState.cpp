@@ -39,7 +39,7 @@ bool SplashState::shouldRenderNextState() const {
 }
 
 bool SplashState::tick(float deltaTime) {
-    fadeTime += static_cast<float>(AngleShooterClient::timePerTick) + deltaTime;
+    fadeTime += static_cast<float>(AngleShooterCommon::TIME_PER_TICK) + deltaTime;
     if (fadeTime >= totalTime) completeSplash();
     return false;
 }

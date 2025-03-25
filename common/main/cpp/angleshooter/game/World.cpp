@@ -1,13 +1,10 @@
 ﻿#include "main/cpp/angleshooter/PreCompiledHeaders.h"
 #include "World.h"
 
-World::World() : map(MapLoader::loadMap(Identifier::fromString("testmaplarge"))) {}
+World::World() : map(nullptr) {}
 
 void World::init() {
 	this->gameObjects.clear();
-	const auto player1 = std::make_shared<PlayerEntity>(this, "player");
-	spawnEntity(player1);
-    player1->setPosition(this->map.getRandomSpawnpoint());
 }
 
 void World::tick(float deltaTime) {
@@ -32,7 +29,6 @@ void World::tick(float deltaTime) {
 	}
 	auto iterator = this->gameObjects.begin();
 	while (iterator != this->gameObjects.end()) {
-		auto a = (*iterator).second;
 		if (iterator->second->isMarkedForRemoval()) {
 			iterator = this->gameObjects.erase(iterator);
 		} else {
@@ -53,10 +49,15 @@ std::vector<std::shared_ptr<Entity>> World::getEntities() {
 	return values;
 }
 
-Map& World::getMap() {
+Map* World::getMap() {
 	return this->map;
 }
 
 uint16_t World::getNextId() {
 	return ++this->nextId;
+}
+
+void World::loadMap(const Identifier& id) {
+	auto map = MapLoader::loadMap(id);
+	this->map = &map;
 }

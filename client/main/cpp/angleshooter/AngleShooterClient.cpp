@@ -3,13 +3,11 @@
 
 #include "game/ClientWorld.h"
 
-double AngleShooterClient::timePerTick = 1. / 60.;
-
 AngleShooterClient::AngleShooterClient() :
 	ClientContext(),
 	window(sf::VideoMode({1920, 1080}), "Angle Shooter", sf::Style::Titlebar | sf::Style::Close),
 	renderTexture({960, 540}),
-	tps(static_cast<int>(1 / timePerTick)),
+	tps(static_cast<int>(1 / AngleShooterCommon::TIME_PER_TICK)),
 	fps(144),
 	tpsText(FontHolder::getInstance().getDefault(), "", 12),
 	fpsText(FontHolder::getInstance().getDefault(), "", 12) {
@@ -39,17 +37,17 @@ void AngleShooterClient::run() {
 		secondTime += deltaTime;
 		InputManager::get().handleInput(window);
 		if (tickTime > 1.) {
-			Logger::warn("AngleShooter::run: Lagging behind by " + Util::toRoundedString(tickTime / timePerTick, 2) + " ticks (" + Util::toRoundedString(tickTime, 2) + " seconds), skipping ahead");
-			tickTime = timePerTick;
+			Logger::warn("AngleShooter::run: Lagging behind by " + Util::toRoundedString(tickTime / AngleShooterCommon::TIME_PER_TICK, 2) + " ticks (" + Util::toRoundedString(tickTime, 2) + " seconds), skipping ahead");
+			tickTime = AngleShooterCommon::TIME_PER_TICK;
 		}
-		while (tickTime >= timePerTick) {
-			tickTime -= timePerTick;
-			tick(static_cast<float>(tickTime / timePerTick));
+		while (tickTime >= AngleShooterCommon::TIME_PER_TICK) {
+			tickTime -= AngleShooterCommon::TIME_PER_TICK;
+			tick(static_cast<float>(tickTime / AngleShooterCommon::TIME_PER_TICK));
 			++ticks;
 		}
 		if (const auto timePerFrame = OptionsManager::get().getTimePerFrame(); frameTime >= timePerFrame) {
 			frameTime -= timePerFrame;
-			render(static_cast<float>(tickTime / timePerTick));
+			render(static_cast<float>(tickTime / AngleShooterCommon::TIME_PER_TICK));
 			while (frameTime >= timePerFrame) frameTime -= timePerFrame;
 			++frames;
 		}
