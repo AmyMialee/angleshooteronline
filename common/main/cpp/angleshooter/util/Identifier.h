@@ -18,4 +18,6 @@ public:
 	friend bool operator<(const Identifier& leftId, const Identifier& rightId);
 	friend bool operator==(const Identifier& leftId, const Identifier& rightId);
 	friend bool operator!=(const Identifier& leftId, const Identifier& rightId);
+	friend sf::Packet& operator<<(sf::Packet& packet, const Identifier& id);
+	friend sf::Packet& operator>>(sf::Packet& packet, Identifier& id);
 };

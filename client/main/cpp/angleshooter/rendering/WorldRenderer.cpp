@@ -86,7 +86,7 @@ void WorldRenderer::render(float deltaTime) {
 	auto average = 160 + std::max((viewSize.size.x - viewSize.position.x) / 2, (viewSize.size.y - viewSize.position.y) / 2) * 3.2f;
 	view.setSize({average, average / static_cast<float>(texture->getSize().x) * static_cast<float>(texture->getSize().y)});
 	texture->setView(view);
-	// ClientWorld::get().getMap().render(deltaTime);
+	if (ClientWorld::get().mapRenderer != nullptr) ClientWorld::get().mapRenderer->render(deltaTime);
 	for (const auto entity : ClientWorld::get().getEntities()) {
 		if (auto renderer = renderRegistry.find(entity->getEntityType().getHash()); renderer != renderRegistry.end()) renderer->second(entity, deltaTime);
 	}

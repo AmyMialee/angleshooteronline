@@ -38,6 +38,8 @@
 #include "managers/TextureHolder.h"
 #include "managers/ShaderHolder.h"
 #include "managers/SoundHolder.h"
+#include "rendering/MapRenderer.h"
 #include "game/ClientWorld.h"
+#include "game/ClientNetworkHandler.h"
 
 #include "AngleShooterClient.h"

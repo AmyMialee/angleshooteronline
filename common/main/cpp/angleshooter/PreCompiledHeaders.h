@@ -51,3 +51,4 @@
 #include "game/World.h"
 #include "game/entities/PlayerEntity.h"
 #include "game/entities/BulletEntity.h"
+#include "NetworkProtocol.hpp"

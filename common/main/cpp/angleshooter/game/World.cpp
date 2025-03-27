@@ -1,7 +1,7 @@
 ﻿#include "main/cpp/angleshooter/PreCompiledHeaders.h"
 #include "World.h"
 
-World::World() : map(nullptr) {}
+World::World() : map(Map(Identifier("empty"), 1, 1)) {}
 
 void World::init() {
 	this->gameObjects.clear();
@@ -50,7 +50,7 @@ std::vector<std::shared_ptr<Entity>> World::getEntities() {
 }
 
 Map* World::getMap() {
-	return this->map;
+	return &this->map;
 }
 
 uint16_t World::getNextId() {
@@ -58,6 +58,5 @@ uint16_t World::getNextId() {
 }
 
 void World::loadMap(const Identifier& id) {
-	auto map = MapLoader::loadMap(id);
-	this->map = &map;
+	this->map = MapLoader::loadMap(id);
 }

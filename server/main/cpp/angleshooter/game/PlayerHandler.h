@@ -2,6 +2,9 @@
 
 class PlayerHandler {
 public:
-	int id;
-	sf::TcpSocket* socket;
+	PlayerHandler();
+	sf::TcpSocket socket;
+	sf::Time lastPacketTime;
+	bool ready;
+	bool timedOut;
 };

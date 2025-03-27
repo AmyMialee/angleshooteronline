@@ -31,7 +31,7 @@ Map MapLoader::loadMap(const Identifier& id) {
 					throw std::runtime_error("Inconsistent row width across rows");
 				}
 			}
-			auto map = Map(static_cast<uint16_t>(textureGrid.size()), static_cast<uint16_t>(width));
+			auto map = Map(id, static_cast<uint16_t>(textureGrid.size()), static_cast<uint16_t>(width));
 			for (uint16_t row = 0; row < map.getRows(); ++row) {
 				const auto& textureRowString = textureGrid[row].get<std::string>();
 				const auto& collisionRowString = collision[row].get<std::string>();
@@ -55,6 +55,7 @@ Map MapLoader::loadMap(const Identifier& id) {
 	} catch (const std::exception& e) {
 		Logger::error("Failed to load map \"" + id.toString() + "\": " + e.what());
 	}
-	auto map = Map(3, 3);
+	static auto missingId = Identifier("missing");
+	auto map = Map(missingId, 3, 3);
 	return map;
 }

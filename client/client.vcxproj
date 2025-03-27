@@ -131,6 +131,7 @@
   <ItemGroup>
     <ClCompile Include="main\cpp\angleshooter\AngleShooterClient.cpp" />
     <ClCompile Include="main\cpp\angleshooter\Client.cpp" />
+    <ClCompile Include="main\cpp\angleshooter\game\ClientNetworkHandler.cpp" />
     <ClCompile Include="main\cpp\angleshooter\game\ClientWorld.cpp" />
     <ClCompile Include="main\cpp\angleshooter\managers\AudioManager.cpp" />
     <ClCompile Include="main\cpp\angleshooter\managers\FontHolder.cpp"/>
@@ -165,6 +166,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main\cpp\angleshooter\AngleShooterClient.h" />
+    <ClInclude Include="main\cpp\angleshooter\game\ClientNetworkHandler.h" />
     <ClInclude Include="main\cpp\angleshooter\game\ClientWorld.h" />
     <ClInclude Include="main\cpp\angleshooter\managers\AudioManager.h" />
     <ClInclude Include="main\cpp\angleshooter\managers\FontHolder.h" />

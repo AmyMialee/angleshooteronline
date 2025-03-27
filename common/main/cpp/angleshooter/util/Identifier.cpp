@@ -45,3 +45,16 @@ bool operator==(const Identifier& leftId, const Identifier& rightId) {
 bool operator!=(const Identifier& leftId, const Identifier& rightId) {
     return !(leftId == rightId);
 }
+
+sf::Packet& operator<<(sf::Packet& packet, const Identifier& id) {
+    const auto string = id.toString();
+    packet << string;
+    return packet;
+}
+
+sf::Packet& operator>>(sf::Packet& packet, Identifier& id) {
+    std::string string;
+    packet >> string;
+    id = Identifier::fromString(string);
+    return packet;
+}

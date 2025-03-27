@@ -1,55 +1,23 @@
 #include "PreCompiledServer.h"
 #include "AngleShooterServer.h"
 
-#include "angleshooter/NetworkProtocol.hpp"
-#include "game/ServerWorld.h"
+AngleShooterServer* AngleShooterServer::instance = nullptr;
 
-AngleShooterServer::AngleShooterServer() : thread(&AngleShooterServer::executionThread, this),
-                                           listeningState(false),
-                                           clientTimeout(sf::seconds(5.f)),
-                                           maxConnectedPlayers(32),
-                                           connectedPlayers(0),
-                                           peers(1),
-                                           waitingThreadEnd(false),
-                                            tps(0) {
+AngleShooterServer::AngleShooterServer() :
+    listeningState(false),
+    clientTimeout(sf::seconds(5.f)),
+    maxConnectedPlayers(32),
+    connectedPlayers(0),
+    peers(1),
+    waitingThreadEnd(false),
+    tps(0) {
+    instance = this;
     listenerSocket.setBlocking(false);
-    peers[0].reset(new RemotePeer());
-    packetHandlers.emplace(NetworkProtocol::C2S_QUIT.getHash(), [](sf::Packet&, RemotePeer& receivingPeer, bool& detectedTimeout) {
+    peers[0].reset(new PlayerHandler());
+    packetHandlers.emplace(NetworkProtocol::C2S_QUIT.getHash(), [](sf::Packet&, PlayerHandler& receivingPeer, bool& detectedTimeout) {
         receivingPeer.timedOut = true;
         detectedTimeout = true;
     });
-    packetHandlers.emplace(NetworkProtocol::C2S_PLAYER_EVENT.getHash(), [](sf::Packet& packet, RemotePeer&, bool&) {
-        std::int32_t aircraftIdentifier;
-        std::int32_t action;
-        packet >> aircraftIdentifier >> action;
-        // notifyPlayerEvent(aircraftIdentifier, action);
-    });
-    packetHandlers.emplace(NetworkProtocol::C2S_PLAYER_REALTIME_CHANGE.getHash(), [](sf::Packet& packet, RemotePeer&, bool&) {
-        std::int32_t aircraftIdentifier;
-        std::int32_t action;
-        bool actionEnabled;
-        packet >> aircraftIdentifier >> action >> actionEnabled;
-        // notifyPlayerRealtimeChange(aircraftIdentifier, action, actionEnabled);
-    });
-    packetHandlers.emplace(NetworkProtocol::C2S_STATE_UPDATE.getHash(), [](sf::Packet& packet, RemotePeer&, bool&) {
-        // std::int32_t numberAircraft;
-        // packet >> numberAircraft;
-        // for (auto i = 0; i < numberAircraft; ++i) {
-            // std::int32_t aircraftIdentifier;
-            // std::int32_t aircraftHitpoints;
-            // std::int32_t missileAmmo;
-            // sf::Vector2f aircraftPosition;
-            // packet >> aircraftIdentifier >> aircraftPosition.x >> aircraftPosition.y >> aircraftHitpoints >> missileAmmo;
-            // aircraftInfo[aircraftIdentifier].position = aircraftPosition;
-            // aircraftInfo[aircraftIdentifier].hitpoints = aircraftHitpoints;
-            // aircraftInfo[aircraftIdentifier].missileAmmo = missileAmmo;
-        // }
-    });
-    thread.join();
-}
-
-AngleShooterServer::~AngleShooterServer() {
-    waitingThreadEnd = true;
 }
 
 void AngleShooterServer::setListening(bool enable) {
@@ -61,14 +29,15 @@ void AngleShooterServer::setListening(bool enable) {
     }
 }
 
-void AngleShooterServer::executionThread() {
+void AngleShooterServer::run() {
     setListening(true);
     ServerWorld::get().init();
-    ServerWorld::get().loadMap(Identifier("testmap"));
+    ServerWorld::get().loadMap(Identifier("testmaplarge"));
     sf::Clock deltaClock;
     auto tickTime = 0.;
     auto secondTime = 0.;
     auto ticks = 0;
+    Logger::debug("Server Started");
     while (!waitingThreadEnd) {
         const auto deltaTime = deltaClock.restart().asSeconds();
         tickTime += deltaTime;
@@ -121,7 +90,7 @@ void AngleShooterServer::handleIncomingPackets() {
     if (detectedTimeout) handleDisconnections();
 }
 
-void AngleShooterServer::handleIncomingPackets(sf::Packet& packet, RemotePeer& receivingPeer, bool& detectedTimeout) {
+void AngleShooterServer::handleIncomingPackets(sf::Packet& packet, PlayerHandler& receivingPeer, bool& detectedTimeout) {
     int packetType;
     packet >> packetType;
     if (packetHandlers.contains(packetType)) {
@@ -142,22 +111,19 @@ void AngleShooterServer::handleIncomingPackets(sf::Packet& packet, RemotePeer& r
 void AngleShooterServer::handleIncomingConnections() {
     if (!listeningState) return;
     if (listenerSocket.accept(peers[connectedPlayers]->socket) != sf::TcpListener::Status::Done) return;
-    sf::Packet packet;
-    packet << NetworkProtocol::S2C_SPAWN_SELF.getHash();
-    // packet << aircraftIdentifierCounter;
-    // packet << aircraftInfo[aircraftIdentifierCounter].position.x;
-    // packet << aircraftInfo[aircraftIdentifierCounter].position.y;
-    // peers[connectedPlayers]->mAircraftIdentifiers.emplace_back(aircraftIdentifierCounter);
+    if (!peers[connectedPlayers]->socket.getRemoteAddress().has_value()) {
+        Logger::error("Failed to get remote address");
+        return;
+    }
     broadcastMessage("New player");
-    informWorldState(peers[connectedPlayers]->socket);
+    initialSetup(peers[connectedPlayers]->socket);
     peers[connectedPlayers]->ready = true;
-    peers[connectedPlayers]->socket.send(packet);
     peers[connectedPlayers]->lastPacketTime = now();
     connectedPlayers++;
     if (connectedPlayers >= maxConnectedPlayers) {
         setListening(false);
     } else {
-        peers.emplace_back(std::make_unique<RemotePeer>());
+        peers.emplace_back(std::make_unique<PlayerHandler>());
     }
 }
 
@@ -172,7 +138,7 @@ void AngleShooterServer::handleDisconnections() {
             // aircraftCount -= (*itr)->mAircraftIdentifiers.size();
             itr = peers.erase(itr);
             if (connectedPlayers < maxConnectedPlayers) {
-                peers.emplace_back(std::make_unique<RemotePeer>());
+                peers.emplace_back(std::make_unique<PlayerHandler>());
                 setListening(true);
             }
             broadcastMessage("A player has disconnected");
@@ -182,17 +148,11 @@ void AngleShooterServer::handleDisconnections() {
     }
 }
 
-void AngleShooterServer::informWorldState(sf::TcpSocket& socket) {
+void AngleShooterServer::initialSetup(sf::TcpSocket& socket) {
+    Logger::debug("Sending Initial Setup Packet to " + socket.getRemoteAddress().value().toString());  // NOLINT(bugprone-unchecked-optional-access) Already checked earlier
     sf::Packet packet;
-    // packet << static_cast<std::int32_t>(server::PacketType::INITIAL_STATE);
-    // // packet << static_cast<std::int32_t>(aircraftCount);
-    // for (std::size_t i = 0; i < connectedPlayers; ++i) {
-    //     if (peers[i]->ready) {
-    //         for (auto identifier : peers[i]->mAircraftIdentifiers) {
-    //             // packet << identifier << aircraftInfo[identifier].position.x << aircraftInfo[identifier].position.y << aircraftInfo[identifier].hitpoints << aircraftInfo[identifier].missileAmmo;
-    //         }
-    //     }
-    // }
+    packet << NetworkProtocol::S2C_INITIAL_SETUP.getHash();
+    packet << ServerWorld::get().getMap()->getId();
     auto status = sf::Socket::Status::Partial;
     while (status == sf::Socket::Status::Partial) status = socket.send(packet);
 }
@@ -212,9 +172,9 @@ void AngleShooterServer::sendToAll(sf::Packet& packet) {
 }
 
 void AngleShooterServer::updateClientState() {
-
+    
 }
 
-AngleShooterServer::RemotePeer::RemotePeer() : ready(false), timedOut(false) {
-    socket.setBlocking(false);
+AngleShooterServer* AngleShooterServer::get() {
+    return instance;
 }
