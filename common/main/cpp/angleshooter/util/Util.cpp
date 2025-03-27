@@ -62,3 +62,14 @@ std::string Util::toRoundedString(double value, int decimals) {
 	stream << std::fixed << std::setprecision(decimals) << value;
 	return stream.str();
 }
+
+std::string Util::toString(sf::TcpSocket::Status status) {
+	switch (status) {
+		case sf::TcpSocket::Status::Done: return "Done";
+		case sf::TcpSocket::Status::NotReady: return "NotReady";
+		case sf::TcpSocket::Status::Partial: return "Partial";
+		case sf::TcpSocket::Status::Disconnected: return "Disconnected";
+		case sf::TcpSocket::Status::Error: return "Error";
+	}
+	return "Unknown";
+}

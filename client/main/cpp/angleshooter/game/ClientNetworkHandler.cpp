@@ -46,26 +46,7 @@ ClientNetworkHandler::ClientNetworkHandler() :
 void ClientNetworkHandler::init() {
 	const auto ip = sf::IpAddress::getLocalAddress().value();
 	const auto status = socket.connect(ip, AngleShooterCommon::PORT, sf::seconds(5.f));
-	std::string statusString;
-	switch (status) {
-		case sf::TcpSocket::Status::Done:
-			statusString = "Done";
-			break;
-		case sf::TcpSocket::Status::NotReady:
-			statusString = "NotReady";
-			break;
-		case sf::TcpSocket::Status::Partial:
-			statusString = "Partial";
-			break;
-		case sf::TcpSocket::Status::Disconnected:
-			statusString = "Disconnected";
-			break;
-		case sf::TcpSocket::Status::Error:
-			statusString = "Error";
-			break;
-	}
-		
-	Logger::debug("Init Socket Status: " + statusString);
+	Logger::debug("Init Socket Status: " + Util::toString(status));
 	if (status == sf::TcpSocket::Status::Done) {
 		connected = true;
 	} else {
