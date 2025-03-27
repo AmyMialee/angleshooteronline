@@ -14,32 +14,6 @@ ClientNetworkHandler::ClientNetworkHandler() :
 	packetHandlers.emplace(NetworkProtocol::S2C_INITIAL_SETUP.getHash(), [this](int, sf::Packet& packet) {
 		Identifier map;
 		packet >> map;
-		ClientWorld::get().loadMap(map);
-	});
-	packetHandlers.emplace(NetworkProtocol::S2C_LOAD_MAP.getHash(), [this](int, sf::Packet& packet) {
-		Identifier id;
-		packet >> id;
-		ClientWorld::get().loadMap(id);
-	});
-	packetHandlers.emplace(NetworkProtocol::S2C_PLAY_MUSIC.getHash(), [this](int, sf::Packet& packet) {
-		Identifier id;
-		float volume, pitch;
-		packet >> id >> volume >> pitch;
-		ClientWorld::get().playMusic(id, volume, pitch);
-	});
-	packetHandlers.emplace(NetworkProtocol::S2C_PLAY_SOUND.getHash(), [this](int, sf::Packet& packet) {
-		Identifier id;
-		float volume, pitch, attenuation;
-		sf::Vector2f position;
-		packet >> id >> volume >> pitch >> position.x >> position.y >> attenuation;
-		ClientWorld::get().playSound(id, volume, pitch, position, attenuation);
-	});
-	packetHandlers.emplace(NetworkProtocol::S2C_PLAY_SOUND_3D.getHash(), [this](int, sf::Packet& packet) {
-		Identifier id;
-		float volume, pitch, attenuation;
-		sf::Vector3f position;
-		packet >> id >> volume >> pitch >> position.x >> position.y >> position.z >> attenuation;
-		ClientWorld::get().playSound3d(id, volume, pitch, position, attenuation);
 	});
 }
 
@@ -100,9 +74,6 @@ void ClientNetworkHandler::tick(float deltaTime) {
 
 		updateBroadcastMessage(deltaTime);
 		timeSinceLastPacket += deltaTime;
-	} else if (failedConnectionClock.getElapsedTime() >= sf::seconds(5.f)) {
-		StateManager::get().clear();
-		StateManager::get().push(MenuState::getId());
 	}
 }
 

@@ -1,38 +1,25 @@
 #pragma once
 
 class AngleShooterServer final {
-	static AngleShooterServer* instance;
-	std::map<int, std::function<void(sf::Packet& packet, PlayerHandler& receivingPeer, bool& detectedTimeout)>> packetHandlers;
+	std::map<int, std::function<void(ClientConnection& sender, sf::Packet& packet)>> packetHandlers;
+	std::map<int, Identifier> packetIds;
+
 	sf::TcpListener listenerSocket;
-	sf::Clock clock;
-	bool listeningState;
-	sf::Time clientTimeout;
-	std::uint16_t maxConnectedPlayers;
-	std::uint16_t connectedPlayers;
-	std::vector<std::unique_ptr<PlayerHandler>> peers;
-	bool waitingThreadEnd;
-	double tps;
-
-
-	void setListening(bool enable);
-	void tick(float deltaTime);
-	[[nodiscard]] sf::Time now() const;
-
-	void handleIncomingPackets();
-	void handleIncomingPackets(sf::Packet& packet, PlayerHandler& receivingPeer, bool& detectedTimeout);
-
-	void handleIncomingConnections();
-	void handleDisconnections();
+    sf::SocketSelector socketSelector;
 	
-	void initialSetup(sf::TcpSocket& socket);
-	void updateClientState();
+	std::vector<std::unique_ptr<ClientConnection>> clients;
+	std::uint8_t nextClientId = 0;
+
+	void registerPacket(const Identifier& packetType, std::function<void(ClientConnection& sender, sf::Packet& packet)> handler);
+	void handleIncomingClients();
+	void handleDisconnectingClients();
+	void handleIncomingPackets();
+	void handlePacket(ClientConnection& sender, sf::Packet& packet);
 
 public:
-	explicit AngleShooterServer();
+	AngleShooterServer();
 	void run();
-	AngleShooterServer(const AngleShooterServer&) = delete;
-	AngleShooterServer& operator=(const AngleShooterServer&) = delete;
-	void broadcastMessage(const std::string& message);
 	void sendToAll(sf::Packet& packet);
-	static AngleShooterServer* get();
+	void sendTo(ClientConnection& player, sf::Packet& packet);
+	void sendTo(sf::TcpSocket& socket, sf::Packet& packet);
 };

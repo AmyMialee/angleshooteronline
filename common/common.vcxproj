@@ -96,32 +96,19 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="main\cpp\angleshooter\game\entities\BulletEntity.cpp" />
-    <ClCompile Include="main\cpp\angleshooter\game\entities\Entity.cpp" />
-    <ClCompile Include="main\cpp\angleshooter\game\entities\PlayerEntity.cpp" />
-    <ClCompile Include="main\cpp\angleshooter\game\World.cpp" />
-    <ClCompile Include="main\cpp\angleshooter\resources\Map.cpp" />
-    <ClCompile Include="main\cpp\angleshooter\resources\MapLoader.cpp" />
     <ClCompile Include="main\cpp\angleshooter\util\Identifier.cpp" />
     <ClCompile Include="main\cpp\angleshooter\util\Logger.cpp" />
     <ClCompile Include="main\cpp\angleshooter\util\Util.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main\cpp\angleshooter\AngleShooterCommon.h" />
-    <ClInclude Include="main\cpp\angleshooter\game\entities\BulletEntity.h" />
-    <ClInclude Include="main\cpp\angleshooter\game\entities\Entity.h" />
-    <ClInclude Include="main\cpp\angleshooter\game\entities\PlayerEntity.h" />
-    <ClInclude Include="main\cpp\angleshooter\game\World.h" />
     <ClInclude Include="main\cpp\angleshooter\NetworkProtocol.hpp" />
     <ClInclude Include="main\cpp\angleshooter\PreCompiledHeaders.h" />
-    <ClInclude Include="main\cpp\angleshooter\resources\Map.h" />
-    <ClInclude Include="main\cpp\angleshooter\resources\MapLoader.h" />
     <ClInclude Include="main\cpp\angleshooter\util\Consumer.h" />
     <ClInclude Include="main\cpp\angleshooter\util\Identifier.h" />
     <ClInclude Include="main\cpp\angleshooter\util\InstancedSingleton.h" />
     <ClInclude Include="main\cpp\angleshooter\util\Logger.h" />
     <ClInclude Include="main\cpp\angleshooter\util\Singleton.h" />
-    <ClInclude Include="main\cpp\angleshooter\util\StackMove.h" />
     <ClInclude Include="main\cpp\angleshooter\util\Util.h" />
     <ClInclude Include="main\cpp\nlohmann\json.hpp" />
   </ItemGroup>

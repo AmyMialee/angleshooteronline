@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-class AngleShooterClient final : ClientContext {
+class AngleShooterClient final {
 	static AngleShooterClient* instance;
 	sf::RenderWindow window;
 	sf::RenderTexture renderTexture;
@@ -15,10 +15,10 @@ class AngleShooterClient final : ClientContext {
 	void loadAssets();
 
 public:
-	inline const static auto BACKGROUND_MUSIC = Identifier("backgroundmusic.ogg");
 	AngleShooterClient();
 	void run();
 
-	[[nodiscard]] sf::RenderWindow* getWindow() override;
-	[[nodiscard]] sf::RenderTexture* getRenderTexture() override;
+	[[nodiscard]] static AngleShooterClient* get();
+	[[nodiscard]] sf::RenderWindow* getWindow();
+	[[nodiscard]] sf::RenderTexture* getRenderTexture();
 };

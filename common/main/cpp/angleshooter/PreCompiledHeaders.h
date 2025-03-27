@@ -35,6 +35,7 @@
 #include <SFML/Network/TcpSocket.hpp>
 #include <SFML/Network/TcpListener.hpp>
 #include <SFML/Network/Packet.hpp>
+#include <SFML/Network.hpp>
 
 #include "../nlohmann/json.hpp"
 
@@ -42,13 +43,7 @@
 #include "util/Identifier.h"
 #include "util/Logger.h"
 #include "util/Util.h"
-#include "util/StackMove.h"
 #include "util/Singleton.h"
 #include "util/InstancedSingleton.h"
 #include "util/Consumer.h"
-#include "resources/MapLoader.h"
-#include "game/entities/Entity.h"
-#include "game/World.h"
-#include "game/entities/PlayerEntity.h"
-#include "game/entities/BulletEntity.h"
 #include "NetworkProtocol.hpp"

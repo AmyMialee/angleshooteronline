@@ -1,106 +1,108 @@
 #include "PreCompiledServer.h"
 #include "AngleShooterServer.h"
 
-AngleShooterServer* AngleShooterServer::instance = nullptr;
-
-AngleShooterServer::AngleShooterServer() :
-    listeningState(false),
-    clientTimeout(sf::seconds(5.f)),
-    maxConnectedPlayers(32),
-    connectedPlayers(0),
-    peers(1),
-    waitingThreadEnd(false),
-    tps(0) {
-    instance = this;
-    listenerSocket.setBlocking(false);
-    peers[0].reset(new PlayerHandler());
-    packetHandlers.emplace(NetworkProtocol::C2S_QUIT.getHash(), [](sf::Packet&, PlayerHandler& receivingPeer, bool& detectedTimeout) {
-        receivingPeer.timedOut = true;
-        detectedTimeout = true;
-    });
+int main(int, char*[]) {
+    try {
+        AngleShooterServer app;
+        app.run();
+    } catch(std::runtime_error& e) {
+        Logger::error(e.what());
+    } catch(...) {
+        Logger::error("An Error Occurred");
+    }
+    return 0;
 }
 
-void AngleShooterServer::setListening(bool enable) {
-    if (enable) {
-        if (!listeningState) listeningState = listenerSocket.listen(AngleShooterCommon::PORT) == sf::TcpListener::Status::Done;
-    } else {
-        listenerSocket.close();
-        listeningState = false;
+AngleShooterServer::AngleShooterServer() {
+    if (listenerSocket.listen(AngleShooterCommon::PORT) != sf::Socket::Status::Done) {
+        throw std::runtime_error("Failed to bind to port, is the server already running?");
     }
+    socketSelector.add(listenerSocket);
+    // TODO: Register Packets
 }
 
 void AngleShooterServer::run() {
-    setListening(true);
-    ServerWorld::get().init();
-    ServerWorld::get().loadMap(Identifier("testmaplarge"));
+    Logger::debug("Starting AngleShooter Server");
     sf::Clock deltaClock;
     auto tickTime = 0.;
-    auto secondTime = 0.;
-    auto ticks = 0;
-    Logger::debug("Server Started");
-    while (!waitingThreadEnd) {
+    while (true) {
         const auto deltaTime = deltaClock.restart().asSeconds();
         tickTime += deltaTime;
-        secondTime += deltaTime;
         if (tickTime > 1.) {
             Logger::warn("AngleShooter::run: Lagging behind by " + Util::toRoundedString(tickTime / AngleShooterCommon::TIME_PER_TICK, 2) + " ticks (" + Util::toRoundedString(tickTime, 2) + " seconds), skipping ahead");
             tickTime = AngleShooterCommon::TIME_PER_TICK;
         }
         if (tickTime >= AngleShooterCommon::TIME_PER_TICK) {
-            handleIncomingConnections();
-            handleIncomingPackets();
+            if (socketSelector.isReady(listenerSocket)) {
+                handleIncomingClients();
+            } else {
+                handleIncomingPackets();
+            }
+            handleDisconnectingClients();
         }
-        while (tickTime >= AngleShooterCommon::TIME_PER_TICK) {
-            tickTime -= AngleShooterCommon::TIME_PER_TICK;
-            tick(static_cast<float>(tickTime / AngleShooterCommon::TIME_PER_TICK));
-            ++ticks;
-        }
-        if (secondTime >= .1f) {
-            tps = tps * .6 + .4 * (ticks / secondTime);
-            ticks = 0;
-            secondTime = 0;
-        }
+        while (tickTime >= AngleShooterCommon::TIME_PER_TICK) tickTime -= AngleShooterCommon::TIME_PER_TICK;
     }
 }
 
-void AngleShooterServer::tick(float deltaTime) {
-    ServerWorld::get().tick(deltaTime);
-    updateClientState();
+void AngleShooterServer::registerPacket(const Identifier& packetType, std::function<void(ClientConnection& sender, sf::Packet& packet)> handler) {
+    this->packetHandlers.emplace(packetType.getHash(), handler);
+    this->packetIds.emplace(packetType.getHash(), packetType);
 }
 
-sf::Time AngleShooterServer::now() const {
-    return clock.getElapsedTime();
+void AngleShooterServer::handleIncomingClients() {
+    if (auto join = std::make_unique<ClientConnection>(); listenerSocket.accept(join->socket) == sf::Socket::Status::Done) {
+        socketSelector.add(join->socket);
+        clients.push_back(std::move(join));
+        sf::Packet joinPacket;
+        joinPacket << NetworkProtocol::S2C_ANNOUNCE_JOIN << ++nextClientId;
+        sendToAll(joinPacket);
+    }
+}
+
+void AngleShooterServer::handleDisconnectingClients() {
+    auto iterator = clients.begin();
+    while (iterator != clients.end()) {
+        if (const auto client = iterator->get(); !client->socket.getRemoteAddress().has_value()) {
+            sf::Packet leavePacket;
+            leavePacket << NetworkProtocol::S2C_ANNOUNCE_LEAVE;
+            for (auto& other : clients) {
+                if (other.get() != client) sendTo(other->socket, leavePacket);
+            }
+            socketSelector.remove(client->socket);
+            iterator = clients.erase(iterator);
+        } else {
+            ++iterator;
+        }
+    }
 }
 
 void AngleShooterServer::handleIncomingPackets() {
-    auto detectedTimeout = false;
-    for (auto& peer : peers) {
-        if (!peer->ready) continue;
-        sf::Packet packet;
-        while (peer->socket.receive(packet) == sf::Socket::Status::Done) {
-            handleIncomingPackets(packet, *peer, detectedTimeout);
-            peer->lastPacketTime = now();
-            packet.clear();
-        }
-        if (now() > peer->lastPacketTime + clientTimeout) {
-            peer->timedOut = true;
-            detectedTimeout = true;
-        }
+    for (auto& client : clients) {
+        if (!socketSelector.isReady(client->socket)) continue;
+        sf::Packet packet; 
+        if (client->socket.receive(packet) != sf::Socket::Status::Done) continue;
+        handlePacket(*client, packet);
     }
-    if (detectedTimeout) handleDisconnections();
 }
 
-void AngleShooterServer::handleIncomingPackets(sf::Packet& packet, PlayerHandler& receivingPeer, bool& detectedTimeout) {
+void AngleShooterServer::handlePacket(ClientConnection& sender, sf::Packet& packet) {
     int packetType;
     packet >> packetType;
     if (packetHandlers.contains(packetType)) {
-        packetHandlers[packetType](packet, receivingPeer, detectedTimeout);
-        Logger::info("Received packet type: " + std::to_string(packetType));
+        packetHandlers[packetType](sender, packet);
+        auto builder = std::stringstream();
+        builder << "Received Packet: " << this->packetIds[packetType].toString();
+        if (const auto address = sender.socket.getRemoteAddress(); address.has_value()) {
+            builder << " from " << address.value();
+        } else {
+            builder << " from unknown address";
+        }
+        Logger::debug(builder.str());
         return;
     }
     auto builder = std::stringstream();
-    builder << "Received unknown packet type: " << packetType;
-    if (const auto address = receivingPeer.socket.getRemoteAddress(); address.has_value()) {
+    builder << "Received unknown packet id: " << packetType;
+    if (const auto address = sender.socket.getRemoteAddress(); address.has_value()) {
         builder << " from " << address.value();
     } else {
         builder << " from unknown address";
@@ -108,73 +110,15 @@ void AngleShooterServer::handleIncomingPackets(sf::Packet& packet, PlayerHandler
     Logger::error(builder.str());
 }
 
-void AngleShooterServer::handleIncomingConnections() {
-    if (!listeningState) return;
-    if (listenerSocket.accept(peers[connectedPlayers]->socket) != sf::TcpListener::Status::Done) return;
-    if (!peers[connectedPlayers]->socket.getRemoteAddress().has_value()) {
-        Logger::error("Failed to get remote address");
-        return;
-    }
-    broadcastMessage("New player");
-    initialSetup(peers[connectedPlayers]->socket);
-    peers[connectedPlayers]->ready = true;
-    peers[connectedPlayers]->lastPacketTime = now();
-    connectedPlayers++;
-    if (connectedPlayers >= maxConnectedPlayers) {
-        setListening(false);
-    } else {
-        peers.emplace_back(std::make_unique<PlayerHandler>());
-    }
+void AngleShooterServer::sendToAll(sf::Packet& packet) {
+    for (const auto& client : clients) sendTo(client->socket, packet);
 }
 
-void AngleShooterServer::handleDisconnections() {
-    for (auto itr = peers.begin(); itr != peers.end();) {
-        if ((*itr)->timedOut) {
-            // for (auto identifier : (*itr)->mAircraftIdentifiers) {
-                // sendToAll((sf::Packet() << static_cast<std::int32_t>(server::PacketType::PLAYER_DISCONNECT) << identifier));
-                // aircraftInfo.erase(identifier);
-            // }
-            connectedPlayers--;
-            // aircraftCount -= (*itr)->mAircraftIdentifiers.size();
-            itr = peers.erase(itr);
-            if (connectedPlayers < maxConnectedPlayers) {
-                peers.emplace_back(std::make_unique<PlayerHandler>());
-                setListening(true);
-            }
-            broadcastMessage("A player has disconnected");
-        } else {
-            ++itr;
-        }
-    }
+void AngleShooterServer::sendTo(ClientConnection& player, sf::Packet& packet) {
+    this->sendTo(player.socket, packet);
 }
 
-void AngleShooterServer::initialSetup(sf::TcpSocket& socket) {
-    Logger::debug("Sending Initial Setup Packet to " + socket.getRemoteAddress().value().toString());  // NOLINT(bugprone-unchecked-optional-access) Already checked earlier
-    sf::Packet packet;
-    packet << NetworkProtocol::S2C_INITIAL_SETUP.getHash();
-    packet << ServerWorld::get().getMap()->getId();
+void AngleShooterServer::sendTo(sf::TcpSocket& socket, sf::Packet& packet) {
     auto status = sf::Socket::Status::Partial;
     while (status == sf::Socket::Status::Partial) status = socket.send(packet);
-}
-
-void AngleShooterServer::broadcastMessage(const std::string& message) {
-    sf::Packet packet;
-    packet << NetworkProtocol::S2C_BROADCAST_MESSAGE.getHash();
-    packet << message;
-    this->sendToAll(packet);
-}
-
-void AngleShooterServer::sendToAll(sf::Packet& packet) {
-    for (std::size_t i = 0; i < connectedPlayers; ++i) if (peers[i]->ready) {
-        auto status = sf::Socket::Status::Partial;
-        while (status == sf::Socket::Status::Partial) status = peers[i]->socket.send(packet);
-    }
-}
-
-void AngleShooterServer::updateClientState() {
-    
-}
-
-AngleShooterServer* AngleShooterServer::get() {
-    return instance;
 }

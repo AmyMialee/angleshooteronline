@@ -18,7 +18,6 @@ AngleShooterClient::AngleShooterClient() :
 	loadAssets();
 	tpsText.setPosition({4.f, 4.f + 14});
 	fpsText.setPosition({4.f, 4.f});
-	StateManager::get().push(SplashState::getId());
 	OptionsManager::get().loadFromFile();
 }
 
@@ -63,15 +62,17 @@ void AngleShooterClient::run() {
 	}
 }
 
+AngleShooterClient* AngleShooterClient::get() {
+	return instance;
+}
+
 void AngleShooterClient::tick(float deltaTime) {
 	AudioManager::get().tick(deltaTime);
-	StateManager::get().tick(deltaTime);
 }
 
 void AngleShooterClient::render(float deltaTime) {
 	window.clear();
 	renderTexture.clear();
-	StateManager::get().render(deltaTime);
 	renderTexture.display();
 	sf::Sprite sprite(renderTexture.getTexture());
 	sprite.setScale({2.f, 2.f});

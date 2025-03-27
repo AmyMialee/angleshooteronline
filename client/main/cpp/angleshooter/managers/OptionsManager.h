@@ -1,7 +1,7 @@
 ﻿#pragma once
 
 class OptionsManager final : public Singleton<OptionsManager> {
-	friend class Singleton<OptionsManager>;
+	friend class Singleton;
 	double masterVolume = 1.;
 	double musicVolume = 0.;
 	double soundVolume = 0.;
