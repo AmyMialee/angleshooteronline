@@ -105,12 +105,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main\cpp\angleshooter\AngleShooterClient.cpp" />
-    <ClCompile Include="main\cpp\angleshooter\Client.cpp" />
-    <ClCompile Include="main\cpp\angleshooter\game\ClientNetworkHandler.cpp" />
-    <ClCompile Include="main\cpp\angleshooter\managers\AudioManager.cpp" />
-    <ClCompile Include="main\cpp\angleshooter\managers\FontHolder.cpp"/>
-    <ClCompile Include="main\cpp\angleshooter\managers\OptionsManager.cpp" />
-    <ClCompile Include="main\cpp\angleshooter\managers\SoundHolder.cpp" />
     <ClCompile Include="main\cpp\angleshooter\PreCompiledClient.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
       <PrecompiledHeaderOutputFile>$(IntDir)client.pch</PrecompiledHeaderOutputFile>
@@ -118,14 +112,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main\cpp\angleshooter\AngleShooterClient.h" />
-    <ClInclude Include="main\cpp\angleshooter\game\ClientNetworkHandler.h" />
-    <ClInclude Include="main\cpp\angleshooter\managers\AudioManager.h" />
-    <ClInclude Include="main\cpp\angleshooter\managers\FontHolder.h" />
-    <ClInclude Include="main\cpp\angleshooter\managers\OptionsManager.h" />
-    <ClInclude Include="main\cpp\angleshooter\managers\SoundHolder.h" />
     <ClInclude Include="main\cpp\angleshooter\PreCompiledClient.h" />
-    <ClInclude Include="main\cpp\angleshooter\util\ResourceHolder.h" />
-    <ClInclude Include="main\cpp\angleshooter\util\ResourceHolder.tpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

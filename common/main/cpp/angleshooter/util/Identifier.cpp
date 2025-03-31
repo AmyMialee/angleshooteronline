@@ -34,6 +34,12 @@ std::string Identifier::toString() const {
     return this->space + ":" + this->path;
 }
 
+sf::Packet Identifier::getPacket() const {
+    sf::Packet packet;
+    packet << this->hash;
+    return packet;
+}
+
 bool operator<(const Identifier& leftId, const Identifier& rightId) {
     return leftId.getHash() < rightId.getHash();
 }

@@ -11,4 +11,7 @@ public:
 	inline const static auto C2S_CHANGE_NAME = Identifier("C2S_CHANGE_NAME");
 	inline const static auto C2S_SEND_MESSAGE = Identifier("C2S_SEND_MESSAGE");
 	inline const static auto C2S_QUIT = Identifier("C2S_QUIT");
+
+	inline const static auto PACKET_QUESTION = Identifier("PACKET_QUESTION");
+	inline const static auto PACKET_TRANSLATION = Identifier("PACKET_TRANSLATION");
 };

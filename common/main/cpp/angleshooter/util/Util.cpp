@@ -73,3 +73,10 @@ std::string Util::toString(sf::TcpSocket::Status status) {
 	}
 	return "Unknown";
 }
+
+std::string Util::getAddressString(const sf::TcpSocket& socket) {
+	if (const auto address = socket.getRemoteAddress(); address.has_value()) {
+		return address.value().toString() + ":" + std::to_string(socket.getRemotePort());
+	}
+	return "Unknown Address";
+}

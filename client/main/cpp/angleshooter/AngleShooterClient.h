@@ -1,24 +1,21 @@
 ﻿#pragma once
 
 class AngleShooterClient final {
-	static AngleShooterClient* instance;
-	sf::RenderWindow window;
-	sf::RenderTexture renderTexture;
-	double tps;
-	double fps;
-    sf::Text tpsText;
-    sf::Text fpsText;
+	std::map<int, std::function<void(sf::Packet& packet)>> packetHandlers;
+	std::map<int, Identifier> packetIds;
+	std::map<int, Identifier> translatedPackets;
+	
+	sf::TcpSocket connectingSocket;
+	bool connected = false;
 
-	void tick(float deltaTime);
-	void render(float deltaTime);
-	void registerStates();
-	void loadAssets();
+	bool connect(const sf::IpAddress& server);
+	void disconnect();
+	void handleIncomingPackets();
+	void handlePacket(sf::Packet& packet);
+	void registerPacket(const Identifier& packetType, const std::function<void(sf::Packet& packet)>& handler);
 
 public:
 	AngleShooterClient();
 	void run();
-
-	[[nodiscard]] static AngleShooterClient* get();
-	[[nodiscard]] sf::RenderWindow* getWindow();
-	[[nodiscard]] sf::RenderTexture* getRenderTexture();
+	void send(sf::Packet& packet);
 };
