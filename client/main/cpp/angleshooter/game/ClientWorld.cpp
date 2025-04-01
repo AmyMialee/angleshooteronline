@@ -10,6 +10,12 @@ void ClientWorld::spawnPlayer(const std::string& name, int color, sf::Vector2f p
 	this->spawnEntity(player);
 }
 
+void ClientWorld::spawnBullet(int color, sf::Vector2f position, sf::Vector2f velocity) {
+	const auto bullet = std::make_shared<BulletEntity>(this, color, position, velocity);
+	bullet->setPosition(position);
+	this->spawnEntity(bullet);
+}
+
 void ClientWorld::playMusic(const Identifier& id, float volume, float pitch) {
 	AudioManager::get().playMusic(id, volume, pitch);
 }

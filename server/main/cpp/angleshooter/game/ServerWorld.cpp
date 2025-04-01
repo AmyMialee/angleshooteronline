@@ -2,7 +2,7 @@
 #include "ServerWorld.h"
 
 std::shared_ptr<PlayerEntity> ServerWorld::spawnPlayer(ClientConnection& sender) {
-	const auto player = std::make_shared<PlayerEntity>(this, sender.name);
+	const auto player = std::make_shared<ServerPlayerEntity>(this, sender.name);
 	this->spawnEntity(player);
 	player->setColor(sender.colour);
 	player->setPosition(this->getMap()->getRandomSpawnpoint());
@@ -10,13 +10,28 @@ std::shared_ptr<PlayerEntity> ServerWorld::spawnPlayer(ClientConnection& sender)
 	for (const auto& client : AngleShooterServer::get().clients) {
 		auto packet = NetworkProtocol::S2C_SPAWN_PLAYER.getPacket();
 		packet << player->getName();
-		packet << player->getColor();
+		packet << player->getColour();
 		packet << player->getPosition().x;
 		packet << player->getPosition().y;
 		packet << (client.get() == &sender);
     	AngleShooterServer::get().send(client->socket, packet);
     }
 	return player;
+}
+
+std::shared_ptr<BulletEntity> ServerWorld::spawnBullet(int color, sf::Vector2f position, sf::Vector2f velocity) {
+	const auto bullet = std::make_shared<BulletEntity>(this, color, position, velocity);
+	this->spawnEntity(bullet);
+	for (const auto& client : AngleShooterServer::get().clients) {
+		auto packet = NetworkProtocol::S2C_SPAWN_BULLET.getPacket();
+		packet << color;
+		packet << position.x;
+		packet << position.y;
+		packet << velocity.x;
+		packet << velocity.y;
+		AngleShooterServer::get().send(client->socket, packet);
+	}
+	return bullet;
 }
 
 void ServerWorld::playMusic(const Identifier& id, float volume, float pitch) {

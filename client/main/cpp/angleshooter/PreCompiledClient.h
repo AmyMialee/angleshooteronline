@@ -2,6 +2,8 @@
 
 #include <angleshooter/PreCompiledHeaders.h>
 
+#include <regex>
+
 #include <SFML/Audio.hpp>
 #include <SFML/Window/Keyboard.hpp>
 #include <SFML/Graphics/VertexArray.hpp>

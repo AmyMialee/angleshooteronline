@@ -1,7 +1,9 @@
 ﻿#include "main/cpp/angleshooter/PreCompiledHeaders.h"
 #include "BulletEntity.h"
 
-BulletEntity::BulletEntity(World* world, PlayerEntity& owner) : Entity(world), owner(owner) {
+BulletEntity::BulletEntity(World* world, int colour, sf::Vector2f position, sf::Vector2f velocity) : Entity(world), colour(colour) {
+	this->setPosition(position);
+	this->setVelocity(velocity);
 	this->setDrag(0.f);
 	this->setScale({6, 6});
 }
@@ -15,9 +17,10 @@ void BulletEntity::tick(float deltaTime) {
 }
 
 void BulletEntity::onCollision(Entity& other) {
-	if (this->owner != other && this->getDistanceTo(other) < 8) {
-		if (const auto player = dynamic_cast<PlayerEntity*>(&other); player != nullptr) {
-			if (player->damage(&owner, 1)) {
+	if (other.getEntityType() != PlayerEntity::ID) return;
+	if (const auto player = dynamic_cast<PlayerEntity*>(&other); this->colour != player->getColour() && this->getDistanceTo(other) < 8) {
+		if (player != nullptr) {
+			if (player->damage(this->colour, 1)) {
 				this->hasHit = true;
 			}
 		}

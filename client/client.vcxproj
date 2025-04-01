@@ -156,6 +156,7 @@
     <ClCompile Include="main\cpp\angleshooter\rendering\WorldRenderer.cpp" />
     <ClCompile Include="main\cpp\angleshooter\states\GameOverState.cpp" />
     <ClCompile Include="main\cpp\angleshooter\states\GameState.cpp" />
+    <ClCompile Include="main\cpp\angleshooter\states\JoiningState.cpp" />
     <ClCompile Include="main\cpp\angleshooter\states\MenuState.cpp" />
     <ClCompile Include="main\cpp\angleshooter\states\OnboardingState.cpp" />
     <ClCompile Include="main\cpp\angleshooter\states\PauseState.cpp" />
@@ -189,6 +190,7 @@
     <ClInclude Include="main\cpp\angleshooter\rendering\WorldRenderer.h" />
     <ClInclude Include="main\cpp\angleshooter\states\GameOverState.h" />
     <ClInclude Include="main\cpp\angleshooter\states\GameState.h" />
+    <ClInclude Include="main\cpp\angleshooter\states\JoiningState.h" />
     <ClInclude Include="main\cpp\angleshooter\states\MenuState.h" />
     <ClInclude Include="main\cpp\angleshooter\states\OnboardingState.h" />
     <ClInclude Include="main\cpp\angleshooter\states\PauseState.h" />

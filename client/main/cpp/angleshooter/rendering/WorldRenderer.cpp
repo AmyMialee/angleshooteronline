@@ -15,9 +15,9 @@ WorldRenderer::WorldRenderer() {
 		});
 		const auto pos = player->getPosition() + player->getVelocity() * deltaTime;
 		auto sprite = player1;
-		const auto r = player->getColor() >> 24 & 0xFF;
-		const auto g = player->getColor() >> 16 & 0xFF;
-		const auto b = player->getColor() >> 8 & 0xFF;
+		const auto r = player->getColour() >> 24 & 0xFF;
+		const auto g = player->getColour() >> 16 & 0xFF;
+		const auto b = player->getColour() >> 8 & 0xFF;
 		sprite.setColor(sf::Color(r, g, b, 0xFF));
 		sprite.setPosition(pos);
 		sprite.setRotation(player->getRotation());

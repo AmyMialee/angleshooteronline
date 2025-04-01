@@ -103,6 +103,7 @@
   <ItemGroup>
     <ClCompile Include="main\cpp\angleshooter\AngleShooterServer.cpp" />
     <ClCompile Include="main\cpp\angleshooter\game\ClientConnection.cpp" />
+    <ClCompile Include="main\cpp\angleshooter\game\ServerPlayerEntity.cpp" />
     <ClCompile Include="main\cpp\angleshooter\game\ServerWorld.cpp" />
     <ClCompile Include="main\cpp\angleshooter\PreCompiledServer.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
@@ -112,6 +113,7 @@
   <ItemGroup>
     <ClInclude Include="main\cpp\angleshooter\AngleShooterServer.h" />
     <ClInclude Include="main\cpp\angleshooter\game\ClientConnection.h" />
+    <ClInclude Include="main\cpp\angleshooter\game\ServerPlayerEntity.h" />
     <ClInclude Include="main\cpp\angleshooter\game\ServerWorld.h" />
     <ClInclude Include="main\cpp\angleshooter\PreCompiledServer.h" />
   </ItemGroup>

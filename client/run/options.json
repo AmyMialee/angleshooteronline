@@ -1,6 +1,7 @@
 {
-    "colour": 16727100,
+    "colour": -1,
     "fps": 144,
+    "ip": "127.0.0.1",
     "keybindings": {
         "angleshooter:down": 18,
         "angleshooter:fire": 40,
@@ -10,6 +11,7 @@
     },
     "masterVolume": 1.0,
     "musicVolume": 0.0,
+    "name": "Player",
     "onboarded": true,
     "soundVolume": 0.0
 }

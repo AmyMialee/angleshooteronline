@@ -110,6 +110,17 @@ AngleShooterClient::AngleShooterClient() :
 		Logger::debug("Received Spawn Player Packet: " + name + " (colour: " + std::to_string(colour) + ") at (" + std::to_string(x) + ", " + std::to_string(y) + "), " + std::to_string(isClientPlayer));
 		ClientWorld::get().spawnPlayer(name, colour, {x, y}, isClientPlayer);
 	});
+	registerPacket(NetworkProtocol::S2C_SPAWN_BULLET, [this](sf::Packet& packet) {
+		int colour;
+		float x, y;
+		float xVel, yVel;
+		packet >> colour;
+		packet >> x;
+		packet >> y;
+		packet >> xVel;
+		packet >> yVel;
+		ClientWorld::get().spawnBullet(colour, {x, y}, {xVel, yVel});
+	});
 	registerPacket(NetworkProtocol::S2C_PLAYER_INPUT, [this](sf::Packet& packet) {
 		std::string name;
 		float x, y;

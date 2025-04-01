@@ -2,6 +2,7 @@
 
 class OptionsManager final {
 	std::string name = "Player";
+	std::string ip = "127.0.0.1";
 	int colour = 0xFFFFFFFF;
 	double masterVolume = 1.;
 	double musicVolume = 0.;
@@ -19,6 +20,7 @@ public:
 	OptionsManager(const OptionsManager&) = delete;
 	void operator=(const OptionsManager&) = delete;
 	[[nodiscard]] std::string getName() const;
+	[[nodiscard]] std::string getIp() const;
 	[[nodiscard]] int getColour() const;
 	[[nodiscard]] double getMasterVolume() const;
 	[[nodiscard]] double getMusicVolume() const;
@@ -28,6 +30,7 @@ public:
 	[[nodiscard]] double getTimePerFrame();
 	[[nodiscard]] bool isDebugEnabled() const;
 	void setName(const std::string& name);
+	void setIp(const std::string& ip);
 	void setColour(int colour);
 	void setMasterVolume(double volume);
 	void setMusicVolume(double volume);

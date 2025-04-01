@@ -27,21 +27,6 @@ void PlayerEntity::tick(float deltaTime) {
 		this->bulletCharge = std::min(this->bulletCharge, 120);
 	}
 	Entity::tick(deltaTime);
-	static Identifier shootSound("bullet.ogg");
-	if (isFiring && this->bulletCharge >= 12) {
-		this->bulletCharge -= 12;
-		const auto bullet = std::make_shared<BulletEntity>(this->world, *this);
-		this->world->spawnEntity(bullet);
-		bullet->setPosition(this->getPosition());
-		bullet->setRotation(this->getRotation());
-		auto x = std::cos(this->getRotation().asRadians());
-		auto y = std::sin(this->getRotation().asRadians());
-		x += Util::randomNormalFloat(0.025f);
-		y += Util::randomNormalFloat(0.025f);
-		const auto velocity = sf::Vector2f(x, y);
-		bullet->setVelocity(velocity * 8.f);
-		this->world->playSound(shootSound, .6f, Util::randomFloat(1.f, 1.6f));
-	}
 	if (input.length() > 0) {  // NOLINT(clang-diagnostic-undefined-func-template)
 		input /= input.length();
 		constexpr auto movementSpeed = 1.6f;
@@ -60,12 +45,12 @@ void PlayerEntity::tick(float deltaTime) {
 	}
 }
 
-bool PlayerEntity::damage(PlayerEntity* source, int amount) {
+bool PlayerEntity::damage(int sourceColour, int amount) {
 	if (this->health <= 0 || this->immunityTime) return false;
 	this->health -= amount;
 	if (this->health <= 0) {
 		this->health = 0;
-		this->onDeath(source);
+		this->onDeath(sourceColour);
 	} else {
 		static Identifier hurtSound("hurt.ogg");
 		this->world->playSound(hurtSound, .8f, Util::randomFloat(0.8f, 1.2f));
@@ -73,19 +58,15 @@ bool PlayerEntity::damage(PlayerEntity* source, int amount) {
 	return true;
 }
 
-void PlayerEntity::onDeath(PlayerEntity* source) {
+void PlayerEntity::onDeath(int sourceColour) {
 	this->deathTime = 60;
 	this->immunityTime = 120;
-	if (source != nullptr) {
-		for (auto i = 0; i < 20; i++) {
-			const auto bullet = this->world->spawnEntity(std::make_shared<BulletEntity>(this->world, *source));
-			bullet->setPosition(this->getPosition());
-			const auto x = static_cast<float>(std::sin((18 * i + 25) * (std::numbers::pi / 180)));
-			const auto y = static_cast<float>(std::cos((18 * i + 25) * (std::numbers::pi / 180)));
-			const auto velocity = sf::Vector2f(x, y);
-			bullet->setVelocity(velocity * 1.28f);
-			bullet->setRotation(sf::radians(std::atan2(velocity.y, velocity.x)));
-		}
+	for (auto i = 0; i < 20; i++) {
+		const auto x = static_cast<float>(std::sin((18 * i + 25) * (std::numbers::pi / 180)));
+		const auto y = static_cast<float>(std::cos((18 * i + 25) * (std::numbers::pi / 180)));
+		const auto velocity = sf::Vector2f(x, y);
+		const auto bullet = this->world->spawnEntity(std::make_shared<BulletEntity>(this->world, sourceColour, this->getPosition(), velocity * 1.28f));
+		bullet->setRotation(sf::radians(std::atan2(velocity.y, velocity.x)));
 	}
 	static Identifier explodeSound("explode.ogg");
 	this->world->playSound(explodeSound, .8f, Util::randomFloat(1.2f, 1.8f));
@@ -95,7 +76,7 @@ std::string PlayerEntity::getName() const {
 	return this->name;
 }
 
-int PlayerEntity::getColor() const {
+int PlayerEntity::getColour() const {
 	return this->color;
 }
 

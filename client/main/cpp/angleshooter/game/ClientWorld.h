@@ -11,6 +11,7 @@ public:
 	void operator=(const ClientWorld&) = delete;
 
 	void spawnPlayer(const std::string& name, int color, sf::Vector2f position, bool isClientPlayer);
+	void spawnBullet(int color, sf::Vector2f position, sf::Vector2f velocity);
 
 	void playMusic(const Identifier& id, float volume, float pitch) override;
 	void playSound(const Identifier& id, float volume, float pitch, sf::Vector2f position, float attenuation) override;
