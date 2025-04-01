@@ -10,11 +10,14 @@ public:
 	inline const static auto S2C_PLAY_SOUND = Identifier("S2C_PLAY_SOUND");
 	inline const static auto S2C_PLAY_SOUND_3D = Identifier("S2C_PLAY_SOUND_3D");
 	inline const static auto S2C_LOAD_MAP = Identifier("S2C_LOAD_MAP");
+	inline const static auto S2C_SPAWN_PLAYER = Identifier("S2C_SPAWN_PLAYER");
+	inline const static auto S2C_PLAYER_INPUT = Identifier("S2C_PLAYER_INPUT");
 
 	inline const static auto C2S_JOIN = Identifier("C2S_JOIN");
 	inline const static auto C2S_CHANGE_NAME = Identifier("C2S_CHANGE_NAME");
 	inline const static auto C2S_SEND_MESSAGE = Identifier("C2S_SEND_MESSAGE");
 	inline const static auto C2S_QUIT = Identifier("C2S_QUIT");
+	inline const static auto C2S_PLAYER_INPUT = Identifier("C2S_PLAYER_INPUT");
 
 	inline const static auto PACKET_QUESTION = Identifier("PACKET_QUESTION");
 	inline const static auto PACKET_TRANSLATION = Identifier("PACKET_TRANSLATION");

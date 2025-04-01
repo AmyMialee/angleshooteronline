@@ -57,6 +57,10 @@ uint16_t World::getNextId() {
 	return ++this->nextId;
 }
 
+int World::getAge() const {
+	return this->age;
+}
+
 void World::loadMap(const Identifier& id) {
 	this->map = MapLoader::loadMap(id);
 }

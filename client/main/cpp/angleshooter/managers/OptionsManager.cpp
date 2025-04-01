@@ -7,6 +7,8 @@ namespace {
 
 void OptionsManager::saveToFile() {
 	nlohmann::json json;
+	json["name"] = name;
+	json["colour"] = colour;
 	json["masterVolume"] = masterVolume;
 	json["musicVolume"] = musicVolume;
 	json["soundVolume"] = soundVolume;
@@ -32,6 +34,8 @@ void OptionsManager::loadFromFile() {
 		file >> json;
 		file.close();
 		try {
+			name = json.value("name", "Player");
+			colour = json.value("colour", 0xFFFFFFFF);
 			masterVolume = json.value("masterVolume", 100.);
 			musicVolume = json.value("musicVolume", 0.);
 			soundVolume = json.value("soundVolume", 0.);
@@ -54,6 +58,10 @@ void OptionsManager::loadFromFile() {
 
 std::string OptionsManager::getName() const {
 	return this->name;
+}
+
+int OptionsManager::getColour() const {
+	return this->colour;
 }
 
 double OptionsManager::getMasterVolume() const {
@@ -87,6 +95,10 @@ bool OptionsManager::isDebugEnabled() const {
 void OptionsManager::setName(const std::string& name) {
 	this->name = name;
 	saveToFile();
+}
+
+void OptionsManager::setColour(int colour) {
+	this->colour = colour;
 }
 
 void OptionsManager::setFps(int fps) {

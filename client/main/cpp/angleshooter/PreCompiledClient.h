@@ -39,5 +39,6 @@
 #include "managers/SoundHolder.h"
 #include "rendering/MapRenderer.h"
 #include "game/ClientWorld.h"
+#include "game/ClientPlayerEntity.h"
 
 #include "AngleShooterClient.h"

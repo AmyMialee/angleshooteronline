@@ -1,8 +1,25 @@
 #include "PreCompiledServer.h"
 #include "ServerWorld.h"
 
+std::shared_ptr<PlayerEntity> ServerWorld::spawnPlayer(ClientConnection& sender) {
+	const auto player = std::make_shared<PlayerEntity>(this, sender.name);
+	this->spawnEntity(player);
+	player->setColor(sender.colour);
+	player->setPosition(this->getMap()->getRandomSpawnpoint());
+	sender.player = player;
+	for (const auto& client : AngleShooterServer::get().clients) {
+		auto packet = NetworkProtocol::S2C_SPAWN_PLAYER.getPacket();
+		packet << player->getName();
+		packet << player->getColor();
+		packet << player->getPosition().x;
+		packet << player->getPosition().y;
+		packet << (client.get() == &sender);
+    	AngleShooterServer::get().send(client->socket, packet);
+    }
+	return player;
+}
+
 void ServerWorld::playMusic(const Identifier& id, float volume, float pitch) {
-	Logger::debug("Sending Music Packet");
 	auto packet = NetworkProtocol::S2C_PLAY_MUSIC.getPacket();
 	packet << id;
 	packet << volume;
@@ -11,7 +28,6 @@ void ServerWorld::playMusic(const Identifier& id, float volume, float pitch) {
 }
 
 void ServerWorld::playSound(const Identifier& id, float volume, float pitch, sf::Vector2f position, float attenuation) {
-	Logger::debug("Sending Sound Packet");
 	auto packet = NetworkProtocol::S2C_PLAY_SOUND.getPacket();
 	packet << id;
 	packet << volume;
@@ -23,7 +39,6 @@ void ServerWorld::playSound(const Identifier& id, float volume, float pitch, sf:
 }
 
 void ServerWorld::playSound3d(const Identifier& id, float volume, float pitch, sf::Vector3f position, float attenuation) {
-	Logger::debug("Sending Sound3d Packet");
 	auto packet = NetworkProtocol::S2C_PLAY_SOUND_3D.getPacket();
 	packet << id;
 	packet << volume;

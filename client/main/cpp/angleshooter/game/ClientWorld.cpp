@@ -3,6 +3,13 @@
 
 ClientWorld::ClientWorld() : mapRenderer() {}
 
+void ClientWorld::spawnPlayer(const std::string& name, int color, sf::Vector2f position, bool isClientPlayer) {
+	const auto player = std::make_shared<ClientPlayerEntity>(this, name, isClientPlayer);
+	player->setColor(color);
+	player->setPosition(position);
+	this->spawnEntity(player);
+}
+
 void ClientWorld::playMusic(const Identifier& id, float volume, float pitch) {
 	AudioManager::get().playMusic(id, volume, pitch);
 }

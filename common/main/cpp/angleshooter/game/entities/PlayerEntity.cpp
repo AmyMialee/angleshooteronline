@@ -27,29 +27,25 @@ void PlayerEntity::tick(float deltaTime) {
 		this->bulletCharge = std::min(this->bulletCharge, 120);
 	}
 	Entity::tick(deltaTime);
-	auto input = sf::Vector2f();
 	static Identifier shootSound("bullet.ogg");
-	// if (ClientContext::get()->getInputManager()->getUp()->isPressed()) input = input + sf::Vector2f(0, -1);
-	// if (ClientContext::get()->getInputManager()->getDown()->isPressed()) input = input + sf::Vector2f(0, 1);
-	// if (ClientContext::get()->getInputManager()->getLeft()->isPressed()) input = input + sf::Vector2f(-1, 0);
-	// if (ClientContext::get()->getInputManager()->getRight()->isPressed()) input = input + sf::Vector2f(1, 0);
-	// if (ClientContext::get()->getInputManager()->getFire()->isPressed() && this->bulletCharge >= 12) {
-		// this->bulletCharge -= 12;
-		// const auto bullet = this->world->spawnEntity(std::make_shared<BulletEntity>(this->world, *this));
-		// bullet->setPosition(this->getPosition());
-		// bullet->setRotation(this->getRotation());
-		// auto x = std::cos(this->getRotation().asRadians());
-		// auto y = std::sin(this->getRotation().asRadians());
-		// x += Util::randomNormalFloat(0.025f);
-		// y += Util::randomNormalFloat(0.025f);
-		// const auto velocity = sf::Vector2f(x, y);
-		// bullet->setVelocity(velocity * 8.f);
-		// this->world->playSound(shootSound, .6f, Util::randomFloat(1.f, 1.6f));
-	// }
+	if (isFiring && this->bulletCharge >= 12) {
+		this->bulletCharge -= 12;
+		const auto bullet = std::make_shared<BulletEntity>(this->world, *this);
+		this->world->spawnEntity(bullet);
+		bullet->setPosition(this->getPosition());
+		bullet->setRotation(this->getRotation());
+		auto x = std::cos(this->getRotation().asRadians());
+		auto y = std::sin(this->getRotation().asRadians());
+		x += Util::randomNormalFloat(0.025f);
+		y += Util::randomNormalFloat(0.025f);
+		const auto velocity = sf::Vector2f(x, y);
+		bullet->setVelocity(velocity * 8.f);
+		this->world->playSound(shootSound, .6f, Util::randomFloat(1.f, 1.6f));
+	}
 	if (input.length() > 0) {  // NOLINT(clang-diagnostic-undefined-func-template)
-		input = input.componentWiseDiv({input.length(), input.length()});
+		input /= input.length();
 		constexpr auto movementSpeed = 1.6f;
-		input = input.componentWiseMul({movementSpeed, movementSpeed});
+		input *= movementSpeed;
 		this->addVelocity(input);
 		const auto currentRotation = this->getRotation();
 		const auto targetRotation = sf::radians(std::atan2(input.y, input.x));
@@ -95,6 +91,14 @@ void PlayerEntity::onDeath(PlayerEntity* source) {
 	this->world->playSound(explodeSound, .8f, Util::randomFloat(1.2f, 1.8f));
 }
 
+std::string PlayerEntity::getName() const {
+	return this->name;
+}
+
+int PlayerEntity::getColor() const {
+	return this->color;
+}
+
 int PlayerEntity::getHealth() const {
 	return this->health;
 }
@@ -109,6 +113,10 @@ int PlayerEntity::getImmunityTime() const {
 
 int PlayerEntity::getBulletCharge() const {
 	return this->bulletCharge;
+}
+
+void PlayerEntity::setColor(int color) {
+	this->color = color;
 }
 
 bool PlayerEntity::isMarkedForRemoval() const {

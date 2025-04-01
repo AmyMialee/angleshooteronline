@@ -5,7 +5,6 @@ class AngleShooterServer final {
 	std::map<int, Identifier> packetIds;
 
 	sf::TcpListener listenerSocket;
-	std::vector<std::unique_ptr<ClientConnection>> clients;
 	std::unordered_set<ClientConnection*> pendingDisconnects;
 	std::uint8_t nextClientId = 0;
 
@@ -20,9 +19,12 @@ protected:
 	~AngleShooterServer() = default;
 
 public:
+	std::vector<std::unique_ptr<ClientConnection>> clients;
+
 	AngleShooterServer(const AngleShooterServer&) = delete;
 	void operator=(const AngleShooterServer&) = delete;
 	void run();
+	void runReceiver();
 	void sendToAll(sf::Packet& packet);
 	void send(ClientConnection& player, sf::Packet& packet);
 	void send(sf::TcpSocket& socket, sf::Packet& packet);

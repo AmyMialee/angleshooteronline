@@ -15,6 +15,10 @@ WorldRenderer::WorldRenderer() {
 		});
 		const auto pos = player->getPosition() + player->getVelocity() * deltaTime;
 		auto sprite = player1;
+		const auto r = player->getColor() >> 24 & 0xFF;
+		const auto g = player->getColor() >> 16 & 0xFF;
+		const auto b = player->getColor() >> 8 & 0xFF;
+		sprite.setColor(sf::Color(r, g, b, 0xFF));
 		sprite.setPosition(pos);
 		sprite.setRotation(player->getRotation());
 		AngleShooterClient::get().renderTexture.draw(sprite);
@@ -115,7 +119,7 @@ void WorldRenderer::render(float deltaTime) {
 }
 
 template<typename T> void WorldRenderer::registerRenderer(const Identifier& id, std::function<void(std::shared_ptr<T>, float)> renderer) {
-    // renderRegistry[id.getHash()] = [renderer](const std::shared_ptr<Entity>& entity, float deltaTime) {
-        // renderer(std::static_pointer_cast<T>(entity), deltaTime);
-    // };
+    renderRegistry[id.getHash()] = [renderer](const std::shared_ptr<Entity>& entity, float deltaTime) {
+        renderer(std::static_pointer_cast<T>(entity), deltaTime);
+    };
 }

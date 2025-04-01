@@ -44,10 +44,19 @@ AngleShooterClient::AngleShooterClient() :
 		packet >> message;
 		Logger::debug("Received Broadcast Message Packet from server: " + message);
 	});
-	registerPacket(NetworkProtocol::PACKET_TRANSLATION, [&](sf::Packet& packet) {
+	registerPacket(NetworkProtocol::PACKET_QUESTION, [this](sf::Packet& packet) {
 		int packetId;
 		packet >> packetId;
+		auto translation = NetworkProtocol::PACKET_TRANSLATION.getPacket();
+		translation << packetId;
+		translation << this->packetIds[packetId];
+		Logger::debug("Received Translation Question Packet: " + this->packetIds[packetId].toString() + " for packet id: " + std::to_string(packetId));
+		send(translation);
+	});
+	registerPacket(NetworkProtocol::PACKET_TRANSLATION, [this](sf::Packet& packet) {
+		int packetId;
 		Identifier translation;
+		packet >> packetId;
 		packet >> translation;
 		Logger::debug("Received Translation Packet: " + translation.toString() + " for packet id: " + std::to_string(packetId));
 		translatedPackets[packetId] = translation;
@@ -88,12 +97,42 @@ AngleShooterClient::AngleShooterClient() :
 		packet >> id;
 		ClientWorld::get().loadMap(id);
 	});
+	registerPacket(NetworkProtocol::S2C_SPAWN_PLAYER, [this](sf::Packet& packet) {
+		std::string name;
+		int colour;
+		float x, y;
+		bool isClientPlayer;
+		packet >> name;
+		packet >> colour;
+		packet >> x;
+		packet >> y;
+		packet >> isClientPlayer;
+		Logger::debug("Received Spawn Player Packet: " + name + " (colour: " + std::to_string(colour) + ") at (" + std::to_string(x) + ", " + std::to_string(y) + "), " + std::to_string(isClientPlayer));
+		ClientWorld::get().spawnPlayer(name, colour, {x, y}, isClientPlayer);
+	});
+	registerPacket(NetworkProtocol::S2C_PLAYER_INPUT, [this](sf::Packet& packet) {
+		std::string name;
+		float x, y;
+		bool isFiring;
+		packet >> name;
+		packet >> x;
+		packet >> y;
+		packet >> isFiring;
+		for (const auto& entity : ClientWorld::get().getEntities()) {
+			if (entity->getEntityType() != PlayerEntity::ID) continue;
+			const auto player = dynamic_cast<PlayerEntity*>(entity.get());
+			if (player->getName() != name) continue;
+			player->input = {x, y};
+			player->isFiring = isFiring;
+		}
+	});
 }
 
 bool AngleShooterClient::connect(const sf::IpAddress& server) {
 	const auto status = connectingSocket.connect(server, AngleShooterCommon::PORT);
 	auto join = NetworkProtocol::C2S_JOIN.getPacket();
 	join << OptionsManager::get().getName();
+	join << OptionsManager::get().getColour();
 	send(join);
 	connected = static_cast<int>(status) < 3;
 	return connected;

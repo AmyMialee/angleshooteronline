@@ -17,7 +17,9 @@ AngleShooterServer::AngleShooterServer() {
     if (listenerSocket.listen(AngleShooterCommon::PORT) != sf::Socket::Status::Done) throw std::runtime_error("Failed to bind to port, is the server already running?");
     registerPacket(NetworkProtocol::C2S_JOIN, [this](ClientConnection& sender, sf::Packet& packet) {
         std::string name;
+        int colour;
         packet >> name;
+        packet >> colour;
         auto endName = name;
         auto count = 0;
         for (const auto& client : clients) if (client->name == endName) endName = name + " " + std::to_string(++count);
@@ -26,6 +28,17 @@ AngleShooterServer::AngleShooterServer() {
         auto mapPacket = NetworkProtocol::S2C_INITIAL_SETUP.getPacket();
         mapPacket << ServerWorld::get().getMap()->getId();
         send(sender.socket, mapPacket);
+        sender.player = ServerWorld::get().spawnPlayer(sender);
+        for (auto& client : clients) {
+            if (client.get() == &sender) continue;
+            auto syncPlayerPacket = NetworkProtocol::S2C_SPAWN_PLAYER.getPacket();
+            syncPlayerPacket << client->name;
+            syncPlayerPacket << client->colour;
+            syncPlayerPacket << client->player->getPosition().x;
+            syncPlayerPacket << client->player->getPosition().y;
+            syncPlayerPacket << false;
+            send(sender.socket, syncPlayerPacket);
+        }
     });
     registerPacket(NetworkProtocol::C2S_CHANGE_NAME, [this](ClientConnection& sender, sf::Packet& packet) {
         std::string name;
@@ -48,13 +61,40 @@ AngleShooterServer::AngleShooterServer() {
         Logger::debug("Received Quit Packet from " + sender.name + " (" + Util::getAddressString(sender.socket) + ")");
         sender.socket.disconnect();
     });
-    registerPacket(NetworkProtocol::PACKET_TRANSLATION, [&](ClientConnection& sender, sf::Packet& packet) {
+    registerPacket(NetworkProtocol::PACKET_QUESTION, [this](ClientConnection& sender, sf::Packet& packet) {
         int packetId;
         packet >> packetId;
+        auto translation = NetworkProtocol::PACKET_TRANSLATION.getPacket();
+        translation << packetId;
+        translation << this->packetIds[packetId];
+        Logger::debug("Received Translation Question Packet: " + this->packetIds[packetId].toString() + " for packet id: " + std::to_string(packetId));
+        send(sender, translation);
+    });
+    registerPacket(NetworkProtocol::PACKET_TRANSLATION, [this](ClientConnection& sender, sf::Packet& packet) {
+        int packetId;
         Identifier translation;
+        packet >> packetId;
         packet >> translation;
         Logger::debug("Received Translation Packet from " + sender.name + " (" + Util::getAddressString(sender.socket) + "): " + translation.toString());
         sender.translatedPackets[packetId] = translation;
+    });
+    registerPacket(NetworkProtocol::C2S_PLAYER_INPUT, [this](const ClientConnection& sender, sf::Packet& packet) {
+        float x, y;
+        bool isFiring;
+        packet >> x;
+        packet >> y;
+        packet >> isFiring;
+        sender.player->input = {x, y};
+        sender.player->isFiring = isFiring;
+        auto syncPlayerPacket = NetworkProtocol::S2C_PLAYER_INPUT.getPacket();
+        syncPlayerPacket << sender.name;
+        syncPlayerPacket << x;
+        syncPlayerPacket << y;
+        syncPlayerPacket << isFiring;
+        for (auto& client : clients) {
+            if (client.get() == &sender) continue;
+            send(*client, syncPlayerPacket);
+        }
     });
 }
 
@@ -62,6 +102,7 @@ void AngleShooterServer::run() {
     Logger::debug("Starting AngleShooter Server");
     ServerWorld::get().init();
     ServerWorld::get().loadMap(Identifier("testmaplarge"));
+    std::thread networkThread(&AngleShooterServer::runReceiver, this);
     sf::Clock deltaClock;
     auto tickTime = 0.;
     while (true) {
@@ -71,15 +112,18 @@ void AngleShooterServer::run() {
             Logger::warn("AngleShooter::run: Lagging behind by " + Util::toRoundedString(tickTime / AngleShooterCommon::TIME_PER_TICK, 2) + " ticks (" + Util::toRoundedString(tickTime, 2) + " seconds), skipping ahead");
             tickTime = AngleShooterCommon::TIME_PER_TICK;
         }
-        if (tickTime >= AngleShooterCommon::TIME_PER_TICK) {
-            handleIncomingClients();
-            handleIncomingPackets();
-            handleDisconnectingClients();
-        }
         while (tickTime >= AngleShooterCommon::TIME_PER_TICK) {
             ServerWorld::get().tick(deltaTime);
             tickTime -= AngleShooterCommon::TIME_PER_TICK;
         }
+    }
+}
+
+void AngleShooterServer::runReceiver() {
+    while (true) {
+        handleIncomingClients();
+        handleIncomingPackets();
+        handleDisconnectingClients();
     }
 }
 
@@ -130,14 +174,14 @@ void AngleShooterServer::handlePacket(ClientConnection& sender, sf::Packet& pack
     packet >> packetType;
     if (packetHandlers.contains(packetType)) {
         packetHandlers[packetType](sender, packet);
-        auto builder = std::stringstream();
-        builder << "Received Packet: " << this->packetIds[packetType].toString();
-        if (const auto address = sender.socket.getRemoteAddress(); address.has_value()) {
-            builder << " from " << address.value();
-        } else {
-            builder << " from unknown address";
-        }
-        Logger::debug(builder.str());
+        // auto builder = std::stringstream();
+        // builder << "Received Packet: " << this->packetIds[packetType].toString();
+        // if (const auto address = sender.socket.getRemoteAddress(); address.has_value()) {
+        //     builder << " from " << address.value();
+        // } else {
+        //     builder << " from unknown address";
+        // }
+        // Logger::debug(builder.str());
         return;
     }
     if (!sender.translatedPackets.contains(packetType)) {
