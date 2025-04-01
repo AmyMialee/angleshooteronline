@@ -137,6 +137,19 @@ AngleShooterClient::AngleShooterClient() :
 			player->isFiring = isFiring;
 		}
 	});
+	registerPacket(NetworkProtocol::S2C_PLAYER_POSITION_SYNC, [this](sf::Packet& packet) {
+		std::string name;
+		float x, y;
+		packet >> name;
+		packet >> x;
+		packet >> y;
+		for (const auto& entity : ClientWorld::get().getEntities()) {
+			if (entity->getEntityType() != PlayerEntity::ID) continue;
+			const auto player = dynamic_cast<PlayerEntity*>(entity.get());
+			if (player->getName() != name) continue;
+			player->setPosition({x, y});
+		}
+	});
 }
 
 bool AngleShooterClient::connect(const sf::IpAddress& server) {

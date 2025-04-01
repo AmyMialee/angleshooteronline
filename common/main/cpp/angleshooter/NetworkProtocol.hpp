@@ -13,6 +13,7 @@ public:
 	inline const static auto S2C_SPAWN_PLAYER = Identifier("S2C_SPAWN_PLAYER");
 	inline const static auto S2C_SPAWN_BULLET = Identifier("S2C_SPAWN_BULLET");
 	inline const static auto S2C_PLAYER_INPUT = Identifier("S2C_PLAYER_INPUT");
+	inline const static auto S2C_PLAYER_POSITION_SYNC = Identifier("S2C_PLAYER_POSITION_SYNC");
 
 	inline const static auto C2S_JOIN = Identifier("C2S_JOIN");
 	inline const static auto C2S_CHANGE_NAME = Identifier("C2S_CHANGE_NAME");

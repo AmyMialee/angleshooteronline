@@ -17,4 +17,11 @@ void ServerPlayerEntity::tick(float deltaTime) {
 		bullet->setRotation(this->getRotation());
 		this->world->playSound(shootSound, .6f, Util::randomFloat(1.f, 1.6f));
 	}
+	if (this->world->getAge() % 12 == 0) {
+		auto packet = NetworkProtocol::S2C_PLAYER_POSITION_SYNC.getPacket();
+		packet << this->getName();
+		packet << this->getPosition().x;
+		packet << this->getPosition().y;
+		AngleShooterServer::get().sendToAll(packet);
+	}
 }
