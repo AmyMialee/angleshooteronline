@@ -21,4 +21,10 @@ void ClientPlayerEntity::tick(float deltaTime) {
 		packet << input.x << input.y << isFiring;
 		AngleShooterClient::get().send(packet);
 	}
+	if (this->world->getAge() % 12 == 0) {
+		auto packet = NetworkProtocol::C2S_PLAYER_POSITION_SYNC.getPacket();
+		packet << this->getPosition().x;
+		packet << this->getPosition().y;
+		AngleShooterClient::get().send(packet);
+	}
 }

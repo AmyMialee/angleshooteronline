@@ -23,5 +23,9 @@ void ServerPlayerEntity::tick(float deltaTime) {
 		packet << this->getPosition().x;
 		packet << this->getPosition().y;
 		AngleShooterServer::get().sendToAll(packet);
+		for (const auto& client : AngleShooterServer::get().clients) {
+			if (client->name == this->getName()) continue;
+			AngleShooterServer::get().send(client->socket, packet);
+		}
 	}
 }

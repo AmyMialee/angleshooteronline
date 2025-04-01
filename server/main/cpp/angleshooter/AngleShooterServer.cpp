@@ -96,6 +96,12 @@ AngleShooterServer::AngleShooterServer() {
             send(*client, syncPlayerPacket);
         }
     });
+    registerPacket(NetworkProtocol::C2S_PLAYER_POSITION_SYNC, [this](const ClientConnection& sender, sf::Packet& packet) {
+        float x, y;
+        packet >> x;
+        packet >> y;
+        sender.player->setPosition({x, y});
+    });
 }
 
 void AngleShooterServer::run() {
