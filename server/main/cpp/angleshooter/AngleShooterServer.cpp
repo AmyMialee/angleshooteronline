@@ -18,14 +18,23 @@ AngleShooterServer::AngleShooterServer() {
     registerPacket(NetworkProtocol::C2S_JOIN, [this](ClientConnection& sender, sf::Packet& packet) {
         std::string name;
         packet >> name;
-        Logger::debug("Received Join Packet from " + name + " (" + Util::getAddressString(sender.socket) + ")");
-        sender.name = name;
+        auto endName = name;
+        auto count = 0;
+        for (const auto& client : clients) if (client->name == endName) endName = name + " " + std::to_string(++count);
+        Logger::debug("Received Join Packet from " + endName + " (" + Util::getAddressString(sender.socket) + ")");
+        sender.name = endName;
+        auto mapPacket = NetworkProtocol::S2C_INITIAL_SETUP.getPacket();
+        mapPacket << ServerWorld::get().getMap()->getId();
+        send(sender.socket, mapPacket);
     });
     registerPacket(NetworkProtocol::C2S_CHANGE_NAME, [this](ClientConnection& sender, sf::Packet& packet) {
         std::string name;
         packet >> name;
-        Logger::debug("Received Change Name Packet " + name + " (" + Util::getAddressString(sender.socket) + "), previously " + sender.name);
-        sender.name = name;
+        auto endName = name;
+        auto count = 0;
+        for (const auto& client : clients) if (client->name == endName) endName = name + " " + std::to_string(++count);
+        Logger::debug("Received Change Name Packet " + endName + " (" + Util::getAddressString(sender.socket) + "), previously " + sender.name);
+        sender.name = endName;
     });
     registerPacket(NetworkProtocol::C2S_SEND_MESSAGE, [this](const ClientConnection& sender, sf::Packet& packet) {
         std::string message;

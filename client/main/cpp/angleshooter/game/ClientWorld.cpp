@@ -1,7 +1,7 @@
 #include <PreCompiledClient.h>
 #include "ClientWorld.h"
 
-ClientWorld::ClientWorld() : World(), mapRenderer() {}
+ClientWorld::ClientWorld() : mapRenderer() {}
 
 void ClientWorld::playMusic(const Identifier& id, float volume, float pitch) {
 	AudioManager::get().playMusic(id, volume, pitch);

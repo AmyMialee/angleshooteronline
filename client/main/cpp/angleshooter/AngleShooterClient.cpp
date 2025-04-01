@@ -35,6 +35,9 @@ AngleShooterClient::AngleShooterClient() :
 	});
 	registerPacket(NetworkProtocol::S2C_INITIAL_SETUP, [this](sf::Packet& packet) {
 		Logger::debug("Received Initial Setup Packet");
+		Identifier id;
+		packet >> id;
+		ClientWorld::get().loadMap(id);
 	});
 	registerPacket(NetworkProtocol::S2C_BROADCAST_MESSAGE, [this](sf::Packet& packet) {
 		std::string message;
@@ -49,6 +52,42 @@ AngleShooterClient::AngleShooterClient() :
 		Logger::debug("Received Translation Packet: " + translation.toString() + " for packet id: " + std::to_string(packetId));
 		translatedPackets[packetId] = translation;
 	});
+	registerPacket(NetworkProtocol::S2C_PLAY_MUSIC, [this](sf::Packet& packet) {
+		Identifier id;
+		float volume, pitch;
+		packet >> id;
+		packet >> volume;
+		packet >> pitch;
+		ClientWorld::get().playMusic(id, volume, pitch);
+	});
+	registerPacket(NetworkProtocol::S2C_PLAY_SOUND, [this](sf::Packet& packet) {
+		Identifier id;
+		float volume, pitch, x, y, attenuation;
+		packet >> id;
+		packet >> volume;
+		packet >> pitch;
+		packet >> x;
+		packet >> y;
+		packet >> attenuation;
+		ClientWorld::get().playSound(id, volume, pitch, {x, y}, attenuation);
+	});
+	registerPacket(NetworkProtocol::S2C_PLAY_SOUND_3D, [this](sf::Packet& packet) {
+		Identifier id;
+		float volume, pitch, x, y, z, attenuation;
+		packet >> id;
+		packet >> volume;
+		packet >> pitch;
+		packet >> x;
+		packet >> y;
+		packet >> z;
+		packet >> attenuation;
+		ClientWorld::get().playSound3d(id, volume, pitch, {x, y, z}, attenuation);
+	});
+	registerPacket(NetworkProtocol::S2C_LOAD_MAP, [this](sf::Packet& packet) {
+		Identifier id;
+		packet >> id;
+		ClientWorld::get().loadMap(id);
+	});
 }
 
 bool AngleShooterClient::connect(const sf::IpAddress& server) {
@@ -56,7 +95,7 @@ bool AngleShooterClient::connect(const sf::IpAddress& server) {
 	auto join = NetworkProtocol::C2S_JOIN.getPacket();
 	join << OptionsManager::get().getName();
 	send(join);
-	connected = status == sf::Socket::Status::Done;
+	connected = static_cast<int>(status) < 3;
 	return connected;
 }
 

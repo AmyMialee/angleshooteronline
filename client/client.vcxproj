@@ -127,6 +127,8 @@
     <Content Include="main\resources\assets\angleshooter\textures\player.png" />
     <Content Include="main\resources\assets\angleshooter\textures\player2.png" />
     <Content Include="main\resources\assets\angleshooter\textures\sfml_logo.png" />
+    <Content Include="main\resources\data\angleshooter\maps\testmap.json" />
+    <Content Include="main\resources\data\angleshooter\maps\testmaplarge.json" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main\cpp\angleshooter\AngleShooterClient.cpp" />
