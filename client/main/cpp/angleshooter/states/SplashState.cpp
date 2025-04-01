@@ -24,13 +24,13 @@ void SplashState::render(float deltaTime) {
     static std::once_flag flag;
     std::call_once(flag, [&] {
         Util::centre(background);
-        background.setPosition(ClientContext::get()->getRenderTexture()->getView().getSize() / 2.f);
+        background.setPosition(AngleShooterClient::get().renderTexture.getView().getSize() / 2.f);
     });
     const auto alpha = std::clamp(255 * std::pow(std::sin(Util::toRadians(160 * std::pow(fadeTime / totalTime, 2))), 2), 0., 255.);
     background.setColor(sf::Color(255, 255, 255, static_cast<uint8_t>(alpha)));
     const auto scale = .4f + .4f * fadeTime / totalTime;
     background.setScale({scale, scale});
-    auto& texture = *ClientContext::get()->getRenderTexture();
+    auto& texture = AngleShooterClient::get().renderTexture;
     texture.draw(background);
 }
 

@@ -35,9 +35,9 @@ void PauseState::render(float deltaTime) {
 	static std::once_flag flag;
 	std::call_once(flag, [&] {
 		backgroundShape.setFillColor(sf::Color(0, 0, 0, 150));
-		backgroundShape.setSize(ClientContext::get()->getWindow()->getView().getSize());
+		backgroundShape.setSize(AngleShooterClient::get().window.getView().getSize());
 	});
-	auto& texture = *ClientContext::get()->getRenderTexture();
+	auto& texture = AngleShooterClient::get().renderTexture;
 	texture.draw(backgroundShape);
 	texture.setView(texture.getDefaultView());
 	texture.draw(gui);

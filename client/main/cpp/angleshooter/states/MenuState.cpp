@@ -27,7 +27,7 @@ void MenuState::init() {
 	gui.pack(playButton);
 	gui.pack(settingsButton);
 	gui.pack(exitButton);
-	AudioManager::get().playMusic(AngleShooterClient::BACKGROUND_MUSIC);
+	AudioManager::get().playMusic(Identifier("backgroundmusic.ogg"));
 }
 
 void MenuState::loadAssets() {
@@ -43,10 +43,10 @@ void MenuState::render(float deltaTime) {
 	static std::once_flag flag;
 	std::call_once(flag, [&] {
 		Util::centre(background);
-		background.setPosition(ClientContext::get()->getRenderTexture()->getView().getSize() / 2.f);
+		background.setPosition(AngleShooterClient::get().renderTexture.getView().getSize() / 2.f);
 		background.setScale({2.f, 2.f});
 	});
-	auto& window = *ClientContext::get()->getRenderTexture();
+	auto& window = AngleShooterClient::get().renderTexture;
 	window.setView(window.getDefaultView());
 	window.draw(background);
 	window.draw(gui);

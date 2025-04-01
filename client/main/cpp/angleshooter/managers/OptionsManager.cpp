@@ -52,6 +52,10 @@ void OptionsManager::loadFromFile() {
 	}
 }
 
+std::string OptionsManager::getName() const {
+	return this->name;
+}
+
 double OptionsManager::getMasterVolume() const {
 	return this->masterVolume;
 }
@@ -78,6 +82,11 @@ double OptionsManager::getTimePerFrame() {
 
 bool OptionsManager::isDebugEnabled() const {
 	return this->debug;
+}
+
+void OptionsManager::setName(const std::string& name) {
+	this->name = name;
+	saveToFile();
 }
 
 void OptionsManager::setFps(int fps) {

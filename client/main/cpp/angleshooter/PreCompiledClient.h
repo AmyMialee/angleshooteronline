@@ -6,7 +6,6 @@
 #include <SFML/Window/Keyboard.hpp>
 #include <SFML/Graphics/VertexArray.hpp>
 
-#include "util/ClientContext.h"
 #include "util/Keybinding.h"
 #include "managers/InputManager.h"
 #include "managers/OptionsManager.h"
@@ -40,6 +39,5 @@
 #include "managers/SoundHolder.h"
 #include "rendering/MapRenderer.h"
 #include "game/ClientWorld.h"
-#include "game/ClientNetworkHandler.h"
 
 #include "AngleShooterClient.h"

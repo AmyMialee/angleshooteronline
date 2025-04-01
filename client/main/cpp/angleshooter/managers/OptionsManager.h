@@ -1,7 +1,7 @@
 ﻿#pragma once
 
-class OptionsManager final : public Singleton<OptionsManager> {
-	friend class Singleton<OptionsManager>;
+class OptionsManager final {
+	std::string name = "Player";
 	double masterVolume = 1.;
 	double musicVolume = 0.;
 	double soundVolume = 0.;
@@ -9,9 +9,15 @@ class OptionsManager final : public Singleton<OptionsManager> {
 	double timePerFrame = 1. / framesPerSecond;
 	bool onboarded = false;
 	bool debug = false;
+
+protected:
 	OptionsManager() = default;
+	~OptionsManager() = default;
 
 public:
+	OptionsManager(const OptionsManager&) = delete;
+	void operator=(const OptionsManager&) = delete;
+	[[nodiscard]] std::string getName() const;
 	[[nodiscard]] double getMasterVolume() const;
 	[[nodiscard]] double getMusicVolume() const;
 	[[nodiscard]] double getSoundVolume() const;
@@ -19,12 +25,18 @@ public:
 	[[nodiscard]] int getFps();
 	[[nodiscard]] double getTimePerFrame();
 	[[nodiscard]] bool isDebugEnabled() const;
-	void setFps(int fps);
+	void setName(const std::string& name);
 	void setMasterVolume(double volume);
 	void setMusicVolume(double volume);
 	void setSoundVolume(double volume);
 	void setOnboarded(bool onboarded);
+	void setFps(int fps);
 	void setDebugEnabled(bool enabled);
 	void saveToFile();
 	void loadFromFile();
+
+	static OptionsManager& get() {
+		static OptionsManager instance;
+		return instance;
+	}
 };

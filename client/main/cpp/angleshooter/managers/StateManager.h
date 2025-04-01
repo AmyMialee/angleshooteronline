@@ -13,7 +13,7 @@ class StateManager final : public Singleton<StateManager> {
 	std::vector<PendingChange> pending;
 	State::Pointer create(const Identifier& id);
 	void applyChanges();
-	StateManager() = default;
+	StateManager();
 	
 public:
 	template<typename T> void registerState(const Identifier& id);

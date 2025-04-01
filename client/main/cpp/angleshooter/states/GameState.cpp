@@ -9,7 +9,7 @@ void GameState::init() {
 	static const auto GAME_MUSIC = Identifier("gamemusic.ogg");
 	ClientWorld::get().init();
 	AudioManager::get().playMusic(GAME_MUSIC);
-	ClientNetworkHandler::get().init();
+	AngleShooterClient::get().connect(sf::IpAddress(127, 0, 0, 1));
 }
 
 void GameState::loadAssets() {
@@ -25,11 +25,10 @@ void GameState::loadAssets() {
 }
 
 void GameState::render(float deltaTime) {
-	auto& window = *ClientContext::get()->getRenderTexture();
+	auto& window = AngleShooterClient::get().renderTexture;
 	window.setView(window.getDefaultView());
 	WorldRenderer::get().render(deltaTime);
-	ClientContext::get()->getWindow()->setView(ClientContext::get()->getWindow()->getDefaultView());
-	ClientNetworkHandler::get().render(deltaTime);
+	AngleShooterClient::get().window.setView(AngleShooterClient::get().window.getDefaultView());
 }
 
 bool GameState::shouldRenderNextState() const {
@@ -38,7 +37,6 @@ bool GameState::shouldRenderNextState() const {
 
 bool GameState::tick(float deltaTime) {
 	ClientWorld::get().tick(deltaTime);
-	ClientNetworkHandler::get().tick(deltaTime);
 	return false;
 }
 

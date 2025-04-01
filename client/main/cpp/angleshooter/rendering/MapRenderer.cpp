@@ -20,6 +20,6 @@ MapRenderer::MapRenderer(Map& map) : mapSprite(sf::Sprite(sf::RenderTexture({1, 
 }
 
 void MapRenderer::render(float) {
-	auto& texture = *ClientContext::get()->getRenderTexture();
+	auto& texture = AngleShooterClient::get().renderTexture;
 	texture.draw(this->mapSprite);
 }

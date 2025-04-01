@@ -71,10 +71,10 @@ void SettingsState::render(float deltaTime) {
 	std::call_once(flag, [&] {
 		background.setColor({200, 255, 255, 255});
 		Util::centre(background);
-		background.setPosition(ClientContext::get()->getRenderTexture()->getView().getSize() / 2.f);
+		background.setPosition(AngleShooterClient::get().renderTexture.getView().getSize() / 2.f);
 		background.setScale({2.f, 2.f});
 	});
-	auto& texture = *ClientContext::get()->getRenderTexture();
+	auto& texture = AngleShooterClient::get().renderTexture;
 	texture.draw(background);
 	texture.draw(gui);
 }

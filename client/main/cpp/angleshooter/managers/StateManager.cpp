@@ -39,11 +39,21 @@ void StateManager::applyChanges() {
 	}
 	pending.clear();
 	if (this->stack.empty()) {
-		ClientContext::get()->getWindow()->close();
+		AngleShooterClient::get().window.close();
 	} else if (!stack.back().second) {
 		stack.back().second = true;
 		stack.back().first->init();
 	}
+}
+
+StateManager::StateManager() {
+	registerState<SplashState>(SplashState::getId());
+	registerState<MenuState>(MenuState::getId());
+	registerState<SettingsState>(SettingsState::getId());
+	registerState<OnboardingState>(OnboardingState::getId());
+	registerState<GameState>(GameState::getId());
+	registerState<PauseState>(PauseState::getId());
+	registerState<GameOverState>(GameOverState::getId());
 }
 
 void StateManager::loadAssets() {

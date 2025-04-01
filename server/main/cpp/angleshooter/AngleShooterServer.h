@@ -1,38 +1,34 @@
 #pragma once
 
 class AngleShooterServer final {
-	static AngleShooterServer* instance;
-	std::map<int, std::function<void(sf::Packet& packet, PlayerHandler& receivingPeer, bool& detectedTimeout)>> packetHandlers;
+	std::map<int, std::function<void(ClientConnection& sender, sf::Packet& packet)>> packetHandlers;
+	std::map<int, Identifier> packetIds;
+
 	sf::TcpListener listenerSocket;
-	sf::Clock clock;
-	bool listeningState;
-	sf::Time clientTimeout;
-	std::uint16_t maxConnectedPlayers;
-	std::uint16_t connectedPlayers;
-	std::vector<std::unique_ptr<PlayerHandler>> peers;
-	bool waitingThreadEnd;
-	double tps;
+	std::vector<std::unique_ptr<ClientConnection>> clients;
+	std::unordered_set<ClientConnection*> pendingDisconnects;
+	std::uint8_t nextClientId = 0;
 
-
-	void setListening(bool enable);
-	void tick(float deltaTime);
-	[[nodiscard]] sf::Time now() const;
-
+	void handleIncomingClients();
+	void handleDisconnectingClients();
 	void handleIncomingPackets();
-	void handleIncomingPackets(sf::Packet& packet, PlayerHandler& receivingPeer, bool& detectedTimeout);
+	void handlePacket(ClientConnection& sender, sf::Packet& packet);
+	void registerPacket(const Identifier& packetType, const std::function<void(ClientConnection& sender, sf::Packet& packet)>& handler);
 
-	void handleIncomingConnections();
-	void handleDisconnections();
-	
-	void initialSetup(sf::TcpSocket& socket);
-	void updateClientState();
+protected:
+	AngleShooterServer();
+	~AngleShooterServer() = default;
 
 public:
-	explicit AngleShooterServer();
-	void run();
 	AngleShooterServer(const AngleShooterServer&) = delete;
-	AngleShooterServer& operator=(const AngleShooterServer&) = delete;
-	void broadcastMessage(const std::string& message);
+	void operator=(const AngleShooterServer&) = delete;
+	void run();
 	void sendToAll(sf::Packet& packet);
-	static AngleShooterServer* get();
+	void send(ClientConnection& player, sf::Packet& packet);
+	void send(sf::TcpSocket& socket, sf::Packet& packet);
+
+	static AngleShooterServer& get() {
+		static AngleShooterServer instance;
+		return instance;
+	}
 };

@@ -5,7 +5,7 @@ const Identifier GameOverState::GAME_OVER_ID("gameover");
 
 void GameOverState::init() {
 	const auto exitButton = std::make_shared<Button>();
-	const auto center = sf::Vector2f{ClientContext::get()->getWindow()->getView().getCenter().x / 2 - 100, 450};
+	const auto center = sf::Vector2f{AngleShooterClient::get().window.getView().getCenter().x / 2 - 100, 450};
 	exitButton->setPosition(center);
 	exitButton->setText("Exit");
 	exitButton->setCallback([this] {
@@ -22,9 +22,9 @@ void GameOverState::render(float deltaTime) {
 	static std::once_flag flag;
 	std::call_once(flag, [&] {
 		backgroundShape.setFillColor(sf::Color(0, 0, 0, 150));
-		backgroundShape.setSize(ClientContext::get()->getWindow()->getView().getSize());
+		backgroundShape.setSize(AngleShooterClient::get().window.getView().getSize());
 	});
-	auto& texture = *ClientContext::get()->getRenderTexture();
+	auto& texture = AngleShooterClient::get().renderTexture;
 	texture.draw(backgroundShape);
 	texture.setView(texture.getDefaultView());
 	texture.draw(gui);
@@ -36,11 +36,11 @@ void GameOverState::render(float deltaTime) {
 		// auto text = sf::Text(FontHolder::getInstance().getDefault(), std::to_string(playerData.getScore()), 56);
 		// text.setPosition(center + sf::Vector2f{10.f, offset + 0.f});
 		// text.setFillColor(sf::Color::Cyan);
-		// ClientContext::get()->getWindow()->draw(text);
+		// AngleShooterClient::get()->getWindow()->draw(text);
 		// text.setPosition(center + sf::Vector2f{8.f, offset + -5.f});
 		// text.setCharacterSize(48);
 		// text.setFillColor(sf::Color::White);
-		// ClientContext::get()->getWindow()->draw(text);
+		// AngleShooterClient::get()->getWindow()->draw(text);
 		// offset += 56;
 	// }
 }

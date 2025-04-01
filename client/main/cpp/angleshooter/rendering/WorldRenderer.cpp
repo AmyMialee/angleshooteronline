@@ -17,12 +17,12 @@ WorldRenderer::WorldRenderer() {
 		auto sprite = player1;
 		sprite.setPosition(pos);
 		sprite.setRotation(player->getRotation());
-		ClientContext::get()->getRenderTexture()->draw(sprite);
+		AngleShooterClient::get().renderTexture.draw(sprite);
 		if (player->getImmunityTime() > 0) {
 			auto circle = sf::CircleShape(player->getScale().x / 2.f + 2);
 			circle.setPosition(pos - player->getScale() / 2.f - sf::Vector2f{2.f, 2.f});
 			circle.setFillColor(sf::Color(0, 255, 255, 120));
-			ClientContext::get()->getRenderTexture()->draw(circle);
+			AngleShooterClient::get().renderTexture.draw(circle);
 		}
 		const auto bound = player->getBoundingBox();
 		sf::RectangleShape shape;
@@ -31,18 +31,18 @@ WorldRenderer::WorldRenderer() {
 		shape.setPosition(bound.position + player->getVelocity() * deltaTime + sf::Vector2f{0, bound.size.y + 2});
 		shape.setSize({bound.size.x, 2});
 		shape.setFillColor(sf::Color::Black);
-		ClientContext::get()->getRenderTexture()->draw(shape);
+		AngleShooterClient::get().renderTexture.draw(shape);
 		shape.setSize({bound.size.x * (static_cast<float>(player->getHealth()) / 8.f), 2});
 		shape.setFillColor(sf::Color::Green);
-		ClientContext::get()->getRenderTexture()->draw(shape);
+		AngleShooterClient::get().renderTexture.draw(shape);
 		if (player->getImmunityTime() <= 0 && player->getBulletCharge() < 120) {
 			shape.setPosition(bound.position + player->getVelocity() * deltaTime + sf::Vector2f{0, bound.size.y + 4.5f});
 			shape.setSize({bound.size.x, 2});
 			shape.setFillColor(sf::Color::Black);
-			ClientContext::get()->getRenderTexture()->draw(shape);
+			AngleShooterClient::get().renderTexture.draw(shape);
 			shape.setSize({bound.size.x * (static_cast<float>(player->getBulletCharge()) / 120.f), 2});
 			shape.setFillColor(sf::Color::Cyan);
-			ClientContext::get()->getRenderTexture()->draw(shape);
+			AngleShooterClient::get().renderTexture.draw(shape);
 		}
 	});
 	registerRenderer<BulletEntity>(BulletEntity::ID, [this](const std::shared_ptr<BulletEntity>& bullet, float deltaTime) {
@@ -57,7 +57,7 @@ WorldRenderer::WorldRenderer() {
 		auto sprite = bullet1;
 		sprite.setPosition(pos);
 		sprite.setRotation(bullet->getRotation());
-		ClientContext::get()->getRenderTexture()->draw(sprite);
+		AngleShooterClient::get().renderTexture.draw(sprite);
 	});
 }
 
@@ -80,12 +80,11 @@ void WorldRenderer::render(float deltaTime) {
 		{lastViewSize.position.x * (1 - deltaTime) + newViewSize.position.x * deltaTime, lastViewSize.position.y * (1 - deltaTime) + newViewSize.position.y * deltaTime},
 		{lastViewSize.size.x * (1 - deltaTime) + newViewSize.size.x * deltaTime, lastViewSize.size.y * (1 - deltaTime) + newViewSize.size.y * deltaTime}};
 	const sf::Vector2f center = {viewSize.position.x / 2 + viewSize.size.x / 2, viewSize.position.y / 2 + viewSize.size.y / 2};
-	const auto texture = ClientContext::get()->getRenderTexture();
-	auto view = texture->getView();
+	auto view = AngleShooterClient::get().renderTexture.getView();
 	view.setCenter(center);
 	auto average = 160 + std::max((viewSize.size.x - viewSize.position.x) / 2, (viewSize.size.y - viewSize.position.y) / 2) * 3.2f;
-	view.setSize({average, average / static_cast<float>(texture->getSize().x) * static_cast<float>(texture->getSize().y)});
-	texture->setView(view);
+	view.setSize({average, average / static_cast<float>(AngleShooterClient::get().renderTexture.getSize().x) * static_cast<float>(AngleShooterClient::get().renderTexture.getSize().y)});
+	AngleShooterClient::get().renderTexture.setView(view);
 	if (ClientWorld::get().mapRenderer != nullptr) ClientWorld::get().mapRenderer->render(deltaTime);
 	for (const auto entity : ClientWorld::get().getEntities()) {
 		if (auto renderer = renderRegistry.find(entity->getEntityType().getHash()); renderer != renderRegistry.end()) renderer->second(entity, deltaTime);
@@ -99,7 +98,7 @@ void WorldRenderer::render(float deltaTime) {
 			const auto rect = entity->getBoundingBox();
 			shape.setPosition(rect.position);
 			shape.setSize(rect.size);
-			ClientContext::get()->getRenderTexture()->draw(shape);
+			AngleShooterClient::get().renderTexture.draw(shape);
 			const auto pos = entity->getPosition();
 			const auto rotation = entity->getRotation().asRadians();
 			sf::VertexArray line(sf::PrimitiveType::Lines, 2);
@@ -107,11 +106,11 @@ void WorldRenderer::render(float deltaTime) {
 			line[0].color = sf::Color::Red;
 			line[1].position = pos + sf::Vector2f(std::cos(rotation) * 16, std::sin(rotation) * 16);
 			line[1].color = sf::Color::Red;
-			ClientContext::get()->getRenderTexture()->draw(line);
+			AngleShooterClient::get().renderTexture.draw(line);
 		}
 	}
 	static auto bloomProcessing = BloomProcessing();
-	bloomProcessing.apply(*ClientContext::get()->getRenderTexture(), *ClientContext::get()->getRenderTexture());
+	bloomProcessing.apply(AngleShooterClient::get().renderTexture, AngleShooterClient::get().renderTexture);
 	this->lastViewSize = viewSize;
 }
 

@@ -1,28 +1,73 @@
 ﻿#include "PreCompiledClient.h"
 #include "AngleShooterClient.h"
 
-#include "game/ClientWorld.h"
+int main(int, char*[]) {
+	try {
+		AngleShooterClient::get().run();
+	} catch(std::runtime_error& e) {
+		Logger::error(e.what());
+	} catch(...) {
+		Logger::error("An Error Occurred");
+	}
+	return 0;
+}
 
 AngleShooterClient::AngleShooterClient() :
-	ClientContext(),
 	window(sf::VideoMode({1920, 1080}), "Angle Shooter", sf::Style::Titlebar | sf::Style::Close),
 	renderTexture({960, 540}),
 	tps(static_cast<int>(1 / AngleShooterCommon::TIME_PER_TICK)),
-	fps(144),
-	tpsText(FontHolder::getInstance().getDefault(), "", 12),
-	fpsText(FontHolder::getInstance().getDefault(), "", 12) {
-	set(this);
+	fps(144)
+{
 	window.clear();
 	window.setKeyRepeatEnabled(false);
-	registerStates();
-	loadAssets();
-	tpsText.setPosition({4.f, 4.f + 14});
-	fpsText.setPosition({4.f, 4.f});
 	StateManager::get().push(SplashState::getId());
 	OptionsManager::get().loadFromFile();
+	connectingSocket.setBlocking(false);
+	registerPacket(NetworkProtocol::S2C_ANNOUNCE_JOIN, [this](sf::Packet& packet) {
+		std::string name;
+		packet >> name;
+		Logger::debug("Received Join Packet, name: " + name);
+	});
+	registerPacket(NetworkProtocol::S2C_ANNOUNCE_LEAVE, [this](sf::Packet& packet) {
+		std::string name;
+		packet >> name;
+		Logger::debug("Received Leave Packet, name: " + name);
+	});
+	registerPacket(NetworkProtocol::S2C_INITIAL_SETUP, [this](sf::Packet& packet) {
+		Logger::debug("Received Initial Setup Packet");
+	});
+	registerPacket(NetworkProtocol::S2C_BROADCAST_MESSAGE, [this](sf::Packet& packet) {
+		std::string message;
+		packet >> message;
+		Logger::debug("Received Broadcast Message Packet from server: " + message);
+	});
+	registerPacket(NetworkProtocol::PACKET_TRANSLATION, [&](sf::Packet& packet) {
+		int packetId;
+		packet >> packetId;
+		Identifier translation;
+		packet >> translation;
+		Logger::debug("Received Translation Packet: " + translation.toString() + " for packet id: " + std::to_string(packetId));
+		translatedPackets[packetId] = translation;
+	});
+}
+
+bool AngleShooterClient::connect(const sf::IpAddress& server) {
+	const auto status = connectingSocket.connect(server, AngleShooterCommon::PORT);
+	auto join = NetworkProtocol::C2S_JOIN.getPacket();
+	join << OptionsManager::get().getName();
+	send(join);
+	connected = status == sf::Socket::Status::Done;
+	return connected;
+}
+
+void AngleShooterClient::disconnect() {
+	auto quit = NetworkProtocol::C2S_QUIT.getPacket();
+	send(quit);
+	connectingSocket.disconnect();
 }
 
 void AngleShooterClient::run() {
+    Logger::debug("Starting AngleShooter Client");
 	ClientWorld::get().init();
 	sf::Clock deltaClock;
 	auto tickTime = 0.;
@@ -40,6 +85,7 @@ void AngleShooterClient::run() {
 			Logger::warn("AngleShooter::run: Lagging behind by " + Util::toRoundedString(tickTime / AngleShooterCommon::TIME_PER_TICK, 2) + " ticks (" + Util::toRoundedString(tickTime, 2) + " seconds), skipping ahead");
 			tickTime = AngleShooterCommon::TIME_PER_TICK;
 		}
+		if (tickTime >= AngleShooterCommon::TIME_PER_TICK && StateManager::get().getStateId() == GameState::getId() && connected) handleIncomingPackets();
 		while (tickTime >= AngleShooterCommon::TIME_PER_TICK) {
 			tickTime -= AngleShooterCommon::TIME_PER_TICK;
 			tick(static_cast<float>(tickTime / AngleShooterCommon::TIME_PER_TICK));
@@ -54,8 +100,6 @@ void AngleShooterClient::run() {
 		if (secondTime >= .1f) {
 			tps = tps * .6 + .4 * (ticks / secondTime);
 			fps = fps * .6 + .4 * (frames / secondTime);
-			tpsText.setString("TPS: " + Util::toRoundedString(tps, 2));
-			fpsText.setString("FPS: " + Util::toRoundedString(fps, 2));
 			ticks = 0;
 			frames = 0;
 			secondTime = 0;
@@ -76,56 +120,50 @@ void AngleShooterClient::render(float deltaTime) {
 	sf::Sprite sprite(renderTexture.getTexture());
 	sprite.setScale({2.f, 2.f});
 	window.draw(sprite);
-	if (OptionsManager::get().isDebugEnabled()) {
-		fpsText.setPosition(fpsText.getPosition() + sf::Vector2f{1.f, 1.f});
-		tpsText.setPosition(tpsText.getPosition() + sf::Vector2f{1.f, 1.f});
-		fpsText.setFillColor(sf::Color::Black);
-		tpsText.setFillColor(sf::Color::Black);
-		window.draw(fpsText);
-		window.draw(tpsText);
-		fpsText.setPosition(fpsText.getPosition() - sf::Vector2f{1.f, 1.f});
-		tpsText.setPosition(tpsText.getPosition() - sf::Vector2f{1.f, 1.f});
-		fpsText.setFillColor(sf::Color::White);
-		tpsText.setFillColor(sf::Color::White);
-		window.draw(fpsText);
-		window.draw(tpsText);
-	}
-	// if (StateManager::get().getStateId() == GameState::getId()) {
-		// const auto center = sf::Vector2f{window.getView().getCenter().x, 16.f};
-		// auto offset = 0.f;
-		// for (auto data = ClientWorld::get().getPlayerData(); const auto& playerData : data | std::views::values) {
-			// auto text = sf::Text(FontHolder::get().getDefault(), std::to_string(playerData.getScore()), 56);
-			// text.setPosition(center + sf::Vector2f{10.f, offset + 0.f});
-			// text.setFillColor(sf::Color::Cyan);
-			// window.draw(text);
-			// text.setPosition(center + sf::Vector2f{8.f, offset + -5.f});
-			// text.setCharacterSize(48);
-			// text.setFillColor(sf::Color::White);
-			// window.draw(text);
-			// offset += 56;
-		// }
-	// }
 	window.display();
 }
 
-void AngleShooterClient::registerStates() {
-	StateManager::get().registerState<SplashState>(SplashState::getId());
-	StateManager::get().registerState<MenuState>(MenuState::getId());
-	StateManager::get().registerState<SettingsState>(SettingsState::getId());
-	StateManager::get().registerState<OnboardingState>(OnboardingState::getId());
-	StateManager::get().registerState<GameState>(GameState::getId());
-	StateManager::get().registerState<PauseState>(PauseState::getId());
-	StateManager::get().registerState<GameOverState>(GameOverState::getId());
+void AngleShooterClient::handleIncomingPackets() {
+	sf::Packet packet;
+	if (const auto status = connectingSocket.receive(packet); status == sf::Socket::Status::Done) {
+		handlePacket(packet);
+	} else if (status == sf::Socket::Status::Disconnected) {
+		this->connected = false;
+	} else if (status != sf::Socket::Status::NotReady) {
+		Logger::error("Receive Error: " + Util::getAddressString(connectingSocket));
+	}
 }
 
-void AngleShooterClient::loadAssets() {
-	StateManager::get().loadAssets();
+void AngleShooterClient::handlePacket(sf::Packet& packet) {
+	int packetType;
+	packet >> packetType;
+	if (packetHandlers.contains(packetType)) {
+		packetHandlers[packetType](packet);
+		Logger::debug("Received Packet: " + this->packetIds[packetType].toString());
+		return;
+	}
+	if (!translatedPackets.contains(packetType)) {
+		auto builder = std::stringstream();
+		builder << "Received unknown packet id: " << packetType;
+		Logger::error(builder.str());
+		translatedPackets.emplace(packetType, Identifier("PENDING"));
+		auto question = NetworkProtocol::PACKET_QUESTION.getPacket();
+		question << packetType;
+		send(question);
+	} else {
+		auto builder = std::stringstream();
+		builder << "Received unhandled packet: " << translatedPackets[packetType].toString();
+		Logger::error(builder.str());
+	}
 }
 
-sf::RenderWindow* AngleShooterClient::getWindow() {
-	return &window;
+void AngleShooterClient::send(sf::Packet& packet) {
+	auto status = sf::Socket::Status::Partial;
+	while (status == sf::Socket::Status::Partial) status = connectingSocket.send(packet);
 }
 
-sf::RenderTexture* AngleShooterClient::getRenderTexture() {
-	return &renderTexture;
+void AngleShooterClient::registerPacket(const Identifier& packetType, const std::function<void(sf::Packet& packet)>& handler) {
+	this->packetHandlers.emplace(packetType.getHash(), handler);
+	this->packetIds.emplace(packetType.getHash(), packetType);
+	Logger::debug("Registered packet: " + packetType.toString() + " (" + std::to_string(packetType.getHash()) + ")");
 }

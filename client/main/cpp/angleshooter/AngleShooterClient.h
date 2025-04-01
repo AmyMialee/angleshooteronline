@@ -1,24 +1,37 @@
 ﻿#pragma once
 
-class AngleShooterClient final : ClientContext {
-	static AngleShooterClient* instance;
+class AngleShooterClient final {
+	std::map<int, std::function<void(sf::Packet& packet)>> packetHandlers;
+	std::map<int, Identifier> packetIds;
+	std::map<int, Identifier> translatedPackets;
+	sf::TcpSocket connectingSocket;
+	bool connected = false;
+
+	void tick(float deltaTime);
+	void render(float deltaTime);
+
+	void handleIncomingPackets();
+	void handlePacket(sf::Packet& packet);
+	void registerPacket(const Identifier& packetType, const std::function<void(sf::Packet& packet)>& handler);
+
+protected:
+	AngleShooterClient();
+	~AngleShooterClient() = default;
+
+public:
+	AngleShooterClient(const AngleShooterClient&) = delete;
+	void operator=(const AngleShooterClient&) = delete;
 	sf::RenderWindow window;
 	sf::RenderTexture renderTexture;
 	double tps;
 	double fps;
-    sf::Text tpsText;
-    sf::Text fpsText;
-
-	void tick(float deltaTime);
-	void render(float deltaTime);
-	void registerStates();
-	void loadAssets();
-
-public:
-	inline const static auto BACKGROUND_MUSIC = Identifier("backgroundmusic.ogg");
-	AngleShooterClient();
 	void run();
+	void send(sf::Packet& packet);
+	bool connect(const sf::IpAddress& server);
+	void disconnect();
 
-	[[nodiscard]] sf::RenderWindow* getWindow() override;
-	[[nodiscard]] sf::RenderTexture* getRenderTexture() override;
+	static AngleShooterClient& get() {
+		static AngleShooterClient instance;
+		return instance;
+	}
 };

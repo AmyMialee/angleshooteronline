@@ -2,6 +2,6 @@
 
 #include <angleshooter/PreCompiledHeaders.h>
 
-#include "game/PlayerHandler.h"
+#include "game/ClientConnection.h"
 #include "AngleShooterServer.h"
 #include "game/ServerWorld.h"

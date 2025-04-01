@@ -5,7 +5,7 @@ const Identifier OnboardingState::ONBOARDING_ID("onboarding");
 
 void OnboardingState::init() {
 	const auto masterSlider = std::make_shared<Slider>();
-	masterSlider->setPosition({ClientContext::get()->getRenderTexture()->getView().getSize().x / 2 - 100, 200.f});
+	masterSlider->setPosition({AngleShooterClient::get().renderTexture.getView().getSize().x / 2 - 100, 200.f});
 	masterSlider->setTextFunction([](double value) {
 		return "Master Volume : " + std::to_string(static_cast<int>(value * 100.));
 	});
@@ -19,7 +19,7 @@ void OnboardingState::init() {
 	masterSlider->setValue(OptionsManager::get().getMasterVolume());
 	gui.pack(masterSlider);
 	const auto musicSlider = std::make_shared<Slider>();
-	musicSlider->setPosition({ClientContext::get()->getRenderTexture()->getView().getSize().x / 2 - 100, 232.f});
+	musicSlider->setPosition({AngleShooterClient::get().renderTexture.getView().getSize().x / 2 - 100, 232.f});
 	musicSlider->setTextFunction([](double value) {
 		return "Music Volume : " + std::to_string(static_cast<int>(value * 100.));
 	});
@@ -32,7 +32,7 @@ void OnboardingState::init() {
 	musicSlider->setValue(OptionsManager::get().getMusicVolume());
 	gui.pack(musicSlider);
 	const auto soundSlider = std::make_shared<Slider>();
-	soundSlider->setPosition({ClientContext::get()->getRenderTexture()->getView().getSize().x / 2 - 100, 264.f});
+	soundSlider->setPosition({AngleShooterClient::get().renderTexture.getView().getSize().x / 2 - 100, 264.f});
 	soundSlider->setTextFunction([](double value) {
 		return "Sound Volume : " + std::to_string(static_cast<int>(value * 100.));
 	});
@@ -45,12 +45,12 @@ void OnboardingState::init() {
 	soundSlider->setValue(OptionsManager::get().getSoundVolume());
 	gui.pack(soundSlider);
 	const auto backButton = std::make_shared<Button>();
-	backButton->setPosition({ClientContext::get()->getRenderTexture()->getView().getSize().x / 2 - 100, 475.f});
+	backButton->setPosition({AngleShooterClient::get().renderTexture.getView().getSize().x / 2 - 100, 475.f});
 	backButton->setText("Back");
 	backButton->setCallback([this] { requestStackPop(); });
 	gui.pack(backButton);
 	OptionsManager::get().setOnboarded(true);
-	AudioManager::get().playMusic(AngleShooterClient::BACKGROUND_MUSIC);
+	AudioManager::get().playMusic(Identifier("backgroundmusic.ogg"));
 }
 
 void OnboardingState::loadAssets() {}
@@ -60,11 +60,11 @@ void OnboardingState::render(float deltaTime) {
 	static std::once_flag flag;
 	std::call_once(flag, [&] {
 		Util::centre(background);
-		background.setPosition(ClientContext::get()->getRenderTexture()->getView().getSize() / 2.f);
+		background.setPosition(AngleShooterClient::get().renderTexture.getView().getSize() / 2.f);
 		background.setColor({165, 255, 255, 255});
 		background.setScale({2.f, 2.f});
 	});
-	auto& texture = *ClientContext::get()->getRenderTexture();
+	auto& texture = AngleShooterClient::get().renderTexture;
 	texture.draw(background);
 	texture.draw(gui);
 }

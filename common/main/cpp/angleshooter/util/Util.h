@@ -14,4 +14,5 @@ public:
 	static std::string toRoundedString(float value, int decimals = 0);
 	static std::string toRoundedString(double value, int decimals = 0);
 	static std::string toString(sf::TcpSocket::Status);
+	static std::string getAddressString(const sf::TcpSocket& socket);
 };

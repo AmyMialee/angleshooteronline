@@ -8,7 +8,7 @@ void ServerWorld::playMusic(const Identifier& id, float volume, float pitch) {
 	packet << id.toString();
 	packet << volume;
 	packet << pitch;
-	AngleShooterServer::get()->sendToAll(packet);
+	AngleShooterServer::get().sendToAll(packet);
 }
 
 void ServerWorld::playSound(const Identifier& id, float volume, float pitch, sf::Vector2f position, float attenuation) {
@@ -21,7 +21,7 @@ void ServerWorld::playSound(const Identifier& id, float volume, float pitch, sf:
 	packet << position.x;
 	packet << position.y;
 	packet << attenuation;
-	AngleShooterServer::get()->sendToAll(packet);
+	AngleShooterServer::get().sendToAll(packet);
 }
 
 void ServerWorld::playSound3d(const Identifier& id, float volume, float pitch, sf::Vector3f position, float attenuation) {
@@ -35,7 +35,7 @@ void ServerWorld::playSound3d(const Identifier& id, float volume, float pitch, s
 	packet << position.y;
 	packet << position.z;
 	packet << attenuation;
-	AngleShooterServer::get()->sendToAll(packet);
+	AngleShooterServer::get().sendToAll(packet);
 }
 
 void ServerWorld::loadMap(const Identifier& id) {
@@ -44,5 +44,5 @@ void ServerWorld::loadMap(const Identifier& id) {
 	sf::Packet packet;
 	packet << NetworkProtocol::S2C_LOAD_MAP.getHash();
 	packet << id.toString();
-	AngleShooterServer::get()->sendToAll(packet);
+	AngleShooterServer::get().sendToAll(packet);
 }
