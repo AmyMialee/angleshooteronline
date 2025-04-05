@@ -6,7 +6,6 @@ class AngleShooterServer final {
 
 	sf::TcpListener listenerSocket;
 	std::unordered_set<ClientConnection*> pendingDisconnects;
-	std::uint8_t nextClientId = 0;
 
 	void handleIncomingClients();
 	void handleDisconnectingClients();
@@ -20,6 +19,7 @@ protected:
 
 public:
 	std::vector<std::unique_ptr<ClientConnection>> clients;
+	double tps;
 
 	AngleShooterServer(const AngleShooterServer&) = delete;
 	void operator=(const AngleShooterServer&) = delete;

@@ -19,6 +19,7 @@ protected:
 	~AngleShooterClient() = default;
 
 public:
+	uint16_t playerId;
 	AngleShooterClient(const AngleShooterClient&) = delete;
 	void operator=(const AngleShooterClient&) = delete;
 	sf::RenderWindow window;

@@ -10,7 +10,7 @@ protected:
 	World* world;
 	
 public:
-	explicit Entity(World* world);
+	explicit Entity(uint16_t id, World* world);
 	~Entity() override = default;
 	Entity(const Entity&) = delete;
 	Entity& operator=(const Entity&) = delete;
@@ -19,7 +19,7 @@ public:
 	
 	[[nodiscard]] float getX() const;
 	[[nodiscard]] float getY() const;
-	[[nodiscard]] uint32_t getId() const;
+	[[nodiscard]] uint16_t getId() const;
 	[[nodiscard]] sf::Vector2f getVelocity() const;
 	[[nodiscard]] float getDrag() const;
 	[[nodiscard]] sf::FloatRect getBoundingBox() const;
@@ -34,6 +34,9 @@ public:
 	virtual void tick(float deltaTime);
 	virtual void onWallCollision();
 	virtual void onCollision(Entity& other);
+
+	virtual void writeToPacket(sf::Packet& packet) const;
+	virtual void readFromPacket(sf::Packet& packet);
 	
 	[[nodiscard]] virtual bool isMarkedForRemoval() const = 0;
 	[[nodiscard]] virtual const Identifier& getEntityType() const = 0;

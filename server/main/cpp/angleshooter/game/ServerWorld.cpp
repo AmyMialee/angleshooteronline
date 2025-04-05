@@ -1,34 +1,31 @@
 #include "PreCompiledServer.h"
 #include "ServerWorld.h"
 
-std::shared_ptr<PlayerEntity> ServerWorld::spawnPlayer(ClientConnection& sender) {
-	const auto player = std::make_shared<ServerPlayerEntity>(this, sender.name);
+std::shared_ptr<ServerPlayerEntity> ServerWorld::spawnPlayer(ClientConnection& sender) {
+	const auto player = std::make_shared<ServerPlayerEntity>(this->getNextId(), this);
 	this->spawnEntity(player);
+	player->name = sender.name;
 	player->setColor(sender.colour);
 	player->setPosition(this->getMap()->getRandomSpawnpoint());
 	sender.player = player;
 	for (const auto& client : AngleShooterServer::get().clients) {
 		auto packet = NetworkProtocol::S2C_SPAWN_PLAYER.getPacket();
-		packet << player->getName();
-		packet << player->getColour();
-		packet << player->getPosition().x;
-		packet << player->getPosition().y;
+		player->writeToPacket(packet);
 		packet << (client.get() == &sender);
     	AngleShooterServer::get().send(client->socket, packet);
     }
 	return player;
 }
 
-std::shared_ptr<BulletEntity> ServerWorld::spawnBullet(int color, sf::Vector2f position, sf::Vector2f velocity) {
-	const auto bullet = std::make_shared<BulletEntity>(this, color, position, velocity);
+std::shared_ptr<BulletEntity> ServerWorld::spawnBullet(sf::Color colour, sf::Vector2f position, sf::Vector2f velocity) {
+	const auto bullet = std::make_shared<BulletEntity>(this->getNextId(), this);
+	bullet->colour = colour;
+	bullet->setPosition(position);
+	bullet->setVelocity(velocity);
 	this->spawnEntity(bullet);
 	for (const auto& client : AngleShooterServer::get().clients) {
 		auto packet = NetworkProtocol::S2C_SPAWN_BULLET.getPacket();
-		packet << color;
-		packet << position.x;
-		packet << position.y;
-		packet << velocity.x;
-		packet << velocity.y;
+		bullet->writeToPacket(packet);
 		AngleShooterServer::get().send(client->socket, packet);
 	}
 	return bullet;

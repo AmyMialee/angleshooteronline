@@ -2,8 +2,6 @@
 
 class NetworkProtocol {
 public:
-	inline const static auto S2C_ANNOUNCE_JOIN = Identifier("S2C_ANNOUNCE_JOIN");
-	inline const static auto S2C_ANNOUNCE_LEAVE = Identifier("S2C_ANNOUNCE_LEAVE");
 	inline const static auto S2C_INITIAL_SETUP = Identifier("S2C_INITIAL_SETUP");
 	inline const static auto S2C_BROADCAST_MESSAGE = Identifier("S2C_BROADCAST_MESSAGE");
 	inline const static auto S2C_PLAY_MUSIC = Identifier("S2C_PLAY_MUSIC");
@@ -14,6 +12,10 @@ public:
 	inline const static auto S2C_SPAWN_BULLET = Identifier("S2C_SPAWN_BULLET");
 	inline const static auto S2C_PLAYER_INPUT = Identifier("S2C_PLAYER_INPUT");
 	inline const static auto S2C_PLAYER_POSITION_SYNC = Identifier("S2C_PLAYER_POSITION_SYNC");
+	inline const static auto S2C_BULLET_CHARGE = Identifier("S2C_BULLET_CHARGE");
+	inline const static auto S2C_HEALTH = Identifier("S2C_HEALTH");
+	inline const static auto S2C_DEATH = Identifier("S2C_DEATH");
+	inline const static auto S2C_TELEPORT = Identifier("S2C_TELEPORT");
 
 	inline const static auto C2S_JOIN = Identifier("C2S_JOIN");
 	inline const static auto C2S_CHANGE_NAME = Identifier("C2S_CHANGE_NAME");

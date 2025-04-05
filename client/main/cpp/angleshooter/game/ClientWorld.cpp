@@ -3,17 +3,22 @@
 
 ClientWorld::ClientWorld() : mapRenderer() {}
 
-void ClientWorld::spawnPlayer(const std::string& name, int color, sf::Vector2f position, bool isClientPlayer) {
-	const auto player = std::make_shared<ClientPlayerEntity>(this, name, isClientPlayer);
-	player->setColor(color);
-	player->setPosition(position);
+std::shared_ptr<ClientPlayerEntity> ClientWorld::spawnPlayer(sf::Packet& packet) {
+	uint16_t id;
+	packet >> id;
+	const auto player = std::make_shared<ClientPlayerEntity>(id, this);
+	player->readFromPacket(packet);
 	this->spawnEntity(player);
+	return player;
 }
 
-void ClientWorld::spawnBullet(int color, sf::Vector2f position, sf::Vector2f velocity) {
-	const auto bullet = std::make_shared<BulletEntity>(this, color, position, velocity);
-	bullet->setPosition(position);
+std::shared_ptr<BulletEntity> ClientWorld::spawnBullet(sf::Packet& packet) {
+	uint16_t id;
+	packet >> id;
+	const auto bullet = std::make_shared<BulletEntity>(id, this);
+	bullet->readFromPacket(packet);
 	this->spawnEntity(bullet);
+	return bullet;
 }
 
 void ClientWorld::playMusic(const Identifier& id, float volume, float pitch) {

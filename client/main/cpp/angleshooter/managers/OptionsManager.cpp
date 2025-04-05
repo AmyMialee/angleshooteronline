@@ -9,7 +9,9 @@ void OptionsManager::saveToFile() {
 	nlohmann::json json;
 	json["name"] = name;
 	json["ip"] = ip;
-	json["colour"] = colour;
+	json["colour_r"] = r;
+	json["colour_g"] = g;
+	json["colour_b"] = b;
 	json["masterVolume"] = masterVolume;
 	json["musicVolume"] = musicVolume;
 	json["soundVolume"] = soundVolume;
@@ -37,7 +39,9 @@ void OptionsManager::loadFromFile() {
 		try {
 			name = json.value("name", "Player");
 			ip = json.value("ip", "127.0.0.1");
-			colour = json.value("colour", 0xFFFFFFFF);
+			r = json.value("colour_r", 0xFF);
+			g = json.value("colour_g", 0xAA);
+			b = json.value("colour_b", 0xAA);
 			masterVolume = json.value("masterVolume", 100.);
 			musicVolume = json.value("musicVolume", 0.);
 			soundVolume = json.value("soundVolume", 0.);
@@ -66,8 +70,8 @@ std::string OptionsManager::getIp() const {
 	return this->ip;
 }
 
-int OptionsManager::getColour() const {
-	return this->colour;
+sf::Color OptionsManager::getColour() const {
+	return sf::Color(r, g, b, 255);
 }
 
 double OptionsManager::getMasterVolume() const {
@@ -105,10 +109,14 @@ void OptionsManager::setName(const std::string& name) {
 
 void OptionsManager::setIp(const std::string& ip) {
 	this->ip = ip;
+	saveToFile();
 }
 
-void OptionsManager::setColour(int colour) {
-	this->colour = colour;
+void OptionsManager::setColour(sf::Color colour) {
+	this->r = colour.r;
+	this->g = colour.g;
+	this->b = colour.b;
+	saveToFile();
 }
 
 void OptionsManager::setFps(int fps) {

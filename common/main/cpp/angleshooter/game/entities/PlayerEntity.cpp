@@ -1,7 +1,7 @@
 ﻿#include "main/cpp/angleshooter/PreCompiledHeaders.h"
 #include "PlayerEntity.h"
 
-PlayerEntity::PlayerEntity(World* world, std::string name) : Entity(world), name(std::move(name)) {
+PlayerEntity::PlayerEntity(uint16_t id, World* world) : Entity(id, world) {
 	this->setDrag(0.35f);
 	this->setScale({14, 14});
 }
@@ -26,7 +26,6 @@ void PlayerEntity::tick(float deltaTime) {
 		this->bulletCharge++;
 		this->bulletCharge = std::min(this->bulletCharge, 120);
 	}
-	Entity::tick(deltaTime);
 	if (input.length() > 0) {  // NOLINT(clang-diagnostic-undefined-func-template)
 		input /= input.length();
 		constexpr auto movementSpeed = 1.6f;
@@ -43,9 +42,10 @@ void PlayerEntity::tick(float deltaTime) {
 		const auto newRotation = currentRotation + rotationDifference * 0.75f;
 		this->setRotation(newRotation);
 	}
+	Entity::tick(deltaTime);
 }
 
-bool PlayerEntity::damage(int sourceColour, int amount) {
+bool PlayerEntity::damage(sf::Color sourceColour, int amount) {
 	if (this->health <= 0 || this->immunityTime) return false;
 	this->health -= amount;
 	if (this->health <= 0) {
@@ -58,25 +58,16 @@ bool PlayerEntity::damage(int sourceColour, int amount) {
 	return true;
 }
 
-void PlayerEntity::onDeath(int sourceColour) {
+void PlayerEntity::onDeath(sf::Color sourceColour) {
 	this->deathTime = 60;
 	this->immunityTime = 120;
-	for (auto i = 0; i < 20; i++) {
-		const auto x = static_cast<float>(std::sin((18 * i + 25) * (std::numbers::pi / 180)));
-		const auto y = static_cast<float>(std::cos((18 * i + 25) * (std::numbers::pi / 180)));
-		const auto velocity = sf::Vector2f(x, y);
-		const auto bullet = this->world->spawnEntity(std::make_shared<BulletEntity>(this->world, sourceColour, this->getPosition(), velocity * 1.28f));
-		bullet->setRotation(sf::radians(std::atan2(velocity.y, velocity.x)));
-	}
-	static Identifier explodeSound("explode.ogg");
-	this->world->playSound(explodeSound, .8f, Util::randomFloat(1.2f, 1.8f));
 }
 
 std::string PlayerEntity::getName() const {
 	return this->name;
 }
 
-int PlayerEntity::getColour() const {
+sf::Color PlayerEntity::getColour() const {
 	return this->color;
 }
 
@@ -96,10 +87,36 @@ int PlayerEntity::getBulletCharge() const {
 	return this->bulletCharge;
 }
 
-void PlayerEntity::setColor(int color) {
+void PlayerEntity::setColor(sf::Color color) {
 	this->color = color;
 }
 
 bool PlayerEntity::isMarkedForRemoval() const {
 	return false;
+}
+
+void PlayerEntity::writeToPacket(sf::Packet& packet) const {
+	Entity::writeToPacket(packet);
+	packet << this->name;
+	packet << this->color.r << this->color.g << this->color.b;
+	packet << this->health;
+	packet << this->input.x;
+	packet << this->input.y;
+	packet << this->getVelocity().x;
+	packet << this->getVelocity().y;
+}
+
+void PlayerEntity::readFromPacket(sf::Packet& packet) {
+	Entity::readFromPacket(packet);
+	packet >> this->name;
+	packet >> this->color.r;
+	packet >> this->color.g;
+	packet >> this->color.b;
+	packet >> this->health;
+	packet >> this->input.x;
+	packet >> this->input.y;
+	float vx, vy;
+	packet >> vx;
+	packet >> vy;
+	this->setVelocity({vx, vy});
 }

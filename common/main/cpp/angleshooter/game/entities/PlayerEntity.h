@@ -1,29 +1,32 @@
 ﻿#pragma once
 
 class PlayerEntity : public Entity {
-	std::string name;
-	int health = 8;
-	int deathTime = 0;
-	int immunityTime = 0;
 	bool isMarkedForRemoval() const override;
 
 public:
+	std::string name;
 	sf::Vector2f input = {0, 0};
 	bool isFiring = false;
-	int color = 0;
+	sf::Color color = {0xFF, 0xAA, 0xAA, 0xFF};
+	int health = 8;
+	int deathTime = 0;
+	int immunityTime = 0;
 	int bulletCharge = 0;
 
-	explicit PlayerEntity(World* world, std::string name);
+	explicit PlayerEntity(uint16_t id, World* world);
 	inline static auto ID = Identifier("player");
 	const Identifier& getEntityType() const override;
 	void tick(float deltaTime) override;
-	bool damage(int sourceColour, int amount);
-	void onDeath(int sourceColour);
+	bool damage(sf::Color sourceColour, int amount);
+	virtual void onDeath(sf::Color sourceColour);
 	[[nodiscard]] std::string getName() const;
-	[[nodiscard]] int getColour() const;
+	[[nodiscard]] sf::Color getColour() const;
 	[[nodiscard]] int getHealth() const;
 	[[nodiscard]] int getDeathTime() const;
 	[[nodiscard]] int getImmunityTime() const;
 	[[nodiscard]] int getBulletCharge() const;
-	void setColor(int color);
+	void setColor(sf::Color color);
+
+	void writeToPacket(sf::Packet& packet) const override;
+	void readFromPacket(sf::Packet& packet) override;
 };

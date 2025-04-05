@@ -8,6 +8,7 @@ void World::init() {
 }
 
 void World::tick(float deltaTime) {
+	this->age++;
 	std::vector<std::shared_ptr<Entity>> objectList;
 	objectList.reserve(this->gameObjects.size());
 	for (const auto& value : this->gameObjects | std::views::values) objectList.push_back(value);

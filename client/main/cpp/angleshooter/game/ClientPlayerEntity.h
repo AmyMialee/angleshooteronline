@@ -1,9 +1,11 @@
 #pragma once
 
 class ClientPlayerEntity : public PlayerEntity {
-	bool isClientPlayer;
-
+	bool syncedFiring = false;
+	sf::Vector2f syncedInput = sf::Vector2f(0, 0);
+	sf::Vector2f syncedPosition = sf::Vector2f(0, 0);
 public:
-	ClientPlayerEntity(World* world, const std::string& name, bool isClientPlayer);
+	bool isClientPlayer = false;
+	explicit ClientPlayerEntity(uint16_t id, World* world);
 	void tick(float deltaTime) override;
 };

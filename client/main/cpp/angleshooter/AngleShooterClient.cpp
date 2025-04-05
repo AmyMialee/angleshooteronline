@@ -23,21 +23,12 @@ AngleShooterClient::AngleShooterClient() :
 	StateManager::get().push(SplashState::getId());
 	OptionsManager::get().loadFromFile();
 	connectingSocket.setBlocking(false);
-	registerPacket(NetworkProtocol::S2C_ANNOUNCE_JOIN, [this](sf::Packet& packet) {
-		std::string name;
-		packet >> name;
-		Logger::debug("Received Join Packet, name: " + name);
-	});
-	registerPacket(NetworkProtocol::S2C_ANNOUNCE_LEAVE, [this](sf::Packet& packet) {
-		std::string name;
-		packet >> name;
-		Logger::debug("Received Leave Packet, name: " + name);
-	});
 	registerPacket(NetworkProtocol::S2C_INITIAL_SETUP, [this](sf::Packet& packet) {
 		Logger::debug("Received Initial Setup Packet");
 		Identifier id;
 		packet >> id;
 		ClientWorld::get().loadMap(id);
+		packet >> this->playerId;
 	});
 	registerPacket(NetworkProtocol::S2C_BROADCAST_MESSAGE, [this](sf::Packet& packet) {
 		std::string message;
@@ -98,56 +89,88 @@ AngleShooterClient::AngleShooterClient() :
 		ClientWorld::get().loadMap(id);
 	});
 	registerPacket(NetworkProtocol::S2C_SPAWN_PLAYER, [this](sf::Packet& packet) {
-		std::string name;
-		int colour;
-		float x, y;
-		bool isClientPlayer;
-		packet >> name;
-		packet >> colour;
-		packet >> x;
-		packet >> y;
-		packet >> isClientPlayer;
-		Logger::debug("Received Spawn Player Packet: " + name + " (colour: " + std::to_string(colour) + ") at (" + std::to_string(x) + ", " + std::to_string(y) + "), " + std::to_string(isClientPlayer));
-		ClientWorld::get().spawnPlayer(name, colour, {x, y}, isClientPlayer);
+		const auto player = ClientWorld::get().spawnPlayer(packet);
+		packet >> player->isClientPlayer;
 	});
 	registerPacket(NetworkProtocol::S2C_SPAWN_BULLET, [this](sf::Packet& packet) {
-		int colour;
-		float x, y;
-		float xVel, yVel;
-		packet >> colour;
-		packet >> x;
-		packet >> y;
-		packet >> xVel;
-		packet >> yVel;
-		ClientWorld::get().spawnBullet(colour, {x, y}, {xVel, yVel});
+		ClientWorld::get().spawnBullet(packet);
 	});
 	registerPacket(NetworkProtocol::S2C_PLAYER_INPUT, [this](sf::Packet& packet) {
-		std::string name;
+		uint16_t id;
 		float x, y;
 		bool isFiring;
-		packet >> name;
+		packet >> id;
 		packet >> x;
 		packet >> y;
 		packet >> isFiring;
 		for (const auto& entity : ClientWorld::get().getEntities()) {
 			if (entity->getEntityType() != PlayerEntity::ID) continue;
 			const auto player = dynamic_cast<PlayerEntity*>(entity.get());
-			if (player->getName() != name) continue;
+			if (player->getId() != id) continue;
 			player->input = {x, y};
 			player->isFiring = isFiring;
+			return;
 		}
 	});
 	registerPacket(NetworkProtocol::S2C_PLAYER_POSITION_SYNC, [this](sf::Packet& packet) {
-		std::string name;
+		uint16_t id;
+		packet >> id;
+		if (id == this->playerId) {
+			packet.clear();
+			return;
+		}
 		float x, y;
-		packet >> name;
-		packet >> x;
-		packet >> y;
+		packet >> x >> y;
+		for (const auto& entity : ClientWorld::get().getEntities()) {
+			if (entity->getId() != id) continue;
+			entity->setPosition({x, y});
+			return;
+		}
+	});
+	registerPacket(NetworkProtocol::S2C_BULLET_CHARGE, [this](sf::Packet& packet) {
+		uint16_t id;
+		packet >> id;
+		int charge;
+		packet >> charge;
 		for (const auto& entity : ClientWorld::get().getEntities()) {
 			if (entity->getEntityType() != PlayerEntity::ID) continue;
 			const auto player = dynamic_cast<PlayerEntity*>(entity.get());
-			if (player->getName() != name) continue;
-			player->setPosition({x, y});
+			if (player->getId() != id) continue;
+			player->bulletCharge = charge;
+		}
+	});
+	registerPacket(NetworkProtocol::S2C_HEALTH, [this](sf::Packet& packet) {
+		uint16_t id;
+		packet >> id;
+		int health;
+		packet >> health;
+		for (const auto& entity : ClientWorld::get().getEntities()) {
+			if (entity->getEntityType() != PlayerEntity::ID) continue;
+			const auto player = dynamic_cast<PlayerEntity*>(entity.get());
+			if (player->getId() != id) continue;
+			player->health = health;
+		}
+	});
+	registerPacket(NetworkProtocol::S2C_DEATH, [this](sf::Packet& packet) {
+		uint16_t id;
+		packet >> id;
+		for (const auto& entity : ClientWorld::get().getEntities()) {
+			if (entity->getEntityType() != PlayerEntity::ID) continue;
+			const auto player = dynamic_cast<PlayerEntity*>(entity.get());
+			if (player->getId() != id) continue;
+			player->deathTime = 60;
+			player->immunityTime = 120;
+		}
+	});
+	registerPacket(NetworkProtocol::S2C_TELEPORT, [this](sf::Packet& packet) {
+		uint16_t id;
+		packet >> id;
+		for (const auto& entity : ClientWorld::get().getEntities()) {
+			if (entity->getEntityType() != PlayerEntity::ID) continue;
+			const auto player = dynamic_cast<PlayerEntity*>(entity.get());
+			if (player->getId() != id) continue;
+			player->deathTime = 60;
+			player->immunityTime = 120;
 		}
 	});
 }
@@ -156,7 +179,9 @@ bool AngleShooterClient::connect(const sf::IpAddress& server) {
 	const auto status = connectingSocket.connect(server, AngleShooterCommon::PORT);
 	auto join = NetworkProtocol::C2S_JOIN.getPacket();
 	join << OptionsManager::get().getName();
-	join << OptionsManager::get().getColour();
+	join << OptionsManager::get().getColour().r;
+	join << OptionsManager::get().getColour().g;
+	join << OptionsManager::get().getColour().b;
 	send(join);
 	connected = static_cast<int>(status) < 3;
 	return connected;
@@ -241,7 +266,11 @@ void AngleShooterClient::handlePacket(sf::Packet& packet) {
 	packet >> packetType;
 	if (packetHandlers.contains(packetType)) {
 		packetHandlers[packetType](packet);
-		Logger::debug("Received Packet: " + this->packetIds[packetType].toString());
+        if (packet.getReadPosition() != packet.getDataSize()) {
+			Logger::error("Packet " + packetIds[packetType].toString() + " has unused data");
+			packet.clear();
+		}
+		Logger::debug("Received packet: " + packetIds[packetType].toString());
 		return;
 	}
 	if (!translatedPackets.contains(packetType)) {
@@ -262,6 +291,7 @@ void AngleShooterClient::handlePacket(sf::Packet& packet) {
 void AngleShooterClient::send(sf::Packet& packet) {
 	auto status = sf::Socket::Status::Partial;
 	while (status == sf::Socket::Status::Partial) status = connectingSocket.send(packet);
+	if (status != sf::Socket::Status::Done) Logger::error("Send Error");
 }
 
 void AngleShooterClient::registerPacket(const Identifier& packetType, const std::function<void(sf::Packet& packet)>& handler) {

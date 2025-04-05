@@ -1,7 +1,7 @@
 ﻿#include "main/cpp/angleshooter/PreCompiledHeaders.h"
 #include "Entity.h"
 
-Entity::Entity(World* world) : id(world->getNextId()), world(world) {}
+Entity::Entity(uint16_t id, World* world) : id(id), world(world) {}
 
 float Entity::getX() const {
 	return this->getPosition().x;
@@ -11,7 +11,7 @@ float Entity::getY() const {
 	return this->getPosition().y;
 }
 
-uint32_t Entity::getId() const {
+uint16_t Entity::getId() const {
 	return this->id;
 }
 
@@ -49,6 +49,19 @@ void Entity::tick(float deltaTime) {
 }
 
 void Entity::onCollision(Entity& other) {}
+
+void Entity::writeToPacket(sf::Packet& packet) const {
+	packet << this->getId();
+	packet << this->getPosition().x;
+	packet << this->getPosition().y;
+}
+
+void Entity::readFromPacket(sf::Packet& packet) {
+	float x, y;
+	packet >> x;
+	packet >> y;
+	this->setPosition({x, y});
+}
 
 bool Entity::operator==(const Entity& other) const {
 	return this == &other;

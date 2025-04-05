@@ -17,25 +17,24 @@ AngleShooterServer::AngleShooterServer() {
     if (listenerSocket.listen(AngleShooterCommon::PORT) != sf::Socket::Status::Done) throw std::runtime_error("Failed to bind to port, is the server already running?");
     registerPacket(NetworkProtocol::C2S_JOIN, [this](ClientConnection& sender, sf::Packet& packet) {
         std::string name;
-        int colour;
+        uint8_t r, g, b;
         packet >> name;
-        packet >> colour;
+        packet >> r >> g >> b;
         auto endName = name;
         auto count = 0;
         for (const auto& client : clients) if (client->name == endName) endName = name + " " + std::to_string(++count);
         Logger::debug("Received Join Packet from " + endName + " (" + Util::getAddressString(sender.socket) + ")");
         sender.name = endName;
+        sender.colour = {r, g, b, 255};
         auto mapPacket = NetworkProtocol::S2C_INITIAL_SETUP.getPacket();
         mapPacket << ServerWorld::get().getMap()->getId();
-        send(sender.socket, mapPacket);
         sender.player = ServerWorld::get().spawnPlayer(sender);
+        mapPacket << sender.player->getId();
+        send(sender.socket, mapPacket);
         for (auto& client : clients) {
-            if (client.get() == &sender) continue;
+            if (client.get()->player->getId() == sender.player->getId()) continue;
             auto syncPlayerPacket = NetworkProtocol::S2C_SPAWN_PLAYER.getPacket();
-            syncPlayerPacket << client->name;
-            syncPlayerPacket << client->colour;
-            syncPlayerPacket << client->player->getPosition().x;
-            syncPlayerPacket << client->player->getPosition().y;
+            client.get()->player->writeToPacket(syncPlayerPacket);
             syncPlayerPacket << false;
             send(sender.socket, syncPlayerPacket);
         }
@@ -87,12 +86,12 @@ AngleShooterServer::AngleShooterServer() {
         sender.player->input = {x, y};
         sender.player->isFiring = isFiring;
         auto syncPlayerPacket = NetworkProtocol::S2C_PLAYER_INPUT.getPacket();
-        syncPlayerPacket << sender.name;
+        syncPlayerPacket << sender.player->getId();
         syncPlayerPacket << x;
         syncPlayerPacket << y;
         syncPlayerPacket << isFiring;
         for (auto& client : clients) {
-            if (client.get() == &sender) continue;
+            if (client.get()->player->getId() == sender.player->getId()) continue;
             send(*client, syncPlayerPacket);
         }
     });
@@ -101,6 +100,14 @@ AngleShooterServer::AngleShooterServer() {
         packet >> x;
         packet >> y;
         sender.player->setPosition({x, y});
+        auto syncPlayerPacket = NetworkProtocol::S2C_PLAYER_POSITION_SYNC.getPacket();
+        syncPlayerPacket << sender.player->getId();
+        syncPlayerPacket << x;
+        syncPlayerPacket << y;
+        for (auto& client : clients) {
+            if (client.get()->player->getId() == sender.player->getId()) continue;
+            send(*client, syncPlayerPacket);
+        }
     });
 }
 
@@ -111,17 +118,27 @@ void AngleShooterServer::run() {
     std::thread networkThread(&AngleShooterServer::runReceiver, this);
     sf::Clock deltaClock;
     auto tickTime = 0.;
+    auto secondTime = 0.;
+    auto ticks = 0;
     while (true) {
         const auto deltaTime = deltaClock.restart().asSeconds();
         tickTime += deltaTime;
+        secondTime += deltaTime;
         if (tickTime > 1.) {
             Logger::warn("AngleShooter::run: Lagging behind by " + Util::toRoundedString(tickTime / AngleShooterCommon::TIME_PER_TICK, 2) + " ticks (" + Util::toRoundedString(tickTime, 2) + " seconds), skipping ahead");
             tickTime = AngleShooterCommon::TIME_PER_TICK;
         }
         while (tickTime >= AngleShooterCommon::TIME_PER_TICK) {
-            ServerWorld::get().tick(deltaTime);
             tickTime -= AngleShooterCommon::TIME_PER_TICK;
+            ServerWorld::get().tick(deltaTime);
+            ++ticks;
         }
+        if (secondTime >= .1f) {
+            tps = tps * .6 + .4 * (ticks / secondTime);
+            ticks = 0;
+            secondTime = 0;
+        }
+        std::this_thread::sleep_for(std::chrono::milliseconds(12));
     }
 }
 
@@ -130,6 +147,7 @@ void AngleShooterServer::runReceiver() {
         handleIncomingClients();
         handleIncomingPackets();
         handleDisconnectingClients();
+        std::this_thread::sleep_for(std::chrono::milliseconds(12));
     }
 }
 
@@ -138,9 +156,6 @@ void AngleShooterServer::handleIncomingClients() {
         auto join = std::make_unique<ClientConnection>();
         join->socket.setBlocking(false);
         if (const auto status = listenerSocket.accept(join->socket); status == sf::Socket::Status::Done) {
-            auto joinPacket = NetworkProtocol::S2C_ANNOUNCE_JOIN.getPacket();
-            joinPacket << ++nextClientId;
-            sendToAll(joinPacket);
             clients.push_back(std::move(join));
         } else {
             if (status != sf::Socket::Status::NotReady) Logger::error("Join Error: " + Util::getAddressString(join->socket));
@@ -166,9 +181,7 @@ void AngleShooterServer::handleDisconnectingClients() {
     auto iterator = clients.begin();
     while (iterator != clients.end()) {
         if (pendingDisconnects.contains(iterator->get())) {
-            auto joinPacket = NetworkProtocol::S2C_ANNOUNCE_LEAVE.getPacket();
-            joinPacket << ++nextClientId;
-            sendToAll(joinPacket);
+            iterator->get()->player->shouldBeErased = true;
             iterator = clients.erase(iterator);
         } else ++iterator;
     }
@@ -180,14 +193,11 @@ void AngleShooterServer::handlePacket(ClientConnection& sender, sf::Packet& pack
     packet >> packetType;
     if (packetHandlers.contains(packetType)) {
         packetHandlers[packetType](sender, packet);
-        // auto builder = std::stringstream();
-        // builder << "Received Packet: " << this->packetIds[packetType].toString();
-        // if (const auto address = sender.socket.getRemoteAddress(); address.has_value()) {
-        //     builder << " from " << address.value();
-        // } else {
-        //     builder << " from unknown address";
-        // }
-        // Logger::debug(builder.str());
+        if (packet.getReadPosition() != packet.getDataSize()) {
+            Logger::error("Packet " + packetIds[packetType].toString() + " has unused data");
+            packet.clear();
+        }
+        Logger::debug("Received Packet: " + packetIds[packetType].toString() + " from " + sender.name + " (" + Util::getAddressString(sender.socket) + ")");
         return;
     }
     if (!sender.translatedPackets.contains(packetType)) {
@@ -226,6 +236,7 @@ void AngleShooterServer::send(ClientConnection& player, sf::Packet& packet) {
 void AngleShooterServer::send(sf::TcpSocket& socket, sf::Packet& packet) {
     auto status = sf::Socket::Status::Partial;
     while (status == sf::Socket::Status::Partial) status = socket.send(packet);
+	if (status != sf::Socket::Status::Done) Logger::error("Send Error: " + Util::getAddressString(socket));
 }
 
 void AngleShooterServer::registerPacket(const Identifier& packetType, const std::function<void(ClientConnection& sender, sf::Packet& packet)>& handler) {

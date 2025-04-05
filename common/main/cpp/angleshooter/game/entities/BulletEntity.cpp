@@ -1,9 +1,7 @@
 ﻿#include "main/cpp/angleshooter/PreCompiledHeaders.h"
 #include "BulletEntity.h"
 
-BulletEntity::BulletEntity(World* world, int colour, sf::Vector2f position, sf::Vector2f velocity) : Entity(world), colour(colour) {
-	this->setPosition(position);
-	this->setVelocity(velocity);
+BulletEntity::BulletEntity(uint16_t id, World* world) : Entity(id, world) {
 	this->setDrag(0.f);
 	this->setScale({6, 6});
 }
@@ -33,4 +31,25 @@ void BulletEntity::onWallCollision() {
 
 bool BulletEntity::isMarkedForRemoval() const {
 	return this->hasHit;
+}
+
+void BulletEntity::writeToPacket(sf::Packet& packet) const {
+	Entity::writeToPacket(packet);
+	packet << this->colour.r;
+	packet << this->colour.g;
+	packet << this->colour.b;
+	packet << this->getVelocity().x;
+	packet << this->getVelocity().y;
+}
+
+void BulletEntity::readFromPacket(sf::Packet& packet) {
+	Entity::readFromPacket(packet);
+	uint8_t r, g, b;
+	packet >> r >> g >> b;
+	const sf::Color colour(r, g, b, 0xFF);
+	this->colour = colour;
+	float xVel, yVel;
+	packet >> xVel;
+	packet >> yVel;
+	this->setVelocity({xVel, yVel});
 }

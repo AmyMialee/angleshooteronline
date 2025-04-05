@@ -15,12 +15,9 @@ WorldRenderer::WorldRenderer() {
 		});
 		const auto pos = player->getPosition() + player->getVelocity() * deltaTime;
 		auto sprite = player1;
-		const auto r = player->getColour() >> 24 & 0xFF;
-		const auto g = player->getColour() >> 16 & 0xFF;
-		const auto b = player->getColour() >> 8 & 0xFF;
-		sprite.setColor(sf::Color(r, g, b, 0xFF));
 		sprite.setPosition(pos);
 		sprite.setRotation(player->getRotation());
+		sprite.setColor(player->getColour());
 		AngleShooterClient::get().renderTexture.draw(sprite);
 		if (player->getImmunityTime() > 0) {
 			auto circle = sf::CircleShape(player->getScale().x / 2.f + 2);
@@ -48,20 +45,31 @@ WorldRenderer::WorldRenderer() {
 			shape.setFillColor(sf::Color::Cyan);
 			AngleShooterClient::get().renderTexture.draw(shape);
 		}
+		static sf::Text text(FontHolder::getInstance().getDefault());
+		text.setCharacterSize(6);
+		text.setFillColor(sf::Color::White);
+		text.setString(player->getName());
+		text.setPosition({pos.x - text.getGlobalBounds().size.x / 2, pos.y - 16});
+		AngleShooterClient::get().renderTexture.draw(text);
 	});
 	registerRenderer<BulletEntity>(BulletEntity::ID, [this](const std::shared_ptr<BulletEntity>& bullet, float deltaTime) {
-		static sf::Sprite bullet1(TextureHolder::getInstance().get(Identifier("bullet.png")));
+		static sf::Sprite bulletCore(TextureHolder::getInstance().get(Identifier("bullet_core.png")));
+		static sf::Sprite bulletRing(TextureHolder::getInstance().get(Identifier("bullet_ring.png")));
 		static std::once_flag flag;
 		std::call_once(flag, [&] {
-			Util::centre(bullet1);
-			const auto textureSize1 = bullet1.getTexture().getSize();
-			bullet1.setScale(bullet->getScale().componentWiseDiv({static_cast<float>(textureSize1.x), static_cast<float>(textureSize1.y)}));
+			Util::centre(bulletCore);
+			Util::centre(bulletRing);
+			const auto textureSizeCore = bulletCore.getTexture().getSize();
+			const auto textureSizeRing = bulletRing.getTexture().getSize();
+			bulletCore.setScale(bullet->getScale().componentWiseDiv({static_cast<float>(textureSizeCore.x), static_cast<float>(textureSizeCore.y)}));
+			bulletRing.setScale(bullet->getScale().componentWiseDiv({static_cast<float>(textureSizeRing.x), static_cast<float>(textureSizeRing.y)}));
 		});
 		const auto pos = bullet->getPosition() + bullet->getVelocity() * deltaTime;
-		auto sprite = bullet1;
-		sprite.setPosition(pos);
-		sprite.setRotation(bullet->getRotation());
-		AngleShooterClient::get().renderTexture.draw(sprite);
+		bulletCore.setPosition(pos);
+		bulletRing.setPosition(pos);
+		bulletRing.setColor(bullet->colour);
+		AngleShooterClient::get().renderTexture.draw(bulletCore);
+		AngleShooterClient::get().renderTexture.draw(bulletRing);
 	});
 }
 
@@ -72,7 +80,7 @@ void WorldRenderer::render(float deltaTime) {
 	auto maxY = std::numeric_limits<float>::min();
 	for (const auto& gameObject : ClientWorld::get().getEntities()) {
 		if (const auto player = dynamic_cast<PlayerEntity*>(gameObject.get()); player != nullptr) {
-			const auto position = player->getPosition() + player->getVelocity() * deltaTime;
+			const auto position = player->getPosition() + player->input * deltaTime;
 			minX = std::min(minX, position.x);
 			minY = std::min(minY, position.y);
 			maxX = std::max(maxX, position.x);
