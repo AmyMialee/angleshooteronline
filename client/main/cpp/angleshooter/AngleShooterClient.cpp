@@ -282,7 +282,7 @@ void AngleShooterClient::handleIncomingPackets() {
 }
 
 void AngleShooterClient::handlePacket(sf::Packet& packet) {
-	int packetType;
+	uint8_t packetType;
 	packet >> packetType;
 	if (packetHandlers.contains(packetType)) {
 		packetHandlers[packetType](packet);
@@ -322,8 +322,8 @@ void AngleShooterClient::send(sf::Packet& packet) {
 	}
 }
 
-void AngleShooterClient::registerPacket(const Identifier& packetType, const std::function<void(sf::Packet& packet)>& handler) {
-	this->packetHandlers.emplace(packetType.getHash(), handler);
-	this->packetIds.emplace(packetType.getHash(), packetType);
-	Logger::debug("Registered packet: " + packetType.toString() + " (" + std::to_string(packetType.getHash()) + ")");
+void AngleShooterClient::registerPacket(const PacketIdentifier& packetType, const std::function<void(sf::Packet& packet)>& handler) {
+	this->packetHandlers.emplace(packetType.getId(), handler);
+	this->packetIds.emplace(packetType.getId(), packetType);
+	Logger::debug("Registered packet: " + packetType.toString() + " (" + std::to_string(packetType.getId()) + ")");
 }

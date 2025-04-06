@@ -15,7 +15,6 @@ public:
 	[[nodiscard]] std::string getPath() const;
 	[[nodiscard]] int getHash() const;
 	[[nodiscard]] std::string toString() const;
-	[[nodiscard]] sf::Packet getPacket() const;
 	friend bool operator<(const Identifier& leftId, const Identifier& rightId);
 	friend bool operator==(const Identifier& leftId, const Identifier& rightId);
 	friend bool operator!=(const Identifier& leftId, const Identifier& rightId);

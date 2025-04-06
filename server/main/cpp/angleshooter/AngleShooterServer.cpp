@@ -215,7 +215,7 @@ void AngleShooterServer::handleDisconnectingClients() {
 }
 
 void AngleShooterServer::handlePacket(ClientConnection& sender, sf::Packet& packet) {
-    int packetType;
+    uint8_t packetType;
     packet >> packetType;
     if (packetHandlers.contains(packetType)) {
         packetHandlers[packetType](sender, packet);
@@ -264,8 +264,8 @@ void AngleShooterServer::send(sf::TcpSocket& socket, sf::Packet& packet) {
     packetQueue.emplace(&socket, packet);
 }
 
-void AngleShooterServer::registerPacket(const Identifier& packetType, const std::function<void(ClientConnection& sender, sf::Packet& packet)>& handler) {
-    this->packetHandlers.emplace(packetType.getHash(), handler);
-    this->packetIds.emplace(packetType.getHash(), packetType.toString());
-    Logger::debug("Registered packet: " + packetType.toString() + " (" + std::to_string(packetType.getHash()) + ")");
+void AngleShooterServer::registerPacket(const PacketIdentifier& packetType, const std::function<void(ClientConnection& sender, sf::Packet& packet)>& handler) {
+    this->packetHandlers.emplace(packetType.getId(), handler);
+    this->packetIds.emplace(packetType.getId(), packetType);
+    Logger::debug("Registered packet: " + packetType.toString() + " (" + std::to_string(packetType.getId()) + ")");
 }

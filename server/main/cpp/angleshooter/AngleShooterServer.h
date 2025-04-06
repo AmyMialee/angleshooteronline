@@ -1,8 +1,8 @@
 #pragma once
 
 class AngleShooterServer final {
-	std::map<int, std::function<void(ClientConnection& sender, sf::Packet& packet)>> packetHandlers;
-	std::map<int, Identifier> packetIds;
+	std::map<uint8_t, std::function<void(ClientConnection& sender, sf::Packet& packet)>> packetHandlers;
+	std::map<uint8_t, Identifier> packetIds;
 
 	sf::TcpListener listenerSocket;
 	std::unordered_set<ClientConnection*> pendingDisconnects;
@@ -14,7 +14,7 @@ class AngleShooterServer final {
 	void handleDisconnectingClients();
 	void handleIncomingPackets();
 	void handlePacket(ClientConnection& sender, sf::Packet& packet);
-	void registerPacket(const Identifier& packetType, const std::function<void(ClientConnection& sender, sf::Packet& packet)>& handler);
+	void registerPacket(const PacketIdentifier& packetType, const std::function<void(ClientConnection& sender, sf::Packet& packet)>& handler);
 
 protected:
 	AngleShooterServer();

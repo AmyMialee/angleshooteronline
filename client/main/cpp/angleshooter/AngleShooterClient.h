@@ -1,9 +1,9 @@
 ﻿#pragma once
 
 class AngleShooterClient final {
-	std::map<int, std::function<void(sf::Packet& packet)>> packetHandlers;
-	std::map<int, Identifier> packetIds;
-	std::map<int, Identifier> translatedPackets;
+	std::map<uint8_t, std::function<void(sf::Packet& packet)>> packetHandlers;
+	std::map<uint8_t, Identifier> packetIds;
+	std::map<uint8_t, Identifier> translatedPackets;
 	sf::TcpSocket connectingSocket;
 	bool connected = false;
 
@@ -12,7 +12,7 @@ class AngleShooterClient final {
 
 	void handleIncomingPackets();
 	void handlePacket(sf::Packet& packet);
-	void registerPacket(const Identifier& packetType, const std::function<void(sf::Packet& packet)>& handler);
+	void registerPacket(const PacketIdentifier& packetType, const std::function<void(sf::Packet& packet)>& handler);
 
 protected:
 	AngleShooterClient();
