@@ -1,6 +1,8 @@
 ﻿#include "PreCompiledClient.h"
 #include "MenuState.h"
 
+#include "ServerListState.h"
+
 const Identifier MenuState::MENU_ID("menu");
 const Identifier MenuState::MENU_TEXTURE("main_menu.png");
 
@@ -9,8 +11,7 @@ void MenuState::init() {
 	playButton->setPosition({100, 250});
 	playButton->setText("Play");
 	playButton->setCallback([this] {
-		requestStackPop();
-		requestStackPush(GameState::getId());
+		requestStackPush(ServerListState::getId());
 	});
 	const auto settingsButton = std::make_shared<Button>();
 	settingsButton->setPosition({100, 300});

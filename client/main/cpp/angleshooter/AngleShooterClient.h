@@ -20,6 +20,7 @@ protected:
 
 public:
 	uint16_t playerId;
+	sf::IpAddress foundAddress;
 	AngleShooterClient(const AngleShooterClient&) = delete;
 	void operator=(const AngleShooterClient&) = delete;
 	sf::RenderWindow window;

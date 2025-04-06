@@ -16,7 +16,8 @@ AngleShooterClient::AngleShooterClient() :
 	window(sf::VideoMode({1920, 1080}), "Angle Shooter", sf::Style::Titlebar | sf::Style::Close),
 	renderTexture({960, 540}),
 	tps(static_cast<int>(1 / AngleShooterCommon::TIME_PER_TICK)),
-	fps(144)
+	fps(144),
+	foundAddress(127, 0, 0, 1)
 {
     NetworkProtocol::initialize();
 	window.clear();

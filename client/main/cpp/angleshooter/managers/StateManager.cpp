@@ -1,6 +1,8 @@
 ﻿#include "PreCompiledClient.h"
 #include "StateManager.h"
 
+#include "../states/ServerListState.h"
+
 StateManager::PendingChange::PendingChange(StackMove action, Identifier id) : action(action), id(std::move(id)) {}
 
 State::Pointer StateManager::create(const Identifier& id) {
@@ -54,6 +56,7 @@ StateManager::StateManager() {
 	registerState<GameState>(GameState::getId());
 	registerState<PauseState>(PauseState::getId());
 	registerState<GameOverState>(GameOverState::getId());
+	registerState<ServerListState>(ServerListState::getId());
 }
 
 void StateManager::loadAssets() {

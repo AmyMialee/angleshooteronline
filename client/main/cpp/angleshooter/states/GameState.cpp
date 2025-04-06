@@ -9,17 +9,7 @@ void GameState::init() {
 	static const auto GAME_MUSIC = Identifier("gamemusic.ogg");
 	ClientWorld::get().init();
 	AudioManager::get().playMusic(GAME_MUSIC);
-	// Converting IP Address from string to uint32_t code from Deepseek
-	std::vector<uint8_t> octets;
-	std::istringstream iss(OptionsManager::get().getIp());
-	std::string token;
-	while (std::getline(iss, token, '.')) {
-		const auto octet = std::stoi(token);
-		octets.push_back(static_cast<uint8_t>(octet));
-	}
-	const uint32_t ip = octets[0] << 24 | octets[1] << 16 | octets[2] << 8 | octets[3];
-	// External code end
-	AngleShooterClient::get().connect(sf::IpAddress(ip));
+	AngleShooterClient::get().connect(AngleShooterClient::get().foundAddress);
 }
 
 void GameState::loadAssets() {

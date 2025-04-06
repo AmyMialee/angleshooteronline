@@ -1,7 +1,6 @@
 #pragma once
 
-class StateManager final : public Singleton<StateManager> {
-	friend class Singleton<StateManager>;
+class StateManager final {
 	struct PendingChange {
 		explicit PendingChange(StackMove action, Identifier id = Identifier::empty);
 		StackMove action;
@@ -13,8 +12,11 @@ class StateManager final : public Singleton<StateManager> {
 	std::vector<PendingChange> pending;
 	State::Pointer create(const Identifier& id);
 	void applyChanges();
+
+protected:
 	StateManager();
-	
+	~StateManager() = default;
+
 public:
 	template<typename T> void registerState(const Identifier& id);
 	void loadAssets();
@@ -27,6 +29,11 @@ public:
 	void pop();
 	void clear();
 	[[nodiscard]] bool isEmpty() const;
+
+	static StateManager& get() {
+		static StateManager instance;
+		return instance;
+	}
 };
 
 template<typename T>

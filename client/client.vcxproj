@@ -161,6 +161,7 @@
     <ClCompile Include="main\cpp\angleshooter\states\MenuState.cpp" />
     <ClCompile Include="main\cpp\angleshooter\states\OnboardingState.cpp" />
     <ClCompile Include="main\cpp\angleshooter\states\PauseState.cpp" />
+    <ClCompile Include="main\cpp\angleshooter\states\ServerListState.cpp" />
     <ClCompile Include="main\cpp\angleshooter\states\SettingsState.cpp" />
     <ClCompile Include="main\cpp\angleshooter\states\SplashState.cpp" />
     <ClCompile Include="main\cpp\angleshooter\states\State.cpp" />
@@ -196,6 +197,7 @@
     <ClInclude Include="main\cpp\angleshooter\states\MenuState.h" />
     <ClInclude Include="main\cpp\angleshooter\states\OnboardingState.h" />
     <ClInclude Include="main\cpp\angleshooter\states\PauseState.h" />
+    <ClInclude Include="main\cpp\angleshooter\states\ServerListState.h" />
     <ClInclude Include="main\cpp\angleshooter\states\SettingsState.h" />
     <ClInclude Include="main\cpp\angleshooter\states\SplashState.h" />
     <ClInclude Include="main\cpp\angleshooter\states\State.h" />
