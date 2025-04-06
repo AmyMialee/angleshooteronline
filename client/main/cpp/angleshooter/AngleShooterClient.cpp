@@ -193,19 +193,17 @@ AngleShooterClient::AngleShooterClient() :
 }
 
 bool AngleShooterClient::connect(const sf::IpAddress& server) {
-	const auto status = connectingSocket.connect(server, AngleShooterCommon::PORT);
-	if (status != sf::Socket::Status::Done) {
-		Logger::error("Failed to connect to server: " + Util::toString(status));
-		return false;
-	}
-    Logger::info("Connected to server: " + server.toString());
+	connectingSocket.setBlocking(true);
+	auto status = connectingSocket.connect(server, AngleShooterCommon::PORT, sf::seconds(5.f));
+	connectingSocket.setBlocking(false);
+    Logger::info("Connection Status: " + Util::toString(status));
 	auto join = NetworkProtocol::C2S_JOIN.getPacket();
 	join << OptionsManager::get().getName();
 	join << OptionsManager::get().getColour().r;
 	join << OptionsManager::get().getColour().g;
 	join << OptionsManager::get().getColour().b;
 	send(join);
-	connected = static_cast<int>(status) < 3;
+	connected = static_cast<int>(status) == 0;
 	return connected;
 }
 
