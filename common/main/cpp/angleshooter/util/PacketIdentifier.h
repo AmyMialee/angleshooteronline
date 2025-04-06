@@ -3,6 +3,7 @@
 class PacketIdentifier : public Identifier {
 	inline static uint8_t nextId = 0;
 	uint8_t id;
+	[[nodiscard]] uint8_t getNextId() const;
 
 public:
 	PacketIdentifier();

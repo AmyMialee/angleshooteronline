@@ -18,6 +18,7 @@ AngleShooterClient::AngleShooterClient() :
 	tps(static_cast<int>(1 / AngleShooterCommon::TIME_PER_TICK)),
 	fps(144)
 {
+    NetworkProtocol::initialize();
 	window.clear();
 	window.setKeyRepeatEnabled(false);
 	StateManager::get().push(SplashState::getId());
@@ -36,7 +37,7 @@ AngleShooterClient::AngleShooterClient() :
 		Logger::debug("Received Broadcast Message Packet from server: " + message);
 	});
 	registerPacket(NetworkProtocol::PACKET_QUESTION, [this](sf::Packet& packet) {
-		int packetId;
+		uint8_t packetId;
 		packet >> packetId;
 		auto translation = NetworkProtocol::PACKET_TRANSLATION.getPacket();
 		translation << packetId;
@@ -45,7 +46,7 @@ AngleShooterClient::AngleShooterClient() :
 		send(translation);
 	});
 	registerPacket(NetworkProtocol::PACKET_TRANSLATION, [this](sf::Packet& packet) {
-		int packetId;
+		uint8_t packetId;
 		Identifier translation;
 		packet >> packetId;
 		packet >> translation;

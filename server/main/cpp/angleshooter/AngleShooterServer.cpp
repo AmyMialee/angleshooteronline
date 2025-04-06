@@ -13,6 +13,7 @@ int main(int, char*[]) {
 }
 
 AngleShooterServer::AngleShooterServer() {
+    NetworkProtocol::initialize();
     listenerSocket.setBlocking(false);
     if (listenerSocket.listen(AngleShooterCommon::PORT) != sf::Socket::Status::Done) throw std::runtime_error("Failed to bind to port, is the server already running?");
     registerPacket(NetworkProtocol::C2S_JOIN, [this](ClientConnection& sender, sf::Packet& packet) {
@@ -62,7 +63,7 @@ AngleShooterServer::AngleShooterServer() {
         sender.socket.disconnect();
     });
     registerPacket(NetworkProtocol::PACKET_QUESTION, [this](ClientConnection& sender, sf::Packet& packet) {
-        int packetId;
+        uint8_t packetId;
         packet >> packetId;
         auto translation = NetworkProtocol::PACKET_TRANSLATION.getPacket();
         translation << packetId;
@@ -71,7 +72,7 @@ AngleShooterServer::AngleShooterServer() {
         send(sender, translation);
     });
     registerPacket(NetworkProtocol::PACKET_TRANSLATION, [this](ClientConnection& sender, sf::Packet& packet) {
-        int packetId;
+        uint8_t packetId;
         Identifier translation;
         packet >> packetId;
         packet >> translation;
