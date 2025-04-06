@@ -194,6 +194,11 @@ AngleShooterClient::AngleShooterClient() :
 
 bool AngleShooterClient::connect(const sf::IpAddress& server) {
 	const auto status = connectingSocket.connect(server, AngleShooterCommon::PORT);
+	if (status != sf::Socket::Status::Done) {
+		Logger::error("Failed to connect to server: " + Util::toString(status));
+		return false;
+	}
+    Logger::info("Connected to server: " + server.toString());
 	auto join = NetworkProtocol::C2S_JOIN.getPacket();
 	join << OptionsManager::get().getName();
 	join << OptionsManager::get().getColour().r;
@@ -308,14 +313,13 @@ void AngleShooterClient::handlePacket(sf::Packet& packet) {
 void AngleShooterClient::send(sf::Packet& packet) {
 	auto status = sf::Socket::Status::Partial;
 	while (status == sf::Socket::Status::Partial) status = connectingSocket.send(packet);
-	if (status != sf::Socket::Status::Done) {
-		Logger::error("Send Error: " + Util::toString(status));
-		if (status == sf::Socket::Status::Disconnected) {
-			this->connected = false;
-			if (StateManager::get().getStateId() == GameState::getId()) {
-				StateManager::get().pop();
-				StateManager::get().push(MenuState::MENU_ID);
-			}
+	if (status == sf::Socket::Status::Done) return;
+	Logger::error("Send Error: " + Util::toString(status));
+	if (status == sf::Socket::Status::Disconnected) {
+		this->connected = false;
+		if (StateManager::get().getStateId() == GameState::getId()) {
+			StateManager::get().pop();
+			StateManager::get().push(MenuState::MENU_ID);
 		}
 	}
 }
