@@ -14,7 +14,7 @@ void GameState::init() {
 	std::istringstream iss(OptionsManager::get().getIp());
 	std::string token;
 	while (std::getline(iss, token, '.')) {
-		const int octet = std::stoi(token);
+		const auto octet = std::stoi(token);
 		octets.push_back(static_cast<uint8_t>(octet));
 	}
 	const uint32_t ip = octets[0] << 24 | octets[1] << 16 | octets[2] << 8 | octets[3];

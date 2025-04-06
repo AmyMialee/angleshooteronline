@@ -308,7 +308,16 @@ void AngleShooterClient::handlePacket(sf::Packet& packet) {
 void AngleShooterClient::send(sf::Packet& packet) {
 	auto status = sf::Socket::Status::Partial;
 	while (status == sf::Socket::Status::Partial) status = connectingSocket.send(packet);
-	if (status != sf::Socket::Status::Done) Logger::error("Send Error");
+	if (status != sf::Socket::Status::Done) {
+		Logger::error("Send Error: " + Util::toString(status));
+		if (status == sf::Socket::Status::Disconnected) {
+			this->connected = false;
+			if (StateManager::get().getStateId() == GameState::getId()) {
+				StateManager::get().pop();
+				StateManager::get().push(MenuState::MENU_ID);
+			}
+		}
+	}
 }
 
 void AngleShooterClient::registerPacket(const Identifier& packetType, const std::function<void(sf::Packet& packet)>& handler) {

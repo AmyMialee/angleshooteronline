@@ -6,8 +6,23 @@ const Identifier SettingsState::SETTINGS_ID("settings");
 void SettingsState::init() {
 	gui.clear();
 	constexpr auto offset = 36.f;
+
+	const auto ipButton = std::make_shared<IpButton>();
+	ipButton->setPosition({80.f, 100.f + offset * 3});
+	auto ipText = [&](const std::string& ip) { return "IP: " + ip; };
+	ipButton->setText(ipText(OptionsManager::get().getIp()));
+	ipButton->setTextFunction(ipText);
+	gui.pack(ipButton);
+
+	const auto nameButton = std::make_shared<NameButton>();
+	nameButton->setPosition({80.f, 100.f + offset * 4});
+	auto nameText = [&](const std::string& name) { return "Name: " + name; };
+	nameButton->setText(nameText(OptionsManager::get().getName()));
+	nameButton->setTextFunction(nameText);
+	gui.pack(nameButton);
+
 	const auto masterSlider = std::make_shared<Slider>();
-	masterSlider->setPosition({80.f, 100.f + offset * 3});
+	masterSlider->setPosition({300.f, 100.f + offset * 3});
 	masterSlider->setTextFunction([](double value) { return "Master Volume : " + std::to_string(static_cast<int>(value * 100.)); });
 	masterSlider->setConstantCallback(Consumer<double>([this](double value) {
 		AudioManager::get().setMusicVolume(OptionsManager::get().getMusicVolume() * value);
@@ -18,7 +33,7 @@ void SettingsState::init() {
 	gui.pack(masterSlider);
 
 	const auto soundSlider = std::make_shared<Slider>();
-	soundSlider->setPosition({80.f, 100.f + offset * 4});
+	soundSlider->setPosition({300.f, 100.f + offset * 4});
 	soundSlider->setTextFunction([](double value) { return "Sound Volume : " + std::to_string(static_cast<int>(value * 100.)); });
 	soundSlider->setConstantCallback(Consumer<double>([this](double value) { AudioManager::get().setSoundVolume(value * OptionsManager::get().getMasterVolume()); }));
 	soundSlider->setFinalCallback(Consumer<double>([this](double value) { OptionsManager::get().setSoundVolume(value); }));
@@ -26,7 +41,7 @@ void SettingsState::init() {
 	gui.pack(soundSlider);
 
 	const auto musicSlider = std::make_shared<Slider>();
-	musicSlider->setPosition({80.f, 100.f + offset * 5});
+	musicSlider->setPosition({300.f, 100.f + offset * 5});
 	musicSlider->setTextFunction([](double value) { return "Music Volume : " + std::to_string(static_cast<int>(value * 100.)); });
 	musicSlider->setConstantCallback(Consumer<double>([this](double value) { AudioManager::get().setMusicVolume(value * OptionsManager::get().getMasterVolume()); }));
 	musicSlider->setFinalCallback(Consumer<double>([this](double value) { OptionsManager::get().setMusicVolume(value); }));
@@ -34,25 +49,11 @@ void SettingsState::init() {
 	gui.pack(musicSlider);
 
 	const auto fpsSlider = std::make_shared<Slider>();
-	fpsSlider->setPosition({80.f, 100.f + offset * 7});
+	fpsSlider->setPosition({300.f, 100.f + offset * 7});
 	fpsSlider->setTextFunction([](double value) { return "FPS : " + std::to_string(static_cast<int>(value * 144.)); });
 	fpsSlider->setFinalCallback(Consumer<double>([this](double value) { OptionsManager::get().setFps(static_cast<int>(value * 144.)); }));
 	fpsSlider->setValue(OptionsManager::get().getFps() / 144.);
 	gui.pack(fpsSlider);
-
-	const auto ipButton = std::make_shared<IpButton>();
-	ipButton->setPosition({300.f, 100.f + offset * 3});
-	auto ipText = [&](const std::string& ip) { return "IP: " + ip; };
-	ipButton->setText(ipText(OptionsManager::get().getIp()));
-	ipButton->setTextFunction(ipText);
-	gui.pack(ipButton);
-
-	const auto nameButton = std::make_shared<NameButton>();
-	nameButton->setPosition({300.f, 100.f + offset * 4});
-	auto nameText = [&](const std::string& name) { return "Name: " + name; };
-	nameButton->setText(nameText(OptionsManager::get().getName()));
-	nameButton->setTextFunction(nameText);
-	gui.pack(nameButton);
 
 	auto makeControlsButton = [this](sf::Vector2f pos, const std::string& text, Keybinding* keybinding) {
 		const auto controlButton = std::make_shared<Button>();

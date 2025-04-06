@@ -7,30 +7,31 @@ Logger& Logger::getInstance() {
 }
 
 Logger::Logger() : creationTime(static_cast<long>(std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now().time_since_epoch()).count())) {
-    const std::filesystem::path runDir = "run";
-    const auto createdRun = create_directories(runDir);
-    const auto logPath = runDir / "latest.log";
-    if (exists(logPath)) try {
-        auto fileTime = last_write_time(logPath);
-        auto unixTime = static_cast<std::time_t>([&]{
-            #ifdef _WIN32
-                return (fileTime.time_since_epoch().count() - 116444736000000000ULL) / 10000000;
-            #else
-                return std::chrono::system_clock::to_time_t(fileTime + (std::chrono::system_clock::now() - std::filesystem::file_time_type::clock::now()));
-            #endif
-        }());
-        std::tm timeInfo;
-        #ifdef _WIN32
-            localtime_s(&timeInfo, &unixTime);
-        #else
-            localtime_r(&unixTime, &timeInfo);
-        #endif
-        std::stringstream stringBuilder;
-        stringBuilder << std::put_time(&timeInfo, "%Y-%m-%d_%H-%M-%S");
-        std::filesystem::rename(logPath, runDir / (stringBuilder.str() + ".log"));
-    } catch (const std::exception& e) { std::cerr << "Log rotation failed: " << e.what() << "\n"; }
-    if (std::ofstream logFile(logPath, std::ios::out | std::ios::app); !logFile.is_open()) std::cerr << "Failed to open log file\n";
-    if (createdRun) log(Severity::INFO, "Created Run Directory");
+    // const std::filesystem::path runDir = "run";
+    // const auto createdRun = create_directories(runDir);
+    // const auto logPath = runDir / "latest.log";
+    // if (exists(logPath)) try {
+    //     auto fileTime = last_write_time(logPath);
+    //     auto unixTime = static_cast<std::time_t>([&]{
+    //         #ifdef _WIN32
+    //             return (fileTime.time_since_epoch().count() - 116444736000000000ULL) / 10000000;
+    //         #else
+    //             return std::chrono::system_clock::to_time_t(fileTime + (std::chrono::system_clock::now() - std::filesystem::file_time_type::clock::now()));
+    //         #endif
+    //     }());
+    //     std::tm timeInfo;
+    //     #ifdef _WIN32
+    //         localtime_s(&timeInfo, &unixTime);
+    //     #else
+    //         localtime_r(&unixTime, &timeInfo);
+    //     #endif
+    //     std::stringstream stringBuilder;
+    //     stringBuilder << std::put_time(&timeInfo, "%Y-%m-%d_%H-%M-%S");
+    //     std::filesystem::rename(logPath, runDir / (stringBuilder.str() + ".log"));
+    // } catch (const std::exception& e) { std::cerr << "Log rotation failed: " << e.what() << "\n"; }
+    // logFile.open(logPath);
+    // if (std::ofstream logFile(logPath, std::ios::out | std::ios::app); !logFile.is_open()) std::cerr << "Failed to open log file\n";
+    // if (createdRun) log(Severity::INFO, "Created Run Directory");
 }
 
 void Logger::log(Severity level, const std::string& message) {
