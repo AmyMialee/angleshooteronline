@@ -16,7 +16,7 @@ void SettingsState::init() {
 	masterSlider->setFinalCallback(Consumer<double>([this](double value) { OptionsManager::get().setMasterVolume(value); }));
 	masterSlider->setValue(OptionsManager::get().getMasterVolume());
 	gui.pack(masterSlider);
-	
+
 	const auto soundSlider = std::make_shared<Slider>();
 	soundSlider->setPosition({80.f, 100.f + offset * 4});
 	soundSlider->setTextFunction([](double value) { return "Sound Volume : " + std::to_string(static_cast<int>(value * 100.)); });
@@ -24,7 +24,7 @@ void SettingsState::init() {
 	soundSlider->setFinalCallback(Consumer<double>([this](double value) { OptionsManager::get().setSoundVolume(value); }));
 	soundSlider->setValue(OptionsManager::get().getSoundVolume());
 	gui.pack(soundSlider);
-	
+
 	const auto musicSlider = std::make_shared<Slider>();
 	musicSlider->setPosition({80.f, 100.f + offset * 5});
 	musicSlider->setTextFunction([](double value) { return "Music Volume : " + std::to_string(static_cast<int>(value * 100.)); });
@@ -32,13 +32,27 @@ void SettingsState::init() {
 	musicSlider->setFinalCallback(Consumer<double>([this](double value) { OptionsManager::get().setMusicVolume(value); }));
 	musicSlider->setValue(OptionsManager::get().getMusicVolume());
 	gui.pack(musicSlider);
-	
+
 	const auto fpsSlider = std::make_shared<Slider>();
 	fpsSlider->setPosition({80.f, 100.f + offset * 7});
 	fpsSlider->setTextFunction([](double value) { return "FPS : " + std::to_string(static_cast<int>(value * 144.)); });
 	fpsSlider->setFinalCallback(Consumer<double>([this](double value) { OptionsManager::get().setFps(static_cast<int>(value * 144.)); }));
 	fpsSlider->setValue(OptionsManager::get().getFps() / 144.);
 	gui.pack(fpsSlider);
+
+	const auto ipButton = std::make_shared<IpButton>();
+	ipButton->setPosition({300.f, 100.f + offset * 3});
+	auto ipText = [&](const std::string& ip) { return "IP: " + ip; };
+	ipButton->setText(ipText(OptionsManager::get().getIp()));
+	ipButton->setTextFunction(ipText);
+	gui.pack(ipButton);
+
+	const auto nameButton = std::make_shared<NameButton>();
+	nameButton->setPosition({300.f, 100.f + offset * 4});
+	auto nameText = [&](const std::string& name) { return "Name: " + name; };
+	nameButton->setText(nameText(OptionsManager::get().getName()));
+	nameButton->setTextFunction(nameText);
+	gui.pack(nameButton);
 
 	auto makeControlsButton = [this](sf::Vector2f pos, const std::string& text, Keybinding* keybinding) {
 		const auto controlButton = std::make_shared<Button>();
@@ -50,12 +64,12 @@ void SettingsState::init() {
 		});
 		gui.pack(controlButton);
 	};
-	makeControlsButton({300.f, 100.f + offset * 3}, "Up", InputManager::get().getUp());
-	makeControlsButton({300.f, 100.f + offset * 4}, "Down", InputManager::get().getDown());
-	makeControlsButton({300.f, 100.f + offset * 5}, "Left", InputManager::get().getLeft());
-	makeControlsButton({300.f, 100.f + offset * 6}, "Right", InputManager::get().getRight());
-	makeControlsButton({300.f, 100.f + offset * 7}, "Fire", InputManager::get().getFire());
-	
+	makeControlsButton({520.f, 100.f + offset * 3}, "Up", InputManager::get().getUp());
+	makeControlsButton({520.f, 100.f + offset * 4}, "Down", InputManager::get().getDown());
+	makeControlsButton({520.f, 100.f + offset * 5}, "Left", InputManager::get().getLeft());
+	makeControlsButton({520.f, 100.f + offset * 6}, "Right", InputManager::get().getRight());
+	makeControlsButton({520.f, 100.f + offset * 7}, "Fire", InputManager::get().getFire());
+
 	const auto backButton = std::make_shared<Button>();
 	backButton->setPosition({300.f, 475.f});
 	backButton->setText("Back");

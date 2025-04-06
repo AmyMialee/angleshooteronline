@@ -18,6 +18,8 @@
 #include <algorithm>
 #include <numbers>
 #include <thread>
+#include <mutex>
+#include <queue>
 
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio/SoundBuffer.hpp>

@@ -137,6 +137,7 @@ AngleShooterClient::AngleShooterClient() :
 			const auto player = dynamic_cast<PlayerEntity*>(entity.get());
 			if (player->getId() != id) continue;
 			player->bulletCharge = charge;
+			return;
 		}
 	});
 	registerPacket(NetworkProtocol::S2C_HEALTH, [this](sf::Packet& packet) {
@@ -149,6 +150,7 @@ AngleShooterClient::AngleShooterClient() :
 			const auto player = dynamic_cast<PlayerEntity*>(entity.get());
 			if (player->getId() != id) continue;
 			player->health = health;
+			return;
 		}
 	});
 	registerPacket(NetworkProtocol::S2C_DEATH, [this](sf::Packet& packet) {
@@ -160,17 +162,32 @@ AngleShooterClient::AngleShooterClient() :
 			if (player->getId() != id) continue;
 			player->deathTime = 60;
 			player->immunityTime = 120;
+			return;
 		}
 	});
 	registerPacket(NetworkProtocol::S2C_TELEPORT, [this](sf::Packet& packet) {
 		uint16_t id;
 		packet >> id;
+		float x, y;
+		packet >> x >> y;
 		for (const auto& entity : ClientWorld::get().getEntities()) {
 			if (entity->getEntityType() != PlayerEntity::ID) continue;
 			const auto player = dynamic_cast<PlayerEntity*>(entity.get());
 			if (player->getId() != id) continue;
-			player->deathTime = 60;
-			player->immunityTime = 120;
+			player->setPosition({x, y});
+			return;
+		}
+	});
+	registerPacket(NetworkProtocol::S2C_REMOVE_OBJECT, [this](sf::Packet& packet) {
+		uint16_t id;
+		packet >> id;
+		auto iterator = ClientWorld::get().gameObjects.begin();
+		while (iterator != ClientWorld::get().gameObjects.end()) {
+			if (iterator->first == id) {
+				iterator = ClientWorld::get().gameObjects.erase(iterator);
+			} else {
+				++iterator;
+			}
 		}
 	});
 }

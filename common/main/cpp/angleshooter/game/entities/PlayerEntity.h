@@ -17,8 +17,8 @@ public:
 	inline static auto ID = Identifier("player");
 	const Identifier& getEntityType() const override;
 	void tick(float deltaTime) override;
-	bool damage(sf::Color sourceColour, int amount);
-	virtual void onDeath(sf::Color sourceColour);
+	virtual bool damage(uint16_t source, int amount);
+	virtual void onDeath(uint16_t source);
 	[[nodiscard]] std::string getName() const;
 	[[nodiscard]] sf::Color getColour() const;
 	[[nodiscard]] int getHealth() const;

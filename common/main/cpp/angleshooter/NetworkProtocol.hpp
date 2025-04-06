@@ -16,6 +16,7 @@ public:
 	inline const static auto S2C_HEALTH = Identifier("S2C_HEALTH");
 	inline const static auto S2C_DEATH = Identifier("S2C_DEATH");
 	inline const static auto S2C_TELEPORT = Identifier("S2C_TELEPORT");
+	inline const static auto S2C_REMOVE_OBJECT = Identifier("S2C_REMOVE_OBJECT");
 
 	inline const static auto C2S_JOIN = Identifier("C2S_JOIN");
 	inline const static auto C2S_CHANGE_NAME = Identifier("C2S_CHANGE_NAME");

@@ -17,9 +17,15 @@ std::shared_ptr<ServerPlayerEntity> ServerWorld::spawnPlayer(ClientConnection& s
 	return player;
 }
 
-std::shared_ptr<BulletEntity> ServerWorld::spawnBullet(sf::Color colour, sf::Vector2f position, sf::Vector2f velocity) {
+std::shared_ptr<BulletEntity> ServerWorld::spawnBullet(uint16_t source, sf::Vector2f position, sf::Vector2f velocity) {
 	const auto bullet = std::make_shared<BulletEntity>(this->getNextId(), this);
-	bullet->colour = colour;
+	bullet->source = source;
+	for (const auto& entity : this->getEntities()) {
+		if (entity->getEntityType() != PlayerEntity::ID) continue;
+		const auto player = dynamic_cast<PlayerEntity*>(entity.get());
+		if (player->getId() != source) continue;
+		bullet->colour = player->getColour();
+	}
 	bullet->setPosition(position);
 	bullet->setVelocity(velocity);
 	this->spawnEntity(bullet);
@@ -29,6 +35,36 @@ std::shared_ptr<BulletEntity> ServerWorld::spawnBullet(sf::Color colour, sf::Vec
 		AngleShooterServer::get().send(client->socket, packet);
 	}
 	return bullet;
+}
+
+void ServerWorld::tick(float deltaTime) {
+	World::tick(deltaTime);
+	std::vector<std::shared_ptr<Entity>> objects;
+	objects.reserve(this->gameObjects.size());
+	for (const auto& value : this->gameObjects | std::views::values) objects.push_back(value);
+	std::vector<std::pair<Entity*, Entity*>> pairs;
+	for (auto main = objects.begin(); main != objects.end(); ++main) {
+		for (auto sub = main + 1; sub != objects.end(); ++sub) {
+			pairs.emplace_back(main->get(), sub->get());
+		}
+	}
+	for (const auto& [first, second] : pairs) {
+		if (first->isColliding(*second)) {
+			first->onCollision(*second);
+			second->onCollision(*first);
+		}
+	}
+	auto iterator = this->gameObjects.begin();
+	while (iterator != this->gameObjects.end()) {
+		if (iterator->second->isMarkedForRemoval()) {
+			auto packet = NetworkProtocol::S2C_REMOVE_OBJECT.getPacket();
+			packet << iterator->first;
+			AngleShooterServer::get().sendToAll(packet);
+			iterator = this->gameObjects.erase(iterator);
+		} else {
+			++iterator;
+		}
+	}
 }
 
 void ServerWorld::playMusic(const Identifier& id, float volume, float pitch) {

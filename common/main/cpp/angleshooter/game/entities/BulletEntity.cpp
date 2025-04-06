@@ -16,9 +16,9 @@ void BulletEntity::tick(float deltaTime) {
 
 void BulletEntity::onCollision(Entity& other) {
 	if (other.getEntityType() != PlayerEntity::ID) return;
-	if (const auto player = dynamic_cast<PlayerEntity*>(&other); this->colour != player->getColour() && this->getDistanceTo(other) < 8) {
+	if (const auto player = dynamic_cast<PlayerEntity*>(&other); this->source != player->getId() && this->getDistanceTo(other) < 8) {
 		if (player != nullptr) {
-			if (player->damage(this->colour, 1)) {
+			if (player->damage(this->source, 1)) {
 				this->hasHit = true;
 			}
 		}
@@ -35,6 +35,7 @@ bool BulletEntity::isMarkedForRemoval() const {
 
 void BulletEntity::writeToPacket(sf::Packet& packet) const {
 	Entity::writeToPacket(packet);
+	packet << this->source;
 	packet << this->colour.r;
 	packet << this->colour.g;
 	packet << this->colour.b;
@@ -44,6 +45,7 @@ void BulletEntity::writeToPacket(sf::Packet& packet) const {
 
 void BulletEntity::readFromPacket(sf::Packet& packet) {
 	Entity::readFromPacket(packet);
+	packet >> this->source;
 	uint8_t r, g, b;
 	packet >> r >> g >> b;
 	const sf::Color colour(r, g, b, 0xFF);

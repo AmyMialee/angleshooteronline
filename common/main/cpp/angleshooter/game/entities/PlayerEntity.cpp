@@ -13,10 +13,6 @@ const Identifier& PlayerEntity::getEntityType() const {
 void PlayerEntity::tick(float deltaTime) {
 	if (this->deathTime > 0) {
 		this->deathTime--;
-		if (this->deathTime <= 0) {
-			this->health = 8;
-			this->setPosition(this->world->getMap()->getRandomSpawnpoint());
-		}
 		return;
 	}
 	if (this->immunityTime > 0) {
@@ -45,20 +41,17 @@ void PlayerEntity::tick(float deltaTime) {
 	Entity::tick(deltaTime);
 }
 
-bool PlayerEntity::damage(sf::Color sourceColour, int amount) {
-	if (this->health <= 0 || this->immunityTime) return false;
+bool PlayerEntity::damage(uint16_t source, int amount) {
+	if (this->health <= 0 || this->immunityTime > 0) return false;
 	this->health -= amount;
 	if (this->health <= 0) {
 		this->health = 0;
-		this->onDeath(sourceColour);
-	} else {
-		static Identifier hurtSound("hurt.ogg");
-		this->world->playSound(hurtSound, .8f, Util::randomFloat(0.8f, 1.2f));
+		this->onDeath(source);
 	}
 	return true;
 }
 
-void PlayerEntity::onDeath(sf::Color sourceColour) {
+void PlayerEntity::onDeath(uint16_t source) {
 	this->deathTime = 60;
 	this->immunityTime = 120;
 }

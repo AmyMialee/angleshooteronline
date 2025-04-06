@@ -7,6 +7,9 @@ class AngleShooterServer final {
 	sf::TcpListener listenerSocket;
 	std::unordered_set<ClientConnection*> pendingDisconnects;
 
+	std::queue<std::pair<sf::TcpSocket*, sf::Packet>> packetQueue;
+	std::mutex packetLock;
+
 	void handleIncomingClients();
 	void handleDisconnectingClients();
 	void handleIncomingPackets();
@@ -25,6 +28,8 @@ public:
 	void operator=(const AngleShooterServer&) = delete;
 	void run();
 	void runReceiver();
+	void runSender();
+
 	void sendToAll(sf::Packet& packet);
 	void send(ClientConnection& player, sf::Packet& packet);
 	void send(sf::TcpSocket& socket, sf::Packet& packet);

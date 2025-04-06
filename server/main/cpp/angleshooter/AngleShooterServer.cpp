@@ -115,11 +115,13 @@ void AngleShooterServer::run() {
     Logger::debug("Starting AngleShooter Server");
     ServerWorld::get().init();
     ServerWorld::get().loadMap(Identifier("testmaplarge"));
-    std::thread networkThread(&AngleShooterServer::runReceiver, this);
+    std::thread receiverThread(&AngleShooterServer::runReceiver, this);
+    std::thread senderThread(&AngleShooterServer::runSender, this);
     sf::Clock deltaClock;
     auto tickTime = 0.;
     auto secondTime = 0.;
     auto ticks = 0;
+    Logger::debug("Starting Server Game Loop");
     while (true) {
         const auto deltaTime = deltaClock.restart().asSeconds();
         tickTime += deltaTime;
@@ -143,11 +145,30 @@ void AngleShooterServer::run() {
 }
 
 void AngleShooterServer::runReceiver() {
+    Logger::debug("Starting Server Network Handler");
     while (true) {
         handleIncomingClients();
         handleIncomingPackets();
         handleDisconnectingClients();
         std::this_thread::sleep_for(std::chrono::milliseconds(12));
+    }
+}
+
+void AngleShooterServer::runSender() {
+    Logger::debug("Starting Server Packet Sender");
+    while (true) {
+        std::unique_lock lock(packetLock);
+        if (!packetQueue.empty()) {
+            auto [socket, packet] = packetQueue.front();
+            packetQueue.pop();
+            lock.unlock();
+            auto status = sf::Socket::Status::Partial;
+            while (status == sf::Socket::Status::Partial) status = socket->send(packet);
+            if (status != sf::Socket::Status::Done) Logger::error("Send Error: " + Util::getAddressString(*socket));
+        } else {
+            lock.unlock();
+            std::this_thread::sleep_for(std::chrono::milliseconds(12));
+        }
     }
 }
 
@@ -234,9 +255,8 @@ void AngleShooterServer::send(ClientConnection& player, sf::Packet& packet) {
 }
 
 void AngleShooterServer::send(sf::TcpSocket& socket, sf::Packet& packet) {
-    auto status = sf::Socket::Status::Partial;
-    while (status == sf::Socket::Status::Partial) status = socket.send(packet);
-	if (status != sf::Socket::Status::Done) Logger::error("Send Error: " + Util::getAddressString(socket));
+    std::lock_guard lock(packetLock);
+    packetQueue.emplace(&socket, packet);
 }
 
 void AngleShooterServer::registerPacket(const Identifier& packetType, const std::function<void(ClientConnection& sender, sf::Packet& packet)>& handler) {

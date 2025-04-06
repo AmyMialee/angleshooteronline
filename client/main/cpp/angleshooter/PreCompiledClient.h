@@ -19,6 +19,8 @@
 #include "menu/Label.h"
 #include "menu/Slider.h"
 #include "menu/WidgetContainer.h"
+#include "menu/IpButton.h"
+#include "menu/NameButton.h"
 #include "rendering/shaders/PostProcessing.h"
 #include "rendering/shaders/BloomProcessing.h"
 #include "rendering/WorldRenderer.h"

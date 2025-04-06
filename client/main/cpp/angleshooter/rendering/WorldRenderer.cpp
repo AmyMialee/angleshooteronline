@@ -5,7 +5,7 @@
 
 WorldRenderer::WorldRenderer() {
 	registerRenderer<PlayerEntity>(PlayerEntity::ID, [this](const std::shared_ptr<PlayerEntity>& player, float deltaTime) {
-		if (player->getHealth() <= 0) return;
+		if (player->deathTime > 0) return;
 		static sf::Sprite player1(TextureHolder::getInstance().get(Identifier("player.png")));
 		static std::once_flag flag;
 		std::call_once(flag, [&] {

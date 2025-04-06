@@ -1,8 +1,6 @@
 ﻿#include "PreCompiledClient.h"
 #include "MenuState.h"
 
-#include "JoiningState.h"
-
 const Identifier MenuState::MENU_ID("menu");
 const Identifier MenuState::MENU_TEXTURE("main_menu.png");
 
@@ -26,17 +24,9 @@ void MenuState::init() {
 	exitButton->setCallback([this] {
 		requestStackPop();
 	});
-	const auto setIpButton = std::make_shared<Button>();
-	setIpButton->setPosition({100, 400});
-	setIpButton->setText("Set IP");
-	setIpButton->setCallback([this] {
-		requestStackPop();
-		requestStackPush(JoiningState::getId());
-	});
 	gui.pack(playButton);
 	gui.pack(settingsButton);
 	gui.pack(exitButton);
-	gui.pack(setIpButton);
 	AudioManager::get().playMusic(Identifier("backgroundmusic.ogg"));
 }
 

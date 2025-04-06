@@ -2,14 +2,14 @@
 
 class World {
 	Map map;
-	std::unordered_map<uint16_t, std::shared_ptr<Entity>> gameObjects;
 	uint16_t nextId = 0;
 	int age = 0;
 
 public:
+	std::unordered_map<uint16_t, std::shared_ptr<Entity>> gameObjects;
 	World();
 	virtual ~World() = default;
-	void tick(float deltaTime);
+	virtual void tick(float deltaTime);
 	void init();
 	std::shared_ptr<Entity> spawnEntity(std::shared_ptr<Entity> entity);
 	[[nodiscard]] std::vector<std::shared_ptr<Entity>> getEntities();

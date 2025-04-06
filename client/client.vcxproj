@@ -143,7 +143,9 @@
     <ClCompile Include="main\cpp\angleshooter\managers\TextureHolder.cpp" />
     <ClCompile Include="main\cpp\angleshooter\menu\Button.cpp" />
     <ClCompile Include="main\cpp\angleshooter\menu\Label.cpp" />
+    <ClCompile Include="main\cpp\angleshooter\menu\NameButton.cpp" />
     <ClCompile Include="main\cpp\angleshooter\menu\Slider.cpp" />
+    <ClCompile Include="main\cpp\angleshooter\menu\IpButton.cpp" />
     <ClCompile Include="main\cpp\angleshooter\menu\Widget.cpp" />
     <ClCompile Include="main\cpp\angleshooter\menu\WidgetContainer.cpp" />
     <ClCompile Include="main\cpp\angleshooter\PreCompiledClient.cpp">
@@ -156,7 +158,6 @@
     <ClCompile Include="main\cpp\angleshooter\rendering\WorldRenderer.cpp" />
     <ClCompile Include="main\cpp\angleshooter\states\GameOverState.cpp" />
     <ClCompile Include="main\cpp\angleshooter\states\GameState.cpp" />
-    <ClCompile Include="main\cpp\angleshooter\states\JoiningState.cpp" />
     <ClCompile Include="main\cpp\angleshooter\states\MenuState.cpp" />
     <ClCompile Include="main\cpp\angleshooter\states\OnboardingState.cpp" />
     <ClCompile Include="main\cpp\angleshooter\states\PauseState.cpp" />
@@ -180,7 +181,9 @@
     <ClInclude Include="main\cpp\angleshooter\managers\TextureHolder.h" />
     <ClInclude Include="main\cpp\angleshooter\menu\Button.h" />
     <ClInclude Include="main\cpp\angleshooter\menu\Label.h" />
+    <ClInclude Include="main\cpp\angleshooter\menu\NameButton.h" />
     <ClInclude Include="main\cpp\angleshooter\menu\Slider.h" />
+    <ClInclude Include="main\cpp\angleshooter\menu\IpButton.h" />
     <ClInclude Include="main\cpp\angleshooter\menu\Widget.h" />
     <ClInclude Include="main\cpp\angleshooter\menu\WidgetContainer.h" />
     <ClInclude Include="main\cpp\angleshooter\PreCompiledClient.h" />
@@ -190,7 +193,6 @@
     <ClInclude Include="main\cpp\angleshooter\rendering\WorldRenderer.h" />
     <ClInclude Include="main\cpp\angleshooter\states\GameOverState.h" />
     <ClInclude Include="main\cpp\angleshooter\states\GameState.h" />
-    <ClInclude Include="main\cpp\angleshooter\states\JoiningState.h" />
     <ClInclude Include="main\cpp\angleshooter\states\MenuState.h" />
     <ClInclude Include="main\cpp\angleshooter\states\OnboardingState.h" />
     <ClInclude Include="main\cpp\angleshooter\states\PauseState.h" />

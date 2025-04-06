@@ -10,8 +10,9 @@ public:
 	void operator=(const ServerWorld&) = delete;
 
 	std::shared_ptr<ServerPlayerEntity> spawnPlayer(ClientConnection& sender);
-	std::shared_ptr<BulletEntity> spawnBullet(sf::Color colour, sf::Vector2f position, sf::Vector2f velocity);
+	std::shared_ptr<BulletEntity> spawnBullet(uint16_t source, sf::Vector2f position, sf::Vector2f velocity);
 
+	void tick(float deltaTime) override;
 	void playMusic(const Identifier& id, float volume, float pitch) override;
 	void playSound(const Identifier& id, float volume, float pitch, sf::Vector2f position, float attenuation) override;
 	void playSound3d(const Identifier& id, float volume, float pitch, sf::Vector3f position, float attenuation) override;

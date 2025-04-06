@@ -5,7 +5,8 @@ public:
 	bool shouldBeErased = false;
 	ServerPlayerEntity(uint16_t id, World* world);
 	void tick(float deltaTime) override;
-	void onDeath(sf::Color sourceColour) override;
+	bool damage(uint16_t source, int amount) override;
+	void onDeath(uint16_t source) override;
 
 private:
 	[[nodiscard]] bool isMarkedForRemoval() const override;
