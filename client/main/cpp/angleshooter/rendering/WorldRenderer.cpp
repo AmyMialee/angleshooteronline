@@ -6,19 +6,24 @@
 WorldRenderer::WorldRenderer() {
 	registerRenderer<PlayerEntity>(PlayerEntity::ID, [this](const std::shared_ptr<PlayerEntity>& player, float deltaTime) {
 		if (player->deathTime > 0) return;
-		static sf::Sprite player1(TextureHolder::getInstance().get(Identifier("player.png")));
+		static sf::Sprite playerSprite(TextureHolder::getInstance().get(Identifier("player.png")));
+		static sf::Text text(FontHolder::getInstance().getDefault());
 		static std::once_flag flag;
 		std::call_once(flag, [&] {
-			Util::centre(player1);
-			const auto textureSize1 = player1.getTexture().getSize();
-			player1.setScale(player->getScale().componentWiseDiv({static_cast<float>(textureSize1.x), static_cast<float>(textureSize1.y)}));
+			Util::centre(playerSprite);
+			const auto textureSize1 = playerSprite.getTexture().getSize();
+			playerSprite.setScale(player->getScale().componentWiseDiv({static_cast<float>(textureSize1.x), static_cast<float>(textureSize1.y)}));
+			text.setCharacterSize(48);
+			text.setScale({0.125f, 0.125f});
+			text.setFillColor(sf::Color::White);
+			text.setOutlineColor(sf::Color::Black);
+			text.setOutlineThickness(2.f);
 		});
 		const auto pos = player->getPosition() + player->getVelocity() * deltaTime;
-		auto sprite = player1;
-		sprite.setPosition(pos);
-		sprite.setRotation(player->getRotation());
-		sprite.setColor(player->getColour());
-		AngleShooterClient::get().renderTexture.draw(sprite);
+		playerSprite.setPosition(pos);
+		playerSprite.setRotation(player->getRotation());
+		playerSprite.setColor(player->getColour());
+		AngleShooterClient::get().renderTexture.draw(playerSprite);
 		if (player->getImmunityTime() > 0) {
 			auto circle = sf::CircleShape(player->getScale().x / 2.f + 2);
 			circle.setPosition(pos - player->getScale() / 2.f - sf::Vector2f{2.f, 2.f});
@@ -45,11 +50,10 @@ WorldRenderer::WorldRenderer() {
 			shape.setFillColor(sf::Color::Cyan);
 			AngleShooterClient::get().renderTexture.draw(shape);
 		}
-		static sf::Text text(FontHolder::getInstance().getDefault());
-		text.setCharacterSize(6);
-		text.setFillColor(sf::Color::White);
 		text.setString(player->getName());
 		text.setPosition({pos.x - text.getGlobalBounds().size.x / 2, pos.y - 16});
+		const auto textColour = sf::Color({static_cast<std::uint8_t>(player->getColour().r / 2 + 128), static_cast<std::uint8_t>(player->getColour().g / 2 + 128), static_cast<std::uint8_t>(player->getColour().b / 2 + 128)});
+		text.setFillColor(textColour);
 		AngleShooterClient::get().renderTexture.draw(text);
 	});
 	registerRenderer<BulletEntity>(BulletEntity::ID, [this](const std::shared_ptr<BulletEntity>& bullet, float deltaTime) {

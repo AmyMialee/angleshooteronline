@@ -70,6 +70,7 @@ void ServerListState::seekThread() {
 		std::this_thread::sleep_for(std::chrono::milliseconds(10));
 		if (StateManager::get().getStateId() != SERVER_LIST_ID) return;
 	}
+	remainingPorts.setString("");
 	Logger::info("Found " + std::to_string(activeServers.size()) + " servers");
 }
 

@@ -5,7 +5,7 @@ ClientPlayerEntity::ClientPlayerEntity(uint16_t id, World* world) : PlayerEntity
 
 void ClientPlayerEntity::tick(float deltaTime) {
 	PlayerEntity::tick(deltaTime);
-	if (!isClientPlayer) return;
+	if (!isClientPlayer || StateManager::get().getStateId() != GameState::GAME_ID) return;
 	input = sf::Vector2f(0, 0);
 	if (InputManager::get().getUp()->isPressed()) input += sf::Vector2f(0, -1);
 	if (InputManager::get().getDown()->isPressed()) input += sf::Vector2f(0, 1);

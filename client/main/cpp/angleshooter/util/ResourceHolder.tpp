@@ -45,7 +45,7 @@ T& ResourceHolder<T>::get(const Identifier& id) {
     if (found != this->resourceMap.end()) return *found->second;
     if (!attemptedResources.contains(id.getHash())) {
         attemptedResources.insert(id.getHash());
-        Logger::info("ResourceHolder::get - Late Loading " + this->directory + " Resource: " + id.toString());
+        Logger::debug("ResourceHolder::get - Late Loading " + this->directory + " Resource: " + id.toString());
         this->load(id);
         auto retry = this->resourceMap.find(id.getHash());
         if (retry != this->resourceMap.end()) return *retry->second;
@@ -59,7 +59,7 @@ T* ResourceHolder<T>::getPointer(const Identifier& id) {
     if (found != this->resourceMap.end()) return found->second.get();
     if (!attemptedResources.contains(id.getHash())) {
         attemptedResources.insert(id.getHash());
-        Logger::info("ResourceHolder::get - Late Loading " + this->directory + " Resource: " + id.toString());
+        Logger::debug("ResourceHolder::get - Late Loading " + this->directory + " Resource: " + id.toString());
         this->load(id);
         auto retry = this->resourceMap.find(id.getHash());
         if (retry != this->resourceMap.end()) return retry->second.get();

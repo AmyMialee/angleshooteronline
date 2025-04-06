@@ -21,6 +21,39 @@ void SettingsState::init() {
 	nameButton->setTextFunction(nameText);
 	gui.pack(nameButton);
 
+	const auto redSlider = std::make_shared<Slider>();
+	redSlider->setPosition({80.f, 100.f + offset * 5});
+	redSlider->setTextFunction([](double value) { return "Red Value : " + std::to_string(static_cast<int>(value * 255.)); });
+	redSlider->setConstantCallback(Consumer<double>([this](double value) {
+		const auto oldColour = OptionsManager::get().getColour();
+		const auto colour = sf::Color(static_cast<uint8_t>(value * 255.), oldColour.g, oldColour.b);
+		OptionsManager::get().setColour(colour);
+	}));
+	redSlider->setValue(OptionsManager::get().getColour().r / 255.);
+	gui.pack(redSlider);
+
+	const auto greenSlider = std::make_shared<Slider>();
+	greenSlider->setPosition({80.f, 100.f + offset * 6});
+	greenSlider->setTextFunction([](double value) { return "Green Value : " + std::to_string(static_cast<int>(value * 255.)); });
+	greenSlider->setConstantCallback(Consumer<double>([this](double value) {
+		const auto oldColour = OptionsManager::get().getColour();
+		const auto colour = sf::Color(oldColour.r, static_cast<uint8_t>(value * 255.), oldColour.b);
+		OptionsManager::get().setColour(colour);
+	}));
+	greenSlider->setValue(OptionsManager::get().getColour().g / 255.);
+	gui.pack(greenSlider);
+
+	const auto blueSlider = std::make_shared<Slider>();
+	blueSlider->setPosition({80.f, 100.f + offset * 7});
+	blueSlider->setTextFunction([](double value) { return "Blue Value : " + std::to_string(static_cast<int>(value * 255.)); });
+	blueSlider->setConstantCallback(Consumer<double>([this](double value) {
+		const auto oldColour = OptionsManager::get().getColour();
+		const auto colour = sf::Color(oldColour.r, oldColour.g, static_cast<uint8_t>(value * 255.));
+		OptionsManager::get().setColour(colour);
+	}));
+	blueSlider->setValue(OptionsManager::get().getColour().b / 255.);
+	gui.pack(blueSlider);
+
 	const auto masterSlider = std::make_shared<Slider>();
 	masterSlider->setPosition({300.f, 100.f + offset * 3});
 	masterSlider->setTextFunction([](double value) { return "Master Volume : " + std::to_string(static_cast<int>(value * 100.)); });
@@ -82,16 +115,21 @@ void SettingsState::loadAssets() {}
 
 void SettingsState::render(float deltaTime) {
 	static sf::Sprite background(TextureHolder::getInstance().get(MenuState::MENU_TEXTURE));
+	static sf::Sprite playerSprite(TextureHolder::getInstance().get(Identifier("player.png")));
 	static std::once_flag flag;
 	std::call_once(flag, [&] {
 		background.setColor({200, 255, 255, 255});
 		Util::centre(background);
 		background.setPosition(AngleShooterClient::get().renderTexture.getView().getSize() / 2.f);
 		background.setScale({2.f, 2.f});
+		Util::centre(playerSprite);
+		playerSprite.setPosition({180.f, 420.f});
 	});
 	auto& texture = AngleShooterClient::get().renderTexture;
 	texture.draw(background);
 	texture.draw(gui);
+	playerSprite.setColor(OptionsManager::get().getColour());
+	texture.draw(playerSprite);
 }
 
 bool SettingsState::shouldRenderNextState() const {
