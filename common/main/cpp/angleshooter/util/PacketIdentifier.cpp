@@ -6,7 +6,7 @@ uint8_t PacketIdentifier::getNextId() const {
 		Logger::error("PacketIdentifier ID overflow, unable to allocate more");
 		return nextId;
 	}
-	Logger::info("Packet Created with ID: " + std::to_string(nextId) + " (" + this->toString() + ")");
+	Logger::debug("Packet Created with ID: " + std::to_string(nextId) + " (" + this->toString() + ")");
 	return nextId++;
 }
 

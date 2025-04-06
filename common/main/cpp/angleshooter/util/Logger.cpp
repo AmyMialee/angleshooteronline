@@ -1,6 +1,8 @@
 ﻿#include "main/cpp/angleshooter/PreCompiledHeaders.h"
 #include "Logger.h"
 
+#include "../../../../../client/main/cpp/angleshooter/managers/OptionsManager.h"
+
 Logger& Logger::getInstance() {
     static Logger instance;
     return instance;
@@ -52,6 +54,7 @@ void Logger::logOnce(Severity level, const std::string& message) {
 }
 
 void Logger::debug(const std::string& message) {
+    if (!OptionsManager::get().isDebugEnabled()) return;
     getInstance().log(Severity::DEBUG, message);
 }
 
@@ -68,6 +71,7 @@ void Logger::error(const std::string& message) {
 }
 
 void Logger::debugOnce(const std::string& message) {
+    if (!OptionsManager::get().isDebugEnabled()) return;
     getInstance().logOnce(Severity::DEBUG, message);
 }
 

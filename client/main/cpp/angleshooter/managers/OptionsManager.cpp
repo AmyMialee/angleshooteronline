@@ -24,7 +24,7 @@ void OptionsManager::saveToFile() {
 	if (std::ofstream file(fileName); file.is_open()) {
 		file << json.dump(4);
 		file.close();
-		Logger::debug("Saved options to file");
+		Logger::info("Saved options to file");
 	} else {
 		Logger::errorOnce("Failed to save options to file");
 	}
@@ -32,7 +32,7 @@ void OptionsManager::saveToFile() {
 
 void OptionsManager::loadFromFile() {
 	if (std::ifstream file(fileName); file.is_open()) {
-		Logger::debug("Loading options from file");
+		Logger::info("Loading options from file");
 		nlohmann::json json;
 		file >> json;
 		file.close();
@@ -55,7 +55,7 @@ void OptionsManager::loadFromFile() {
 			Logger::error("Failed to load options from file: " + std::string(e.what()));
 			saveToFile();
 		}
-		Logger::debug("Options loaded");
+		Logger::info("Options loaded");
 	} else {
 		saveToFile();
 		Logger::info("Creating new options file");
