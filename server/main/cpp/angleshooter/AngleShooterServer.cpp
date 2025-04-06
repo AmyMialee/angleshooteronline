@@ -32,6 +32,7 @@ AngleShooterServer::AngleShooterServer() {
         mapPacket << sender.player->getId();
         send(sender.socket, mapPacket);
         for (auto& client : clients) {
+            if (!client.get()->player) return;
             if (client.get()->player->getId() == sender.player->getId()) continue;
             auto syncPlayerPacket = NetworkProtocol::S2C_SPAWN_PLAYER.getPacket();
             client.get()->player->writeToPacket(syncPlayerPacket);
@@ -91,6 +92,7 @@ AngleShooterServer::AngleShooterServer() {
         syncPlayerPacket << y;
         syncPlayerPacket << isFiring;
         for (auto& client : clients) {
+            if (!client.get()->player) return;
             if (client.get()->player->getId() == sender.player->getId()) continue;
             send(*client, syncPlayerPacket);
         }
@@ -105,6 +107,7 @@ AngleShooterServer::AngleShooterServer() {
         syncPlayerPacket << x;
         syncPlayerPacket << y;
         for (auto& client : clients) {
+            if (!client.get()->player) return;
             if (client.get()->player->getId() == sender.player->getId()) continue;
             send(*client, syncPlayerPacket);
         }
@@ -112,7 +115,7 @@ AngleShooterServer::AngleShooterServer() {
 }
 
 void AngleShooterServer::run() {
-    Logger::debug("Starting AngleShooter Server");
+    Logger::info("Starting AngleShooter Server");
     ServerWorld::get().init();
     ServerWorld::get().loadMap(Identifier("testmaplarge"));
     std::thread receiverThread(&AngleShooterServer::runReceiver, this);
@@ -121,7 +124,7 @@ void AngleShooterServer::run() {
     auto tickTime = 0.;
     auto secondTime = 0.;
     auto ticks = 0;
-    Logger::debug("Starting Server Game Loop");
+    Logger::info("Starting Server Game Loop");
     while (true) {
         const auto deltaTime = deltaClock.restart().asSeconds();
         tickTime += deltaTime;
@@ -145,7 +148,7 @@ void AngleShooterServer::run() {
 }
 
 void AngleShooterServer::runReceiver() {
-    Logger::debug("Starting Server Network Handler");
+    Logger::info("Starting Server Network Handler");
     while (true) {
         handleIncomingClients();
         handleIncomingPackets();
@@ -155,7 +158,7 @@ void AngleShooterServer::runReceiver() {
 }
 
 void AngleShooterServer::runSender() {
-    Logger::debug("Starting Server Packet Sender");
+    Logger::info("Starting Server Packet Sender");
     while (true) {
         std::unique_lock lock(packetLock);
         if (!packetQueue.empty()) {
@@ -177,6 +180,7 @@ void AngleShooterServer::handleIncomingClients() {
         auto join = std::make_unique<ClientConnection>();
         join->socket.setBlocking(false);
         if (const auto status = listenerSocket.accept(join->socket); status == sf::Socket::Status::Done) {
+            Logger::info("Accepted connection from " + Util::getAddressString(join->socket));
             clients.push_back(std::move(join));
         } else {
             if (status != sf::Socket::Status::NotReady) Logger::error("Join Error: " + Util::getAddressString(join->socket));
@@ -191,6 +195,7 @@ void AngleShooterServer::handleIncomingPackets() {
         if (const auto status = client->socket.receive(packet); status == sf::Socket::Status::Done) {
             handlePacket(*client, packet);
         } else if (status == sf::Socket::Status::Disconnected) {
+            Logger::info("Client disconnected: " + Util::getAddressString(client->socket));
             pendingDisconnects.insert(client.get());
         } else if (status != sf::Socket::Status::NotReady) {
             Logger::error("Receive Error: " + Util::getAddressString(client->socket));
@@ -202,7 +207,7 @@ void AngleShooterServer::handleDisconnectingClients() {
     auto iterator = clients.begin();
     while (iterator != clients.end()) {
         if (pendingDisconnects.contains(iterator->get())) {
-            iterator->get()->player->shouldBeErased = true;
+            if (iterator->get()->player) iterator->get()->player->shouldBeErased = true;
             iterator = clients.erase(iterator);
         } else ++iterator;
     }
