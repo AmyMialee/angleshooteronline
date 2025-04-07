@@ -8,20 +8,29 @@ ServerListState::ServerListState() : remainingPorts(FontHolder::getInstance().ge
 void ServerListState::init() {
 	gui.clear();
 
-	const auto button = std::make_shared<Button>();
-	button->setPosition({80.f, 400.f});
-	auto ipText = [&](const std::string& ip) { return "IP: " + ip; };
-	button->setText(ipText(OptionsManager::get().getIp()));
-	button->setCallback([this] {
+	const auto optionsIp = std::make_shared<Button>();
+	optionsIp->setPosition({80.f, 364.f});
+	auto ipText = [&](const std::string& ip) { return "Options: " + ip; };
+	optionsIp->setText(ipText(OptionsManager::get().getIp()));
+	optionsIp->setCallback([this] {
 		AngleShooterClient::get().foundAddress = sf::IpAddress::resolve(OptionsManager::get().getIp()).value();
 		requestStackClear();
 		requestStackPush(GameState::GAME_ID);
 	});
-	gui.pack(button);
+	gui.pack(optionsIp);
+
+	const auto localIp = std::make_shared<Button>();
+	localIp->setPosition({80.f, 400.f});
+	localIp->setText("localhost: 127.0.0.1");
+	localIp->setCallback([this] {
+		AngleShooterClient::get().foundAddress = sf::IpAddress(127, 0, 0, 1);
+		requestStackClear();
+		requestStackPush(GameState::GAME_ID);
+	});
+	gui.pack(localIp);
 
 	std::thread receiverThread(&ServerListState::seekThread, this);
     receiverThread.detach();
-
 	const auto backButton = std::make_shared<Button>();
 	backButton->setPosition({300.f, 475.f});
 	backButton->setText("Back");
@@ -43,7 +52,7 @@ void ServerListState::seekThread() {
 	remainingPorts.setPosition({5, 5});
 	remainingPorts.setString("Refreshing Server List...");
 	remainingPorts.setScale({0.5f, 0.5f});
-	auto index = 1;
+	auto index = 2;
 	for (auto i = 1; i <= 255; ++i) {
 		if (auto targetIp = sf::IpAddress::resolve(baseIp + std::to_string(i))) {
 			sf::TcpSocket socket;

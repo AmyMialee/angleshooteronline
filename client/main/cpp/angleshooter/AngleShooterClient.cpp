@@ -279,6 +279,7 @@ void AngleShooterClient::run() {
 			secondTime = 0;
 		}
 	}
+	connectingSocket.disconnect();
 }
 
 void AngleShooterClient::tick(float deltaTime) {
