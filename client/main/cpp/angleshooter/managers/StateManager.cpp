@@ -22,9 +22,11 @@ void StateManager::applyChanges() {
 				stack.emplace_back(create(change.id), false);
 				continue;
 			case StackMove::POP:
+				stack.back().first->destroy();
 				stack.pop_back();
 				continue;
 			case StackMove::CLEAR:
+				for (auto& [state, initialized] : std::ranges::reverse_view(stack)) state->destroy();
 				stack.clear();
 		}
 	}

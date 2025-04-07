@@ -24,6 +24,7 @@
 #include "rendering/shaders/PostProcessing.h"
 #include "rendering/shaders/BloomProcessing.h"
 #include "rendering/WorldRenderer.h"
+#include "util/ScoreEntry.h"
 #include "states/MenuState.h"
 #include "states/GameState.h"
 #include "states/SettingsState.h"

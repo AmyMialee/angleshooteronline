@@ -138,6 +138,7 @@
     <ClCompile Include="main\cpp\angleshooter\managers\FontHolder.cpp"/>
     <ClCompile Include="main\cpp\angleshooter\managers\InputManager.cpp" />
     <ClCompile Include="main\cpp\angleshooter\managers\OptionsManager.cpp" />
+    <ClCompile Include="main\cpp\angleshooter\managers\ScoreManager.cpp" />
     <ClCompile Include="main\cpp\angleshooter\managers\SoundHolder.cpp" />
     <ClCompile Include="main\cpp\angleshooter\managers\StateManager.cpp" />
     <ClCompile Include="main\cpp\angleshooter\managers\TextureHolder.cpp" />
@@ -166,6 +167,7 @@
     <ClCompile Include="main\cpp\angleshooter\states\SplashState.cpp" />
     <ClCompile Include="main\cpp\angleshooter\states\State.cpp" />
     <ClCompile Include="main\cpp\angleshooter\util\Keybinding.cpp" />
+    <ClCompile Include="main\cpp\angleshooter\util\ScoreEntry.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main\cpp\angleshooter\AngleShooterClient.h" />
@@ -175,6 +177,7 @@
     <ClInclude Include="main\cpp\angleshooter\managers\FontHolder.h" />
     <ClInclude Include="main\cpp\angleshooter\managers\InputManager.h" />
     <ClInclude Include="main\cpp\angleshooter\managers\OptionsManager.h" />
+    <ClInclude Include="main\cpp\angleshooter\managers\ScoreManager.h" />
     <ClInclude Include="main\cpp\angleshooter\managers\ShaderHolder.h" />
     <ClInclude Include="main\cpp\angleshooter\managers\ShaderHolder.tpp" />
     <ClInclude Include="main\cpp\angleshooter\managers\SoundHolder.h" />
@@ -204,6 +207,7 @@
     <ClInclude Include="main\cpp\angleshooter\util\Keybinding.h" />
     <ClInclude Include="main\cpp\angleshooter\util\ResourceHolder.h" />
     <ClInclude Include="main\cpp\angleshooter\util\ResourceHolder.tpp" />
+    <ClInclude Include="main\cpp\angleshooter\util\ScoreEntry.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

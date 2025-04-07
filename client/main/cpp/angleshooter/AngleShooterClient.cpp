@@ -93,6 +93,8 @@ AngleShooterClient::AngleShooterClient() :
 	registerPacket(NetworkProtocol::S2C_SPAWN_PLAYER, [this](sf::Packet& packet) {
 		const auto player = ClientWorld::get().spawnPlayer(packet);
 		packet >> player->isClientPlayer;
+		GameState::SCORES.emplace(player->getId(), ScoreEntry{player->name, player->colour, player->score, 0, 0});
+		GameState::refreshScores();
 	});
 	registerPacket(NetworkProtocol::S2C_SPAWN_BULLET, [this](sf::Packet& packet) {
 		ClientWorld::get().spawnBullet(packet);
@@ -132,7 +134,7 @@ AngleShooterClient::AngleShooterClient() :
 	registerPacket(NetworkProtocol::S2C_BULLET_CHARGE, [this](sf::Packet& packet) {
 		uint16_t id;
 		packet >> id;
-		int charge;
+		uint16_t charge;
 		packet >> charge;
 		for (const auto& entity : ClientWorld::get().getEntities()) {
 			if (entity->getEntityType() != PlayerEntity::ID) continue;
@@ -145,7 +147,7 @@ AngleShooterClient::AngleShooterClient() :
 	registerPacket(NetworkProtocol::S2C_HEALTH, [this](sf::Packet& packet) {
 		uint16_t id;
 		packet >> id;
-		int health;
+		uint16_t health;
 		packet >> health;
 		for (const auto& entity : ClientWorld::get().getEntities()) {
 			if (entity->getEntityType() != PlayerEntity::ID) continue;
@@ -187,9 +189,32 @@ AngleShooterClient::AngleShooterClient() :
 		while (iterator != ClientWorld::get().gameObjects.end()) {
 			if (iterator->first == id) {
 				iterator = ClientWorld::get().gameObjects.erase(iterator);
+				if (const auto it = GameState::SCORES.find(id); it != GameState::SCORES.end()) {
+					GameState::SCORES.erase(it);
+					GameState::refreshScores();
+				}
 			} else {
 				++iterator;
 			}
+		}
+	});
+	registerPacket(NetworkProtocol::S2C_UPDATE_SCORE, [this](sf::Packet& packet) {
+		uint16_t id;
+		packet >> id;
+		uint16_t score;
+		packet >> score;
+		for (const auto& entity : ClientWorld::get().getEntities()) {
+			if (entity->getEntityType() != PlayerEntity::ID) continue;
+			const auto player = dynamic_cast<PlayerEntity*>(entity.get());
+			if (player->getId() != id) continue;
+			player->score = score;
+			if (const auto it = GameState::SCORES.find(player->getId()); it != GameState::SCORES.end()) {
+				it->second.score = player->score;
+			} else {
+				GameState::SCORES.emplace(player->getId(), ScoreEntry{player->name, player->colour, player->score, 0, 0});
+			}
+			GameState::refreshScores();
+			return;
 		}
 	});
 }

@@ -17,6 +17,7 @@ public:
 	inline static PacketIdentifier S2C_DEATH;
 	inline static PacketIdentifier S2C_TELEPORT;
 	inline static PacketIdentifier S2C_REMOVE_OBJECT;
+	inline static PacketIdentifier S2C_UPDATE_SCORE;
 
 	inline static PacketIdentifier C2S_JOIN;
 	inline static PacketIdentifier C2S_CHANGE_NAME;
@@ -44,6 +45,7 @@ public:
 		S2C_DEATH = PacketIdentifier("S2C_DEATH");
 		S2C_TELEPORT = PacketIdentifier("S2C_TELEPORT");
 		S2C_REMOVE_OBJECT = PacketIdentifier("S2C_REMOVE_OBJECT");
+		S2C_UPDATE_SCORE = PacketIdentifier("S2C_UPDATE_SCORE");
 
 		C2S_JOIN = PacketIdentifier("C2S_JOIN");
 		C2S_CHANGE_NAME = PacketIdentifier("C2S_CHANGE_NAME");

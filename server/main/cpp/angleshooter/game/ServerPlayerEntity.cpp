@@ -33,7 +33,7 @@ void ServerPlayerEntity::tick(float deltaTime) {
 	}
 }
 
-bool ServerPlayerEntity::damage(uint16_t source, int amount) {
+bool ServerPlayerEntity::damage(uint16_t source, uint16_t amount) {
 	const auto result = PlayerEntity::damage(source, amount);
 	if (result) {
 		auto packet = NetworkProtocol::S2C_HEALTH.getPacket();
@@ -60,6 +60,14 @@ void ServerPlayerEntity::onDeath(uint16_t source) {
 	auto packet = NetworkProtocol::S2C_DEATH.getPacket();
 	packet << this->getId();
 	AngleShooterServer::get().sendToAll(packet);
+	for (const auto& client : AngleShooterServer::get().clients) {
+		if (client->player->getId() != source) continue;
+		client->player->score++;
+		auto scorePacket = NetworkProtocol::S2C_UPDATE_SCORE.getPacket();
+		scorePacket << client->player->getId() << client->player->score;
+		AngleShooterServer::get().sendToAll(scorePacket);
+		break;
+	}
 }
 
 bool ServerPlayerEntity::isMarkedForRemoval() const {

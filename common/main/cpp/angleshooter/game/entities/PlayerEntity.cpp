@@ -20,7 +20,7 @@ void PlayerEntity::tick(float deltaTime) {
 		this->bulletCharge = 0;
 	} else {
 		this->bulletCharge++;
-		this->bulletCharge = std::min(this->bulletCharge, 120);
+		this->bulletCharge = std::min(this->bulletCharge, static_cast<uint16_t>(120));
 	}
 	if (input.length() > 0) {  // NOLINT(clang-diagnostic-undefined-func-template)
 		input /= input.length();
@@ -41,7 +41,7 @@ void PlayerEntity::tick(float deltaTime) {
 	Entity::tick(deltaTime);
 }
 
-bool PlayerEntity::damage(uint16_t source, int amount) {
+bool PlayerEntity::damage(uint16_t source, uint16_t amount) {
 	if (this->health <= 0 || this->immunityTime > 0) return false;
 	this->health -= amount;
 	if (this->health <= 0) {
