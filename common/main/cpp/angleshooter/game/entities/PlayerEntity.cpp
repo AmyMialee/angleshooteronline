@@ -56,34 +56,6 @@ void PlayerEntity::onDeath(uint16_t source) {
 	this->immunityTime = 120;
 }
 
-std::string PlayerEntity::getName() const {
-	return this->name;
-}
-
-sf::Color PlayerEntity::getColour() const {
-	return this->color;
-}
-
-int PlayerEntity::getHealth() const {
-	return this->health;
-}
-
-int PlayerEntity::getDeathTime() const {
-	return this->deathTime;
-}
-
-int PlayerEntity::getImmunityTime() const {
-	return this->immunityTime;
-}
-
-int PlayerEntity::getBulletCharge() const {
-	return this->bulletCharge;
-}
-
-void PlayerEntity::setColor(sf::Color color) {
-	this->color = color;
-}
-
 bool PlayerEntity::isMarkedForRemoval() const {
 	return false;
 }
@@ -91,7 +63,7 @@ bool PlayerEntity::isMarkedForRemoval() const {
 void PlayerEntity::writeToPacket(sf::Packet& packet) const {
 	Entity::writeToPacket(packet);
 	packet << this->name;
-	packet << this->color.r << this->color.g << this->color.b;
+	packet << this->colour.r << this->colour.g << this->colour.b;
 	packet << this->health;
 	packet << this->input.x;
 	packet << this->input.y;
@@ -102,9 +74,9 @@ void PlayerEntity::writeToPacket(sf::Packet& packet) const {
 void PlayerEntity::readFromPacket(sf::Packet& packet) {
 	Entity::readFromPacket(packet);
 	packet >> this->name;
-	packet >> this->color.r;
-	packet >> this->color.g;
-	packet >> this->color.b;
+	packet >> this->colour.r;
+	packet >> this->colour.g;
+	packet >> this->colour.b;
 	packet >> this->health;
 	packet >> this->input.x;
 	packet >> this->input.y;

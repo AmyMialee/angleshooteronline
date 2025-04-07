@@ -1,7 +1,6 @@
 ﻿#pragma once
 
-class AudioManager final : public Singleton<AudioManager> {
-	friend class Singleton;
+class AudioManager final {
 	sf::Music music;
 	Identifier musicId = Identifier::empty;
 	float musicVolume = 1.f;
@@ -9,7 +8,10 @@ class AudioManager final : public Singleton<AudioManager> {
 	std::vector<std::tuple<std::shared_ptr<sf::Sound>, float, float>> sounds;
 	int tickIndex = 0;
 	float scaleVolume(double volume);
+
+protected:
 	AudioManager() = default;
+	~AudioManager() = default;
 
 public:
 	void playMusic(const Identifier& id, float volume = 1.f, float pitch = 1.f);
@@ -29,4 +31,9 @@ public:
 	[[nodiscard]] sf::Vector3f getListenerRotation3d() const;
 	void setListenerRotation(sf::Vector2f direction);
 	void setListenerRotation(sf::Vector3f direction);
+
+	static AudioManager& get() {
+		static AudioManager instance;
+		return instance;
+	}
 };

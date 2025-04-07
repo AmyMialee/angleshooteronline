@@ -1,11 +1,5 @@
 ﻿#pragma once
-#include "ShaderHolder.h"  // NOLINT(misc-header-include-cycle)
-#include <angleshooter/util/Logger.h>
-
-inline ShaderHolder& ShaderHolder::get() {
-    static ShaderHolder instance;
-    return instance;
-}
+#include "ShaderHolder.h"
 
 inline void ShaderHolder::load(const Identifier& id, const Identifier& filename, const Identifier& parameter) {
     this->load(id,

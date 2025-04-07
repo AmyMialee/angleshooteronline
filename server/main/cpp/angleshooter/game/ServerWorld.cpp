@@ -5,7 +5,7 @@ std::shared_ptr<ServerPlayerEntity> ServerWorld::spawnPlayer(ClientConnection& s
 	const auto player = std::make_shared<ServerPlayerEntity>(this->getNextId(), this);
 	this->spawnEntity(player);
 	player->name = sender.name;
-	player->setColor(sender.colour);
+	player->colour = sender.colour;
 	player->setPosition(this->getMap()->getRandomSpawnpoint());
 	sender.player = player;
 	for (const auto& client : AngleShooterServer::get().clients) {
@@ -24,7 +24,7 @@ std::shared_ptr<BulletEntity> ServerWorld::spawnBullet(uint16_t source, sf::Vect
 		if (entity->getEntityType() != PlayerEntity::ID) continue;
 		const auto player = dynamic_cast<PlayerEntity*>(entity.get());
 		if (player->getId() != source) continue;
-		bullet->colour = player->getColour();
+		bullet->colour = player->colour;
 	}
 	bullet->setPosition(position);
 	bullet->setVelocity(velocity);

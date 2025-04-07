@@ -18,7 +18,7 @@ public:
 	[[nodiscard]] int getAge() const;
 
 	virtual void playMusic(const Identifier& id, float volume = 1.f, float pitch = 1.f) = 0;
-	virtual void playSound(const Identifier& id, float volume = 1.f, float pitch = 1.f, sf::Vector2f position = sf::Vector2f(0.f, 0.f), float attenuation = 1.f) = 0;
-	virtual void playSound3d(const Identifier& id, float volume = 1.f, float pitch = 1.f, sf::Vector3f position = sf::Vector3f(0.f, 0.f, 0.f), float attenuation = 1.f) = 0;
+	virtual void playSound(const Identifier& id, float volume = 1.f, float pitch = 1.f, sf::Vector2f position = sf::Vector2f(0.f, 0.f), float attenuation = .1f) = 0;
+	virtual void playSound3d(const Identifier& id, float volume = 1.f, float pitch = 1.f, sf::Vector3f position = sf::Vector3f(0.f, 0.f, 0.f), float attenuation = .1f) = 0;
 	virtual void loadMap(const Identifier& id);
 };

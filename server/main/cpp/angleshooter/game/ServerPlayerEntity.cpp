@@ -26,7 +26,7 @@ void ServerPlayerEntity::tick(float deltaTime) {
 		const auto velocity = sf::Vector2f(x, y);
 		const auto bullet = dynamic_cast<ServerWorld*>(this->world)->spawnBullet(this->getId(), this->getPosition(), velocity * 8.f);
 		bullet->setRotation(this->getRotation());
-		this->world->playSound(shootSound, .6f, Util::randomFloat(1.f, 1.6f));
+		this->world->playSound(shootSound, .6f, Util::randomFloat(1.f, 1.6f), this->getPosition());
 		auto packet = NetworkProtocol::S2C_BULLET_CHARGE.getPacket();
 		packet << this->getId() << this->bulletCharge;
 		AngleShooterServer::get().sendToAll(packet);
@@ -40,7 +40,7 @@ bool ServerPlayerEntity::damage(uint16_t source, int amount) {
 		packet << this->getId() << this->health;
 		AngleShooterServer::get().sendToAll(packet);
 		static Identifier hurtSound("hurt.ogg");
-		this->world->playSound(hurtSound, .8f, Util::randomFloat(0.8f, 1.2f));
+		this->world->playSound(hurtSound, .8f, Util::randomFloat(0.8f, 1.2f), this->getPosition());
 	}
 	return result;
 }
@@ -56,7 +56,7 @@ void ServerPlayerEntity::onDeath(uint16_t source) {
 		this->world->spawnEntity(bullet);
 	}
 	static Identifier explodeSound("explode.ogg");
-	this->world->playSound(explodeSound, .8f, Util::randomFloat(1.2f, 1.8f));
+	this->world->playSound(explodeSound, .8f, Util::randomFloat(1.2f, 1.8f), this->getPosition());
 	auto packet = NetworkProtocol::S2C_DEATH.getPacket();
 	packet << this->getId();
 	AngleShooterServer::get().sendToAll(packet);

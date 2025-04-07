@@ -24,6 +24,8 @@ void AudioManager::playMusic(const Identifier& id, float volume, float pitch) {
 		this->musicVolume = volume;
 		this->musicPitch = pitch;
 		this->music.setPitch(pitch);
+		this->music.setAttenuation(0.f);
+		this->music.setDirectionalAttenuationFactor(0.f);
 		setMusicVolume(volume * OptionsManager::get().getMasterVolume() * OptionsManager::get().getMusicVolume());
 		this->music.play();
 	} else {
@@ -45,6 +47,7 @@ void AudioManager::playSound3d(const Identifier& id, float volume, float pitch, 
 	sound->setPitch(pitch);
 	sound->setPosition(position);
 	sound->setAttenuation(attenuation);
+	sound->setDirectionalAttenuationFactor(0.f);
 	sound->play();
 	this->sounds.emplace_back(tuple);
 }

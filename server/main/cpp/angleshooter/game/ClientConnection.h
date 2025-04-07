@@ -6,7 +6,7 @@ public:
 	ClientConnection();
 	sf::TcpSocket socket;
 	std::string name = "Anon";
-	sf::Color colour = {0xFF, 0xAA, 0xAA, 0xFF};
+	sf::Color colour = {0xFF, 0xFF, 0xFF, 0xFF};
 	std::map<int, Identifier> translatedPackets;
 	std::shared_ptr<ServerPlayerEntity> player = nullptr;
 };
