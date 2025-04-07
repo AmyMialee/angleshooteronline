@@ -77,28 +77,33 @@ WorldRenderer::WorldRenderer() {
 	});
 }
 
-void WorldRenderer::render(float deltaTime) {
+void WorldRenderer::tick(float) {
+	viewLast = viewCurrent;
 	auto minX = std::numeric_limits<float>::max();
 	auto minY = std::numeric_limits<float>::max();
 	auto maxX = std::numeric_limits<float>::min();
 	auto maxY = std::numeric_limits<float>::min();
 	for (const auto& gameObject : ClientWorld::get().getEntities()) {
 		if (const auto player = dynamic_cast<PlayerEntity*>(gameObject.get()); player != nullptr) {
-			const auto position = player->getPosition() + player->input * deltaTime;
+			const auto position = player->getPosition();
 			minX = std::min(minX, position.x);
 			minY = std::min(minY, position.y);
 			maxX = std::max(maxX, position.x);
 			maxY = std::max(maxY, position.y);
 		}
 	}
-	const sf::FloatRect newViewSize = {{minX, minY}, {maxX, maxY}};
-	const sf::FloatRect viewSize = {
-		{lastViewSize.position.x * (1 - deltaTime) + newViewSize.position.x * deltaTime, lastViewSize.position.y * (1 - deltaTime) + newViewSize.position.y * deltaTime},
-		{lastViewSize.size.x * (1 - deltaTime) + newViewSize.size.x * deltaTime, lastViewSize.size.y * (1 - deltaTime) + newViewSize.size.y * deltaTime}};
-	const sf::Vector2f center = {viewSize.position.x / 2 + viewSize.size.x / 2, viewSize.position.y / 2 + viewSize.size.y / 2};
+	viewTarget = {{minX, minY}, {maxX, maxY}};
+	constexpr auto adjustment = 0.35f;
+	viewCurrent = {
+		{viewCurrent.position.x * (1 - adjustment) + viewTarget.position.x * adjustment, viewCurrent.position.y * (1 - adjustment) + viewTarget.position.y * adjustment},
+		{viewCurrent.size.x * (1 - adjustment) + viewTarget.size.x * adjustment, viewCurrent.size.y * (1 - adjustment) + viewTarget.size.y * adjustment}};
+}
+
+void WorldRenderer::render(float deltaTime) {
 	auto view = AngleShooterClient::get().renderTexture.getView();
+	const auto center = sf::Vector2f{viewLast.position.x / 2 + viewLast.size.x / 2, viewLast.position.y / 2 + viewLast.size.y / 2};
 	view.setCenter(center);
-	auto average = 160 + std::max((viewSize.size.x - viewSize.position.x) / 2, (viewSize.size.y - viewSize.position.y) / 2) * 3.2f;
+	const auto average = 160 + std::max((viewCurrent.size.x - viewCurrent.position.x) / 2, (viewCurrent.size.y - viewCurrent.position.y) / 2) * 3.2f;
 	view.setSize({average, average / static_cast<float>(AngleShooterClient::get().renderTexture.getSize().x) * static_cast<float>(AngleShooterClient::get().renderTexture.getSize().y)});
 	AngleShooterClient::get().renderTexture.setView(view);
 	if (ClientWorld::get().mapRenderer != nullptr) ClientWorld::get().mapRenderer->render(deltaTime);
@@ -127,7 +132,6 @@ void WorldRenderer::render(float deltaTime) {
 	}
 	static auto bloomProcessing = BloomProcessing();
 	bloomProcessing.apply(AngleShooterClient::get().renderTexture, AngleShooterClient::get().renderTexture);
-	this->lastViewSize = viewSize;
 }
 
 template<typename T> void WorldRenderer::registerRenderer(const Identifier& id, std::function<void(std::shared_ptr<T>, float)> renderer) {

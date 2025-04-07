@@ -86,6 +86,7 @@ bool GameState::shouldRenderNextState() const {
 
 bool GameState::tick(float deltaTime) {
 	ClientWorld::get().tick(deltaTime);
+	WorldRenderer::get().tick(deltaTime);
 	for (auto& score : SCORES | std::views::values) {
 		if (std::abs(score.yTarget - score.yCurrent) > 0.01f) {
 			score.yLastCurrent = score.yCurrent;
