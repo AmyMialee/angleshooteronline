@@ -275,12 +275,26 @@ AngleShooterClient::AngleShooterClient() :
 			return;
 		}
 	});
+	registerPacket(NetworkProtocol::PING, [this](sf::Packet& packet) {
+		auto pong = NetworkProtocol::PONG.getPacket();
+		send(pong);
+	});
+	registerPacket(NetworkProtocol::PONG, [this](sf::Packet&) {
+		this->rtt = this->roundTripTimer.reset().asSeconds();
+		Logger::debug("Pong! " + Util::toRoundedString(this->rtt, 2) + " seconds");
+	});
 }
 
 bool AngleShooterClient::connect(const sf::IpAddress& server) {
 	connectingSocket.setBlocking(true);
-	auto status = connectingSocket.connect(server, AngleShooterCommon::PORT, sf::seconds(5.f));
+	const auto status = connectingSocket.connect(server, AngleShooterCommon::PORT, sf::seconds(5.f));
 	connectingSocket.setBlocking(false);
+	if (status != sf::Socket::Status::Done) {
+		connected = false;
+		Logger::error("Connection Error: " + Util::toString(status));
+		connectingSocket.disconnect();
+		return false;
+	}
     Logger::info("Connection Status: " + Util::toString(status));
 	auto join = NetworkProtocol::C2S_JOIN.getPacket();
 	join << OptionsManager::get().getName();
@@ -288,7 +302,7 @@ bool AngleShooterClient::connect(const sf::IpAddress& server) {
 	join << OptionsManager::get().getColour().g;
 	join << OptionsManager::get().getColour().b;
 	send(join);
-	connected = static_cast<int>(status) == 0;
+	connected = true;
 	return connected;
 }
 

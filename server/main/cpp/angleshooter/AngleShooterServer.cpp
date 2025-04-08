@@ -127,6 +127,13 @@ AngleShooterServer::AngleShooterServer() {
         syncColourPacket << r << g << b;
         sendToAll(syncColourPacket);
     });
+    registerPacket(NetworkProtocol::PING, [this](ClientConnection& sender, sf::Packet&) {
+        auto pong = NetworkProtocol::PONG.getPacket();
+        send(sender, pong);
+    });
+    registerPacket(NetworkProtocol::PONG, [this](const ClientConnection& sender, sf::Packet&) {
+        Logger::debug("Pong! from " + sender.name + " (" + Util::getAddressString(sender.socket) + ")");
+    });
 }
 
 void AngleShooterServer::run() {

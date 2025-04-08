@@ -31,6 +31,8 @@ public:
 
 	inline static PacketIdentifier PACKET_QUESTION;
 	inline static PacketIdentifier PACKET_TRANSLATION;
+	inline static PacketIdentifier PING;
+	inline static PacketIdentifier PONG;
 
 	static void initialize() {
 		S2C_INITIAL_SETUP = PacketIdentifier("S2C_INITIAL_SETUP");
@@ -51,7 +53,6 @@ public:
 		S2C_UPDATE_SCORE = PacketIdentifier("S2C_UPDATE_SCORE");
 
 		C2S_JOIN = PacketIdentifier("C2S_JOIN");
-		C2S_CHANGE_NAME = PacketIdentifier("C2S_CHANGE_NAME");
 		C2S_SEND_MESSAGE = PacketIdentifier("C2S_SEND_MESSAGE");
 		C2S_QUIT = PacketIdentifier("C2S_QUIT");
 		C2S_PLAYER_INPUT = PacketIdentifier("C2S_PLAYER_INPUT");
@@ -61,5 +62,7 @@ public:
 
 		PACKET_QUESTION = PacketIdentifier("PACKET_QUESTION");
 		PACKET_TRANSLATION = PacketIdentifier("PACKET_TRANSLATION");
+		PING = PacketIdentifier("PING");
+		PONG = PacketIdentifier("PONG");
 	}
 };

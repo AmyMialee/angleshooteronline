@@ -5,6 +5,7 @@ class AngleShooterClient final {
 	std::map<uint8_t, Identifier> packetIds;
 	std::map<uint8_t, Identifier> translatedPackets;
 	sf::TcpSocket connectingSocket;
+	sf::Clock roundTripTimer;
 
 	void tick(float deltaTime);
 	void render(float deltaTime);
@@ -27,6 +28,7 @@ public:
 	double tps;
 	double fps;
 	bool connected = false;
+	float rtt = 0; // Round Trip Time
 	void run();
 	void send(sf::Packet& packet);
 	bool connect(const sf::IpAddress& server);
