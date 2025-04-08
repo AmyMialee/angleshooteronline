@@ -191,15 +191,20 @@ void AngleShooterServer::handleIncomingClients() {
 }
 
 void AngleShooterServer::handleIncomingPackets() {
-    for (auto& client : clients) {
-        sf::Packet packet;
-        if (const auto status = client->socket.receive(packet); status == sf::Socket::Status::Done) {
-            handlePacket(*client, packet);
-        } else if (status == sf::Socket::Status::Disconnected) {
-            Logger::info("Client disconnected: " + Util::getAddressString(client->socket));
-            pendingDisconnects.insert(client.get());
-        } else if (status != sf::Socket::Status::NotReady) {
-            Logger::error("Receive Error: " + Util::getAddressString(client->socket));
+    for (const auto& client : clients) {
+        while (true) {
+            sf::Packet packet;
+            if (const auto status = client->socket.receive(packet); status == sf::Socket::Status::Done) {
+                handlePacket(*client, packet);
+                continue;
+            } else if (status == sf::Socket::Status::Disconnected) {
+                Logger::info("Client disconnected: " + Util::getAddressString(client->socket));
+                pendingDisconnects.insert(client.get());
+            } else if (status != sf::Socket::Status::NotReady) {
+                Logger::error("Receive Error, disconnecting: " + Util::getAddressString(client->socket));
+                pendingDisconnects.insert(client.get());
+            }
+            return;
         }
     }
 }

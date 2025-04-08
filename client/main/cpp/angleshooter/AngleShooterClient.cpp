@@ -299,13 +299,18 @@ void AngleShooterClient::render(float deltaTime) {
 }
 
 void AngleShooterClient::handleIncomingPackets() {
-	sf::Packet packet;
-	if (const auto status = connectingSocket.receive(packet); status == sf::Socket::Status::Done) {
-		handlePacket(packet);
-	} else if (status == sf::Socket::Status::Disconnected) {
-		this->connected = false;
-	} else if (status != sf::Socket::Status::NotReady) {
-		Logger::error("Receive Error: " + Util::getAddressString(connectingSocket));
+	while (true) {
+		sf::Packet packet;
+		if (const auto status = connectingSocket.receive(packet); status == sf::Socket::Status::Done) {
+			handlePacket(packet);
+			continue;
+		} else if (status == sf::Socket::Status::Disconnected) {
+			this->connected = false;
+		} else if (status != sf::Socket::Status::NotReady) {
+			Logger::error("Receive Error, disconnecting: " + Util::getAddressString(connectingSocket));
+			this->connected = false;
+		}
+		return;
 	}
 }
 
