@@ -93,7 +93,7 @@ void WorldRenderer::tick(float) {
 		}
 	}
 	viewTarget = {{minX, minY}, {maxX, maxY}};
-	constexpr auto adjustment = 0.35f;
+	constexpr auto adjustment = 0.1f;
 	viewCurrent = {
 		{viewCurrent.position.x * (1 - adjustment) + viewTarget.position.x * adjustment, viewCurrent.position.y * (1 - adjustment) + viewTarget.position.y * adjustment},
 		{viewCurrent.size.x * (1 - adjustment) + viewTarget.size.x * adjustment, viewCurrent.size.y * (1 - adjustment) + viewTarget.size.y * adjustment}};
