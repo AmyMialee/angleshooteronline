@@ -41,15 +41,6 @@ AngleShooterServer::AngleShooterServer() {
             send(sender.socket, syncPlayerPacket);
         }
     });
-    registerPacket(NetworkProtocol::C2S_CHANGE_NAME, [this](ClientConnection& sender, sf::Packet& packet) {
-        std::string name;
-        packet >> name;
-        auto endName = name;
-        auto count = 0;
-        for (const auto& client : clients) if (client->name == endName) endName = name + " " + std::to_string(++count);
-        Logger::debug("Received Change Name Packet " + endName + " (" + Util::getAddressString(sender.socket) + "), previously " + sender.name);
-        sender.name = endName;
-    });
     registerPacket(NetworkProtocol::C2S_SEND_MESSAGE, [this](const ClientConnection& sender, sf::Packet& packet) {
         std::string message;
         packet >> message;
@@ -92,11 +83,11 @@ AngleShooterServer::AngleShooterServer() {
         syncPlayerPacket << x;
         syncPlayerPacket << y;
         syncPlayerPacket << isFiring;
-        for (auto& client : clients) {
-            if (!client.get()->player) return;
-            if (client.get()->player->getId() == sender.player->getId()) continue;
-            send(*client, syncPlayerPacket);
-        }
+        sendToAll(syncPlayerPacket, [&sender](const ClientConnection& client) {
+            if (!client.player) return true;
+            if (client.player->getId() == sender.player->getId()) return false;
+            return true;
+        });
     });
     registerPacket(NetworkProtocol::C2S_PLAYER_POSITION_SYNC, [this](const ClientConnection& sender, sf::Packet& packet) {
         float x, y;
@@ -107,11 +98,34 @@ AngleShooterServer::AngleShooterServer() {
         syncPlayerPacket << sender.player->getId();
         syncPlayerPacket << x;
         syncPlayerPacket << y;
-        for (auto& client : clients) {
-            if (!client.get()->player) return;
-            if (client.get()->player->getId() == sender.player->getId()) continue;
-            send(*client, syncPlayerPacket);
-        }
+        sendToAll(syncPlayerPacket, [&sender](const ClientConnection& client) {
+            if (!client.player) return true;
+            if (client.player->getId() == sender.player->getId()) return false;
+            return true;
+        });
+    });
+    registerPacket(NetworkProtocol::C2S_UPDATE_NAME, [this](ClientConnection& sender, sf::Packet& packet) {
+        std::string name;
+        packet >> name;
+        auto endName = name;
+        auto count = 0;
+        for (const auto& client : clients) if (client->name == endName) endName = name + " " + std::to_string(++count);
+        Logger::debug("Received Change Name Packet " + endName + " (" + Util::getAddressString(sender.socket) + "), previously " + sender.name);
+        sender.name = endName;
+        auto syncNamePacket = NetworkProtocol::S2C_UPDATE_NAME.getPacket();
+        syncNamePacket << sender.player->getId();
+        syncNamePacket << name;
+        sendToAll(syncNamePacket);
+    });
+    registerPacket(NetworkProtocol::C2S_UPDATE_COLOUR, [this](ClientConnection& sender, sf::Packet& packet) {
+        uint8_t r, g, b;
+        packet >> r >> g >> b;
+        Logger::debug("Received Change Colour Packet " + std::to_string(r) + " " + std::to_string(g) + " " + std::to_string(b) + " (" + Util::getAddressString(sender.socket) + ")");
+        sender.colour = {r, g, b, 255};
+        auto syncColourPacket = NetworkProtocol::S2C_UPDATE_COLOUR.getPacket();
+        syncColourPacket << sender.player->getId();
+        syncColourPacket << r << g << b;
+        sendToAll(syncColourPacket);
     });
 }
 
@@ -144,7 +158,7 @@ void AngleShooterServer::run() {
             ticks = 0;
             secondTime = 0;
         }
-        std::this_thread::sleep_for(std::chrono::milliseconds(12));
+        std::this_thread::sleep_for(std::chrono::milliseconds(6));
     }
 }
 
@@ -154,7 +168,7 @@ void AngleShooterServer::runReceiver() {
         handleIncomingClients();
         handleIncomingPackets();
         handleDisconnectingClients();
-        std::this_thread::sleep_for(std::chrono::milliseconds(12));
+        std::this_thread::sleep_for(std::chrono::milliseconds(6));
     }
 }
 
@@ -175,7 +189,7 @@ void AngleShooterServer::runSender() {
             }
         } else {
             lock.unlock();
-            std::this_thread::sleep_for(std::chrono::milliseconds(12));
+            std::this_thread::sleep_for(std::chrono::milliseconds(6));
         }
     }
 }
@@ -261,8 +275,11 @@ void AngleShooterServer::handlePacket(ClientConnection& sender, sf::Packet& pack
     }
 }
 
-void AngleShooterServer::sendToAll(sf::Packet& packet) {
-    for (const auto& client : clients) send(client->socket, packet);
+void AngleShooterServer::sendToAll(sf::Packet& packet, const std::function<bool(ClientConnection&)>& predicate) {
+    for (const auto& client : clients) {
+        if (!predicate(*client)) continue;
+        send(client->socket, packet);
+    }
 }
 
 void AngleShooterServer::send(ClientConnection& player, sf::Packet& packet) {

@@ -105,6 +105,11 @@ bool OptionsManager::isDebugEnabled() const {
 void OptionsManager::setName(const std::string& name) {
 	this->name = name;
 	saveToFile();
+	if (AngleShooterClient::get().connected) {
+		auto packet = NetworkProtocol::C2S_UPDATE_NAME.getPacket();
+		packet << name;
+		AngleShooterClient::get().send(packet);
+	}
 }
 
 void OptionsManager::setIp(const std::string& ip) {
@@ -117,6 +122,11 @@ void OptionsManager::setColour(sf::Color colour) {
 	this->g = colour.g;
 	this->b = colour.b;
 	saveToFile();
+	if (AngleShooterClient::get().connected) {
+		auto packet = NetworkProtocol::C2S_UPDATE_COLOUR.getPacket();
+		packet << colour.r << colour.g << colour.b;
+		AngleShooterClient::get().send(packet);
+	}
 }
 
 void OptionsManager::setFps(int fps) {

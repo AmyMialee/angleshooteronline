@@ -30,7 +30,7 @@ public:
 	void runReceiver();
 	void runSender();
 
-	void sendToAll(sf::Packet& packet);
+	void sendToAll(sf::Packet& packet, const std::function<bool(ClientConnection&)>& predicate = [](ClientConnection&) { return true; });
 	void send(ClientConnection& player, sf::Packet& packet);
 	void send(sf::TcpSocket& socket, sf::Packet& packet);
 

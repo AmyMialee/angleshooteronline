@@ -18,13 +18,16 @@ public:
 	inline static PacketIdentifier S2C_TELEPORT;
 	inline static PacketIdentifier S2C_REMOVE_OBJECT;
 	inline static PacketIdentifier S2C_UPDATE_SCORE;
+	inline static PacketIdentifier S2C_UPDATE_NAME;
+	inline static PacketIdentifier S2C_UPDATE_COLOUR;
 
 	inline static PacketIdentifier C2S_JOIN;
-	inline static PacketIdentifier C2S_CHANGE_NAME;
 	inline static PacketIdentifier C2S_SEND_MESSAGE;
 	inline static PacketIdentifier C2S_QUIT;
 	inline static PacketIdentifier C2S_PLAYER_INPUT;
 	inline static PacketIdentifier C2S_PLAYER_POSITION_SYNC;
+	inline static PacketIdentifier C2S_UPDATE_NAME;
+	inline static PacketIdentifier C2S_UPDATE_COLOUR;
 
 	inline static PacketIdentifier PACKET_QUESTION;
 	inline static PacketIdentifier PACKET_TRANSLATION;
@@ -53,6 +56,8 @@ public:
 		C2S_QUIT = PacketIdentifier("C2S_QUIT");
 		C2S_PLAYER_INPUT = PacketIdentifier("C2S_PLAYER_INPUT");
 		C2S_PLAYER_POSITION_SYNC = PacketIdentifier("C2S_PLAYER_POSITION_SYNC");
+		C2S_UPDATE_NAME = PacketIdentifier("C2S_UPDATE_NAME");
+		C2S_UPDATE_COLOUR = PacketIdentifier("C2S_UPDATE_COLOUR");
 
 		PACKET_QUESTION = PacketIdentifier("PACKET_QUESTION");
 		PACKET_TRANSLATION = PacketIdentifier("PACKET_TRANSLATION");

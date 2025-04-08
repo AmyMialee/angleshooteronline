@@ -108,9 +108,12 @@ AngleShooterClient::AngleShooterClient() :
 		packet >> y;
 		packet >> isFiring;
 		for (const auto& entity : ClientWorld::get().getEntities()) {
-			if (entity->getEntityType() != PlayerEntity::ID) continue;
+			if (entity->getId() != id) continue;
+			if (entity->getEntityType() != PlayerEntity::ID) {
+				Logger::error("Received player input for non-player entity");
+				return;
+			}
 			const auto player = dynamic_cast<PlayerEntity*>(entity.get());
-			if (player->getId() != id) continue;
 			player->input = {x, y};
 			player->isFiring = isFiring;
 			return;
@@ -137,9 +140,12 @@ AngleShooterClient::AngleShooterClient() :
 		uint16_t charge;
 		packet >> charge;
 		for (const auto& entity : ClientWorld::get().getEntities()) {
-			if (entity->getEntityType() != PlayerEntity::ID) continue;
+			if (entity->getId() != id) continue;
+			if (entity->getEntityType() != PlayerEntity::ID) {
+				Logger::error("Received player bullet charge for non-player entity");
+				return;
+			}
 			const auto player = dynamic_cast<PlayerEntity*>(entity.get());
-			if (player->getId() != id) continue;
 			player->bulletCharge = charge;
 			return;
 		}
@@ -150,9 +156,12 @@ AngleShooterClient::AngleShooterClient() :
 		uint16_t health;
 		packet >> health;
 		for (const auto& entity : ClientWorld::get().getEntities()) {
-			if (entity->getEntityType() != PlayerEntity::ID) continue;
+			if (entity->getId() != id) continue;
+			if (entity->getEntityType() != PlayerEntity::ID) {
+				Logger::error("Received player health for non-player entity");
+				return;
+			}
 			const auto player = dynamic_cast<PlayerEntity*>(entity.get());
-			if (player->getId() != id) continue;
 			player->health = health;
 			return;
 		}
@@ -161,9 +170,12 @@ AngleShooterClient::AngleShooterClient() :
 		uint16_t id;
 		packet >> id;
 		for (const auto& entity : ClientWorld::get().getEntities()) {
-			if (entity->getEntityType() != PlayerEntity::ID) continue;
+			if (entity->getId() != id) continue;
+			if (entity->getEntityType() != PlayerEntity::ID) {
+				Logger::error("Received player death for non-player entity");
+				return;
+			}
 			const auto player = dynamic_cast<PlayerEntity*>(entity.get());
-			if (player->getId() != id) continue;
 			player->deathTime = 60;
 			player->immunityTime = 120;
 			return;
@@ -175,9 +187,12 @@ AngleShooterClient::AngleShooterClient() :
 		float x, y;
 		packet >> x >> y;
 		for (const auto& entity : ClientWorld::get().getEntities()) {
-			if (entity->getEntityType() != PlayerEntity::ID) continue;
+			if (entity->getId() != id) continue;
+			if (entity->getEntityType() != PlayerEntity::ID) {
+				Logger::error("Received player teleport for non-player entity");
+				return;
+			}
 			const auto player = dynamic_cast<PlayerEntity*>(entity.get());
-			if (player->getId() != id) continue;
 			player->setPosition({x, y});
 			return;
 		}
@@ -204,9 +219,12 @@ AngleShooterClient::AngleShooterClient() :
 		uint16_t score;
 		packet >> score;
 		for (const auto& entity : ClientWorld::get().getEntities()) {
-			if (entity->getEntityType() != PlayerEntity::ID) continue;
+			if (entity->getId() != id) continue;
+			if (entity->getEntityType() != PlayerEntity::ID) {
+				Logger::error("Received player score for non-player entity");
+				return;
+			}
 			const auto player = dynamic_cast<PlayerEntity*>(entity.get());
-			if (player->getId() != id) continue;
 			player->score = score;
 			if (const auto it = GameState::SCORES.find(player->getId()); it != GameState::SCORES.end()) {
 				it->second.score = player->score;
@@ -214,6 +232,46 @@ AngleShooterClient::AngleShooterClient() :
 				GameState::SCORES.emplace(player->getId(), ScoreEntry{player->name, player->colour, player->score, 0, 0});
 			}
 			GameState::refreshScores();
+			return;
+		}
+	});
+	registerPacket(NetworkProtocol::S2C_UPDATE_NAME, [this](sf::Packet& packet) {
+		uint16_t id;
+		packet >> id;
+		std::string name;
+		packet >> name;
+		for (const auto& entity : ClientWorld::get().getEntities()) {
+			if (entity->getId() != id) continue;
+			if (entity->getEntityType() != PlayerEntity::ID) {
+				Logger::error("Received player name for non-player entity");
+				return;
+			}
+			const auto player = dynamic_cast<PlayerEntity*>(entity.get());
+			player->name = name;
+			if (const auto it = GameState::SCORES.find(player->getId()); it != GameState::SCORES.end()) {
+				it->second.name = player->name;
+				GameState::refreshScores();
+			}
+			return;
+		}
+	});
+	registerPacket(NetworkProtocol::S2C_UPDATE_COLOUR, [this](sf::Packet& packet) {
+		uint16_t id;
+		packet >> id;
+		uint8_t r, g, b;
+		packet >> r >> g >> b;
+		for (const auto& entity : ClientWorld::get().getEntities()) {
+			if (entity->getId() != id) continue;
+			if (entity->getEntityType() != PlayerEntity::ID) {
+				Logger::error("Received player colour for non-player entity");
+				return;
+			}
+			const auto player = dynamic_cast<PlayerEntity*>(entity.get());
+			player->colour = {r, g, b, 255};
+			if (const auto it = GameState::SCORES.find(player->getId()); it != GameState::SCORES.end()) {
+				it->second.colour = player->colour;
+				GameState::refreshScores();
+			}
 			return;
 		}
 	});

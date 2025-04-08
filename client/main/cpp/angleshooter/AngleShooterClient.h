@@ -5,7 +5,6 @@ class AngleShooterClient final {
 	std::map<uint8_t, Identifier> packetIds;
 	std::map<uint8_t, Identifier> translatedPackets;
 	sf::TcpSocket connectingSocket;
-	bool connected = false;
 
 	void tick(float deltaTime);
 	void render(float deltaTime);
@@ -27,6 +26,7 @@ public:
 	sf::RenderTexture renderTexture;
 	double tps;
 	double fps;
+	bool connected = false;
 	void run();
 	void send(sf::Packet& packet);
 	bool connect(const sf::IpAddress& server);
