@@ -21,7 +21,7 @@ void ClientPlayerEntity::tick(float deltaTime) {
 		AudioManager::get().setListenerPosition(this->getPosition());
 		// AudioManager::get().setListenerRotation(input);
 	}
-	if (this->world->getAge() % 12 == 0 && this->getPosition() != this->syncedPosition) {
+	if (this->world->getAge() % 8 == 0 && this->getPosition() != this->syncedPosition) {
 		auto packet = NetworkProtocol::C2S_PLAYER_POSITION_SYNC.getPacket();
 		packet << this->getPosition().x;
 		packet << this->getPosition().y;
