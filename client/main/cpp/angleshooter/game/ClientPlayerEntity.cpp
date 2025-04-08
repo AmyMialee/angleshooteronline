@@ -29,3 +29,13 @@ void ClientPlayerEntity::tick(float deltaTime) {
 		this->syncedPosition = this->getPosition();
 	}
 }
+
+void ClientPlayerEntity::readFromPacket(sf::Packet& packet) {
+	PlayerEntity::readFromPacket(packet);
+	if (const auto it = GameState::SCORES.find(this->getId()); it != GameState::SCORES.end()) {
+		it->second.score = this->score;
+	} else {
+		GameState::SCORES.emplace(this->getId(), ScoreEntry{this->name, this->colour, this->score, 0, 0});
+	}
+	GameState::refreshScores();
+}

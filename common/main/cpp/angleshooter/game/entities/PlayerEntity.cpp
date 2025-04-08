@@ -69,6 +69,7 @@ void PlayerEntity::writeToPacket(sf::Packet& packet) const {
 	packet << this->input.y;
 	packet << this->getVelocity().x;
 	packet << this->getVelocity().y;
+	packet << this->score;
 }
 
 void PlayerEntity::readFromPacket(sf::Packet& packet) {
@@ -84,4 +85,5 @@ void PlayerEntity::readFromPacket(sf::Packet& packet) {
 	packet >> vx;
 	packet >> vy;
 	this->setVelocity({vx, vy});
+	packet >> this->score;
 }

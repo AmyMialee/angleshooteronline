@@ -177,7 +177,6 @@
     <ClInclude Include="main\cpp\angleshooter\managers\FontHolder.h" />
     <ClInclude Include="main\cpp\angleshooter\managers\InputManager.h" />
     <ClInclude Include="main\cpp\angleshooter\managers\OptionsManager.h" />
-    <ClInclude Include="main\cpp\angleshooter\managers\ScoreManager.h" />
     <ClInclude Include="main\cpp\angleshooter\managers\ShaderHolder.h" />
     <ClInclude Include="main\cpp\angleshooter\managers\ShaderHolder.tpp" />
     <ClInclude Include="main\cpp\angleshooter\managers\SoundHolder.h" />
