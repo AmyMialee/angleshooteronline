@@ -166,9 +166,13 @@ void AngleShooterServer::runSender() {
             auto [socket, packet] = packetQueue.front();
             packetQueue.pop();
             lock.unlock();
-            auto status = sf::Socket::Status::Partial;
-            while (status == sf::Socket::Status::Partial) status = socket->send(packet);
-            if (status != sf::Socket::Status::Done) Logger::error("Send Error: " + Util::getAddressString(*socket));
+            try {
+                auto status = sf::Socket::Status::Partial;
+                while (status == sf::Socket::Status::Partial) status = socket->send(packet);
+                if (status != sf::Socket::Status::Done) Logger::error("Send Error: " + Util::getAddressString(*socket));
+            } catch (const std::exception& e) {
+                Logger::error("Send Error: " + Util::getAddressString(*socket) + " " + e.what());
+            }
         } else {
             lock.unlock();
             std::this_thread::sleep_for(std::chrono::milliseconds(12));
