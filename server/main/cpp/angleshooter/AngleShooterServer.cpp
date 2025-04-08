@@ -204,7 +204,7 @@ void AngleShooterServer::handleIncomingPackets() {
                 Logger::error("Receive Error, disconnecting: " + Util::getAddressString(client->socket));
                 pendingDisconnects.insert(client.get());
             }
-            return;
+            break;
         }
     }
 }
