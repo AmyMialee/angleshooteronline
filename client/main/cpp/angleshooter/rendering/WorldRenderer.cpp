@@ -93,6 +93,10 @@ void WorldRenderer::tick(float) {
 		}
 	}
 	viewTarget = {{minX, minY}, {maxX, maxY}};
+	if (std::abs(viewCurrent.position.x - viewTarget.position.x) > 100 || std::abs(viewCurrent.position.y - viewTarget.position.y) > 100) {
+		viewCurrent = viewTarget;
+		return;
+	}
 	constexpr auto adjustment = 0.1f;
 	viewCurrent = {
 		{viewCurrent.position.x * (1 - adjustment) + viewTarget.position.x * adjustment, viewCurrent.position.y * (1 - adjustment) + viewTarget.position.y * adjustment},
