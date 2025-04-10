@@ -138,7 +138,6 @@
     <ClCompile Include="main\cpp\angleshooter\managers\FontHolder.cpp"/>
     <ClCompile Include="main\cpp\angleshooter\managers\InputManager.cpp" />
     <ClCompile Include="main\cpp\angleshooter\managers\OptionsManager.cpp" />
-    <ClCompile Include="main\cpp\angleshooter\managers\ScoreManager.cpp" />
     <ClCompile Include="main\cpp\angleshooter\managers\SoundHolder.cpp" />
     <ClCompile Include="main\cpp\angleshooter\managers\StateManager.cpp" />
     <ClCompile Include="main\cpp\angleshooter\managers\TextureHolder.cpp" />
