@@ -36,8 +36,12 @@ void WidgetContainer::tick(float deltaTime) {
 }
 
 void WidgetContainer::draw(sf::RenderTarget& target, sf::RenderStates states) const {
-    states.transform *= getTransform();
-    for (const auto& child : children) target.draw(*child, states);
+    try {
+        states.transform *= getTransform();
+        for (const auto& child : children) target.draw(*child, states);
+    } catch (const std::exception& e) {
+        Logger::error("WidgetContainer::draw: " + std::string(e.what()));
+    }
 }
 
 bool WidgetContainer::hasSelection() const {
