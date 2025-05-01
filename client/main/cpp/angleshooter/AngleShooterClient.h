@@ -27,6 +27,7 @@ public:
 	sf::RenderTexture renderTexture;
 	double tps;
 	double fps;
+	double lps;
 	bool connected = false;
 	float rtt = 0; // Round Trip Time
 	void run();

@@ -17,7 +17,8 @@ AngleShooterClient::AngleShooterClient() :
 	window(sf::VideoMode({1920, 1080}), "Angle Shooter", sf::Style::Titlebar | sf::Style::Close),
 	renderTexture({960, 540}),
 	tps(static_cast<int>(1 / AngleShooterCommon::TIME_PER_TICK)),
-	fps(144)
+	fps(144),
+	lps(144)
 {
     NetworkProtocol::initialize();
 	window.clear();
@@ -321,6 +322,7 @@ void AngleShooterClient::run() {
 	auto secondTime = 0.;
 	auto ticks = 0;
 	auto frames = 0;
+	auto loops = 0;
 	while (window.isOpen()) {
 		const auto deltaTime = deltaClock.restart().asSeconds();
 		tickTime += deltaTime;
@@ -343,13 +345,17 @@ void AngleShooterClient::run() {
 			while (frameTime >= timePerFrame) frameTime -= timePerFrame;
 			++frames;
 		}
+		++loops;
 		if (secondTime >= .1f) {
-			tps = tps * .6 + .4 * (ticks / secondTime);
-			fps = fps * .6 + .4 * (frames / secondTime);
+			tps = ticks / secondTime;
+			fps = frames / secondTime;
+			lps = loops / secondTime;
 			ticks = 0;
 			frames = 0;
+			loops = 0;
 			secondTime = 0;
 		}
+		std::this_thread::sleep_for(std::chrono::milliseconds(1));
 	}
 	connectingSocket.disconnect();
 }
@@ -367,6 +373,38 @@ void AngleShooterClient::render(float deltaTime) {
 	sf::Sprite sprite(renderTexture.getTexture());
 	sprite.setScale({2.f, 2.f});
 	window.draw(sprite);
+	{
+		static auto tpsText = sf::Text(FontHolder::getInstance().getDefault(), "", 12);
+		static auto fpsText = sf::Text(FontHolder::getInstance().getDefault(), "", 12);
+		static auto lpsText = sf::Text(FontHolder::getInstance().getDefault(), "", 12);
+		static std::once_flag flag;
+		std::call_once(flag, [&] {
+			tpsText.setPosition({4.f, 4.f + 14});
+			fpsText.setPosition({4.f, 4.f});
+			lpsText.setPosition({4.f, 4.f + 28});
+		});
+		tpsText.setString("TPS: " + Util::toRoundedString(tps, 2));
+		fpsText.setString("FPS: " + Util::toRoundedString(fps, 2));
+		lpsText.setString("LPS: " + Util::toRoundedString(lps, 2));
+		fpsText.setPosition(fpsText.getPosition() + sf::Vector2f{1.f, 1.f});
+		tpsText.setPosition(tpsText.getPosition() + sf::Vector2f{1.f, 1.f});
+		lpsText.setPosition(lpsText.getPosition() + sf::Vector2f{1.f, 1.f});
+		fpsText.setFillColor(sf::Color::Black);
+		tpsText.setFillColor(sf::Color::Black);
+		lpsText.setFillColor(sf::Color::Black);
+		window.draw(fpsText);
+		window.draw(tpsText);
+		window.draw(lpsText);
+		fpsText.setPosition(fpsText.getPosition() - sf::Vector2f{1.f, 1.f});
+		tpsText.setPosition(tpsText.getPosition() - sf::Vector2f{1.f, 1.f});
+		lpsText.setPosition(lpsText.getPosition() - sf::Vector2f{1.f, 1.f});
+		fpsText.setFillColor(sf::Color::White);
+		tpsText.setFillColor(sf::Color::White);
+		lpsText.setFillColor(sf::Color::White);
+		window.draw(fpsText);
+		window.draw(tpsText);
+		window.draw(lpsText);
+	}
 	window.display();
 }
 
