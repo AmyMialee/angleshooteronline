@@ -8,11 +8,11 @@ Logger& Logger::getInstance() {
 
 Logger::Logger() : creationTime(static_cast<long>(std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now().time_since_epoch()).count())) {
     const std::filesystem::path runDir = "run";
-    const bool createdRun = create_directories(runDir);
-    const std::filesystem::path logPath = runDir / "latest.log";
+    const auto createdRun = create_directories(runDir);
+    const auto logPath = runDir / "latest.log";
     if (exists(logPath)) try {
         auto fileTime = last_write_time(logPath);
-        std::time_t unixTime = static_cast<std::time_t>([&]{
+        auto unixTime = static_cast<std::time_t>([&]{
             #ifdef _WIN32
                 return (fileTime.time_since_epoch().count() - 116444736000000000ULL) / 10000000;
             #else

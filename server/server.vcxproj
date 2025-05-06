@@ -101,10 +101,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="main\resources\data\angleshooter\maps\testmap.json" />
-    <Content Include="main\resources\data\angleshooter\maps\testmaplarge.json" />
-  </ItemGroup>
-  <ItemGroup>
     <ClCompile Include="main\cpp\angleshooter\PreCompiledServer.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
       <PrecompiledHeaderOutputFile>$(IntDir)server.pch</PrecompiledHeaderOutputFile>

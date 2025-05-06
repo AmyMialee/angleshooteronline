@@ -101,52 +101,14 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="main\resources\assets\angleshooter\fonts\ubuntu-m.ttf" />
-    <Content Include="main\resources\assets\angleshooter\music\backgroundmusic.ogg" />
-    <Content Include="main\resources\assets\angleshooter\music\gamemusic.ogg" />
-    <Content Include="main\resources\assets\angleshooter\shader\add.frag" />
-    <Content Include="main\resources\assets\angleshooter\shader\brightness.frag" />
-    <Content Include="main\resources\assets\angleshooter\shader\downsample.frag" />
-    <Content Include="main\resources\assets\angleshooter\shader\empty.frag" />
-    <Content Include="main\resources\assets\angleshooter\shader\fullpass.vert" />
-    <Content Include="main\resources\assets\angleshooter\shader\gaussian.frag" />
-    <Content Include="main\resources\assets\angleshooter\sounds\bullet.ogg" />
-    <Content Include="main\resources\assets\angleshooter\sounds\empty.ogg" />
-    <Content Include="main\resources\assets\angleshooter\sounds\explode.ogg" />
-    <Content Include="main\resources\assets\angleshooter\sounds\hurt.ogg" />
-    <Content Include="main\resources\assets\angleshooter\sounds\ui_button_click.ogg" />
-    <Content Include="main\resources\assets\angleshooter\textures\background.png" />
-    <Content Include="main\resources\assets\angleshooter\textures\bricks.png" />
-    <Content Include="main\resources\assets\angleshooter\textures\bullet.png" />
-    <Content Include="main\resources\assets\angleshooter\textures\bullet2.png" />
-    <Content Include="main\resources\assets\angleshooter\textures\buttonnormal.png" />
-    <Content Include="main\resources\assets\angleshooter\textures\buttonpressed.png" />
-    <Content Include="main\resources\assets\angleshooter\textures\buttonselected.png" />
-    <Content Include="main\resources\assets\angleshooter\textures\cobble.png" />
-    <Content Include="main\resources\assets\angleshooter\textures\main_menu.png" />
-    <Content Include="main\resources\assets\angleshooter\textures\player.png" />
-    <Content Include="main\resources\assets\angleshooter\textures\player2.png" />
-    <Content Include="main\resources\assets\angleshooter\textures\sfml_logo.png" />
-  </ItemGroup>
-  <ItemGroup>
     <ClCompile Include="main\cpp\angleshooter\client.cpp" />
     <ClCompile Include="main\cpp\angleshooter\PreCompiledClient.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
       <PrecompiledHeaderOutputFile>$(IntDir)client.pch</PrecompiledHeaderOutputFile>
     </ClCompile>
-    <ClCompile Include="main\cpp\angleshooter\rendering\MapRenderer.cpp" />
-    <ClCompile Include="main\cpp\angleshooter\resources\ResourceHolders.cpp" />
-    <ClCompile Include="main\cpp\angleshooter\util\ClientContext.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main\cpp\angleshooter\PreCompiledClient.h" />
-    <ClInclude Include="main\cpp\angleshooter\rendering\MapRenderer.h" />
-    <ClInclude Include="main\cpp\angleshooter\resources\ResourceHolder.h" />
-    <ClInclude Include="main\cpp\angleshooter\resources\ResourceHolder.tpp" />
-    <ClInclude Include="main\cpp\angleshooter\resources\ResourceHolders.h" />
-    <ClInclude Include="main\cpp\angleshooter\resources\ShaderHolder.h" />
-    <ClInclude Include="main\cpp\angleshooter\resources\ShaderHolder.tpp" />
-    <ClInclude Include="main\cpp\angleshooter\util\ClientContext.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

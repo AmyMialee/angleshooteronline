@@ -5387,7 +5387,7 @@ class tuple_element<N, ::nlohmann::detail::iteration_proxy_value<IteratorType >>
 
 #if JSON_HAS_RANGES
     template <typename IteratorType>
-    inline constexpr bool ::std::ranges::enable_borrowed_range<::nlohmann::detail::iteration_proxy<IteratorType>> = true;
+    inline constexpr auto ::std::ranges::enable_borrowed_range<::nlohmann::detail::iteration_proxy<IteratorType>> = true;
 #endif
 
 // #include <nlohmann/detail/macro_scope.hpp>
@@ -5570,7 +5570,7 @@ struct external_constructor<value_t::array>
         j.m_data.m_type = value_t::array;
         j.m_data.m_value = value_t::array;
         j.m_data.m_value.array->reserve(arr.size());
-        for (const bool x : arr)
+        for (const auto x : arr)
         {
             j.m_data.m_value.array->push_back(x);
             j.set_parent(j.m_data.m_value.array->back());
@@ -7137,7 +7137,7 @@ class json_sax_dom_callback_parser
 
     bool end_array()
     {
-        bool keep = true;
+        auto keep = true;
 
         if (ref_stack.back())
         {
@@ -7542,7 +7542,7 @@ class lexer : public lexer_base<BasicJsonType>
     {
         // this function only makes sense after reading `\u`
         JSON_ASSERT(current == 'u');
-        int codepoint = 0;
+        auto codepoint = 0;
 
         const auto factors = { 12u, 8u, 4u, 0u };
         for (const auto factor : factors)
@@ -7690,8 +7690,8 @@ class lexer : public lexer_base<BasicJsonType>
                         // unicode escapes
                         case 'u':
                         {
-                            const int codepoint1 = get_codepoint();
-                            int codepoint = codepoint1; // start with codepoint1
+                            const auto codepoint1 = get_codepoint();
+                            auto codepoint = codepoint1; // start with codepoint1
 
                             if (JSON_HEDLEY_UNLIKELY(codepoint1 == -1))
                             {
@@ -7705,7 +7705,7 @@ class lexer : public lexer_base<BasicJsonType>
                                 // expect next \uxxxx entry
                                 if (JSON_HEDLEY_LIKELY(get() == '\\' && get() == 'u'))
                                 {
-                                    const int codepoint2 = get_codepoint();
+                                    const auto codepoint2 = get_codepoint();
 
                                     if (JSON_HEDLEY_UNLIKELY(codepoint2 == -1))
                                     {
@@ -9252,7 +9252,7 @@ class binary_reader
                    const cbor_tag_handler_t tag_handler = cbor_tag_handler_t::error)
     {
         sax = sax_;
-        bool result = false;
+        auto result = false;
 
         switch (format)
         {
@@ -9504,7 +9504,7 @@ class binary_reader
                 return false;
             }
 
-            const std::size_t element_type_parse_position = chars_read;
+            const auto element_type_parse_position = chars_read;
             if (JSON_HEDLEY_UNLIKELY(!get_bson_cstr(key)))
             {
                 return false;
@@ -10000,7 +10000,7 @@ class binary_reader
                 const double val = [&half]
                 {
                     const int exp = (half >> 10u) & 0x1Fu;
-                    const unsigned int mant = half & 0x3FFu;
+                    const auto mant = half & 0x3FFu;
                     JSON_ASSERT(0 <= exp&& exp <= 32);
                     JSON_ASSERT(mant <= 1024);
                     switch (exp)
@@ -11089,7 +11089,7 @@ class binary_reader
     {
         std::pair<std::size_t, char_int_type> size_and_type;
         size_t dimlen = 0;
-        bool no_ndarray = true;
+        auto no_ndarray = true;
 
         if (JSON_HEDLEY_UNLIKELY(!get_ubjson_size_type(size_and_type, no_ndarray)))
         {
@@ -11377,7 +11377,7 @@ class binary_reader
     {
         result.first = npos; // size
         result.second = 0; // type
-        bool is_ndarray = false;
+        auto is_ndarray = false;
 
         get_ignore_noop();
 
@@ -11547,7 +11547,7 @@ class binary_reader
                 const double val = [&half]
                 {
                     const int exp = (half >> 10u) & 0x1Fu;
-                    const unsigned int mant = half & 0x3FFu;
+                    const auto mant = half & 0x3FFu;
                     JSON_ASSERT(0 <= exp&& exp <= 32);
                     JSON_ASSERT(mant <= 1024);
                     switch (exp)
@@ -11818,7 +11818,7 @@ class binary_reader
     {
         // get size of following number string
         std::size_t size{};
-        bool no_ndarray = true;
+        auto no_ndarray = true;
         auto res = get_ubjson_size_value(size, no_ndarray);
         if (JSON_HEDLEY_UNLIKELY(!res))
         {
@@ -11976,7 +11976,7 @@ class binary_reader
                     const NumberType len,
                     string_t& result)
     {
-        bool success = true;
+        auto success = true;
         for (NumberType i = 0; i < len; i++)
         {
             get();
@@ -12009,7 +12009,7 @@ class binary_reader
                     const NumberType len,
                     binary_t& result)
     {
-        bool success = true;
+        auto success = true;
         for (NumberType i = 0; i < len; i++)
         {
             get();
@@ -12092,7 +12092,7 @@ class binary_reader
     }
 
   private:
-    static JSON_INLINE_VARIABLE constexpr std::size_t npos = static_cast<std::size_t>(-1);
+    static JSON_INLINE_VARIABLE constexpr auto npos = static_cast<std::size_t>(-1);
 
     /// input adapter
     InputAdapterType ia;
@@ -12351,7 +12351,7 @@ class parser
         // true = array; false = object
         std::vector<bool> states;
         // value to avoid a goto (see comment where set to true)
-        bool skip_to_state_evaluation = false;
+        auto skip_to_state_evaluation = false;
 
         while (true)
         {
@@ -12734,7 +12734,7 @@ class primitive_iterator_t
   private:
     using difference_type = std::ptrdiff_t;
     static constexpr difference_type begin_value = 0;
-    static constexpr difference_type end_value = begin_value + 1;
+    static constexpr auto end_value = begin_value + 1;
 
   JSON_PRIVATE_UNLESS_TESTED:
     /// iterator as signed integer type
@@ -14035,7 +14035,7 @@ class json_pointer
         const char* p = s.c_str();
         char* p_end = nullptr;
         errno = 0; // strtoull doesn't reset errno
-        const unsigned long long res = std::strtoull(p, &p_end, 10); // NOLINT(runtime/int)
+        const auto res = std::strtoull(p, &p_end, 10); // NOLINT(runtime/int)
         if (p == p_end // invalid input or empty string
                 || errno == ERANGE // out of range
                 || JSON_HEDLEY_UNLIKELY(static_cast<std::size_t>(p_end - p) != s.size())) // incomplete read
@@ -15659,7 +15659,7 @@ class binary_writer
                 if (N <= (std::numeric_limits<std::uint8_t>::max)())
                 {
                     std::uint8_t output_type{};
-                    bool fixed = true;
+                    auto fixed = true;
                     if (use_ext)
                     {
                         switch (N)
@@ -15839,7 +15839,7 @@ class binary_writer
                     oa->write_character(to_char_type('['));
                 }
 
-                bool prefix_required = true;
+                auto prefix_required = true;
                 if (use_type && !j.m_data.m_value.array->empty())
                 {
                     JSON_ASSERT(use_count);
@@ -15937,7 +15937,7 @@ class binary_writer
                     oa->write_character(to_char_type('{'));
                 }
 
-                bool prefix_required = true;
+                auto prefix_required = true;
                 if (use_type && !j.m_data.m_value.object->empty())
                 {
                     JSON_ASSERT(use_count);
@@ -16963,7 +16963,7 @@ Target reinterpret_bits(const Source source)
 
 struct diyfp // f * 2^e
 {
-    static constexpr int kPrecision = 64; // = q
+    static constexpr auto kPrecision = 64; // = q
 
     std::uint64_t f = 0;
     int e = 0;
@@ -17013,23 +17013,23 @@ struct diyfp // f * 2^e
         //
         //   = p_lo + 2^64 p_hi
 
-        const std::uint64_t u_lo = x.f & 0xFFFFFFFFu;
-        const std::uint64_t u_hi = x.f >> 32u;
-        const std::uint64_t v_lo = y.f & 0xFFFFFFFFu;
-        const std::uint64_t v_hi = y.f >> 32u;
+        const auto u_lo = x.f & 0xFFFFFFFFu;
+        const auto u_hi = x.f >> 32u;
+        const auto v_lo = y.f & 0xFFFFFFFFu;
+        const auto v_hi = y.f >> 32u;
 
-        const std::uint64_t p0 = u_lo * v_lo;
-        const std::uint64_t p1 = u_lo * v_hi;
-        const std::uint64_t p2 = u_hi * v_lo;
-        const std::uint64_t p3 = u_hi * v_hi;
+        const auto p0 = u_lo * v_lo;
+        const auto p1 = u_lo * v_hi;
+        const auto p2 = u_hi * v_lo;
+        const auto p3 = u_hi * v_hi;
 
-        const std::uint64_t p0_hi = p0 >> 32u;
-        const std::uint64_t p1_lo = p1 & 0xFFFFFFFFu;
-        const std::uint64_t p1_hi = p1 >> 32u;
-        const std::uint64_t p2_lo = p2 & 0xFFFFFFFFu;
-        const std::uint64_t p2_hi = p2 >> 32u;
+        const auto p0_hi = p0 >> 32u;
+        const auto p1_lo = p1 & 0xFFFFFFFFu;
+        const auto p1_hi = p1 >> 32u;
+        const auto p2_lo = p2 & 0xFFFFFFFFu;
+        const auto p2_hi = p2 >> 32u;
 
-        std::uint64_t Q = p0_hi + p1_lo + p2_lo;
+        auto Q = p0_hi + p1_lo + p2_lo;
 
         // The full product might now be computed as
         //
@@ -17042,7 +17042,7 @@ struct diyfp // f * 2^e
 
         Q += std::uint64_t{1} << (64u - 32u - 1u); // round, ties up
 
-        const std::uint64_t h = p3 + p2_hi + p1_hi + (Q >> 32u);
+        const auto h = p3 + p2_hi + p1_hi + (Q >> 32u);
 
         return {h, x.e + y.e + 64};
     }
@@ -17070,7 +17070,7 @@ struct diyfp // f * 2^e
     */
     static diyfp normalize_to(const diyfp& x, const int target_exponent) noexcept
     {
-        const int delta = x.e - target_exponent;
+        const auto delta = x.e - target_exponent;
 
         JSON_ASSERT(delta >= 0);
         JSON_ASSERT(((x.f << delta) >> delta) == x.f);
@@ -17110,17 +17110,17 @@ boundaries compute_boundaries(FloatType value)
 
     constexpr int      kPrecision = std::numeric_limits<FloatType>::digits; // = p (includes the hidden bit)
     constexpr int      kBias      = std::numeric_limits<FloatType>::max_exponent - 1 + (kPrecision - 1);
-    constexpr int      kMinExp    = 1 - kBias;
-    constexpr std::uint64_t kHiddenBit = std::uint64_t{1} << (kPrecision - 1); // = 2^(p-1)
+    constexpr auto kMinExp    = 1 - kBias;
+    constexpr auto kHiddenBit = std::uint64_t{1} << (kPrecision - 1); // = 2^(p-1)
 
     using bits_type = typename std::conditional<kPrecision == 24, std::uint32_t, std::uint64_t >::type;
 
     const auto bits = static_cast<std::uint64_t>(reinterpret_bits<bits_type>(value));
-    const std::uint64_t E = bits >> (kPrecision - 1);
-    const std::uint64_t F = bits & (kHiddenBit - 1);
+    const auto E = bits >> (kPrecision - 1);
+    const auto F = bits & (kHiddenBit - 1);
 
-    const bool is_denormal = E == 0;
-    const diyfp v = is_denormal
+    const auto is_denormal = E == 0;
+    const auto v = is_denormal
                     ? diyfp(F, kMinExp)
                     : diyfp(F + kHiddenBit, static_cast<int>(E) - kBias);
 
@@ -17145,17 +17145,17 @@ boundaries compute_boundaries(FloatType value)
     //      -----------------+------+------+-------------+-------------+---  (B)
     //                       v-     m-     v             m+            v+
 
-    const bool lower_boundary_is_closer = F == 0 && E > 1;
-    const diyfp m_plus = diyfp(2 * v.f + 1, v.e - 1);
-    const diyfp m_minus = lower_boundary_is_closer
+    const auto lower_boundary_is_closer = F == 0 && E > 1;
+    const auto m_plus = diyfp(2 * v.f + 1, v.e - 1);
+    const auto m_minus = lower_boundary_is_closer
                           ? diyfp(4 * v.f - 1, v.e - 2)  // (B)
                           : diyfp(2 * v.f - 1, v.e - 1); // (A)
 
     // Determine the normalized w+ = m+.
-    const diyfp w_plus = diyfp::normalize(m_plus);
+    const auto w_plus = diyfp::normalize(m_plus);
 
     // Determine w- = m- such that e_(w-) = e_(w+).
-    const diyfp w_minus = diyfp::normalize_to(m_minus, w_plus.e);
+    const auto w_minus = diyfp::normalize_to(m_minus, w_plus.e);
 
     return {diyfp::normalize(v), w_minus, w_plus};
 }
@@ -17215,8 +17215,8 @@ boundaries compute_boundaries(FloatType value)
 //
 //      -e <= 60   or   e >= -60 := alpha
 
-constexpr int kAlpha = -60;
-constexpr int kGamma = -32;
+constexpr auto kAlpha = -60;
+constexpr auto kGamma = -32;
 
 struct cached_power // c = f * 2^e ~= 10^k
 {
@@ -17284,8 +17284,8 @@ inline cached_power get_cached_power_for_binary_exponent(int e)
     // NB:
     // Actually this function returns c, such that -60 <= e_c + e + 64 <= -34.
 
-    constexpr int kCachedPowersMinDecExp = -300;
-    constexpr int kCachedPowersDecStep = 8;
+    constexpr auto kCachedPowersMinDecExp = -300;
+    constexpr auto kCachedPowersDecStep = 8;
 
     static constexpr std::array<cached_power, 79> kCachedPowers =
     {
@@ -17378,14 +17378,14 @@ inline cached_power get_cached_power_for_binary_exponent(int e)
     // NB: log_10(2) ~= 78913 / 2^18
     JSON_ASSERT(e >= -1500);
     JSON_ASSERT(e <=  1500);
-    const int f = kAlpha - e - 1;
-    const int k = (f * 78913) / (1 << 18) + static_cast<int>(f > 0);
+    const auto f = kAlpha - e - 1;
+    const auto k = (f * 78913) / (1 << 18) + static_cast<int>(f > 0);
 
-    const int index = (-kCachedPowersMinDecExp + k + (kCachedPowersDecStep - 1)) / kCachedPowersDecStep;
+    const auto index = (-kCachedPowersMinDecExp + k + (kCachedPowersDecStep - 1)) / kCachedPowersDecStep;
     JSON_ASSERT(index >= 0);
     JSON_ASSERT(static_cast<std::size_t>(index) < kCachedPowers.size());
 
-    const cached_power cached = kCachedPowers[static_cast<std::size_t>(index)];
+    const auto cached = kCachedPowers[static_cast<std::size_t>(index)];
     JSON_ASSERT(kAlpha <= cached.e + e + 64);
     JSON_ASSERT(kGamma >= cached.e + e + 64);
 
@@ -17512,8 +17512,8 @@ inline void grisu2_digit_gen(char* buffer, int& length, int& decimal_exponent,
     JSON_ASSERT(M_plus.e >= kAlpha);
     JSON_ASSERT(M_plus.e <= kGamma);
 
-    std::uint64_t delta = diyfp::sub(M_plus, M_minus).f; // (significand of (M+ - M-), implicit exponent is e)
-    std::uint64_t dist  = diyfp::sub(M_plus, w      ).f; // (significand of (M+ - w ), implicit exponent is e)
+    auto delta = diyfp::sub(M_plus, M_minus).f; // (significand of (M+ - M-), implicit exponent is e)
+    auto dist  = diyfp::sub(M_plus, w      ).f; // (significand of (M+ - w ), implicit exponent is e)
 
     // Split M+ = f * 2^e into two parts p1 and p2 (note: e < 0):
     //
@@ -17525,7 +17525,7 @@ inline void grisu2_digit_gen(char* buffer, int& length, int& decimal_exponent,
     const diyfp one(std::uint64_t{1} << -M_plus.e, M_plus.e);
 
     auto p1 = static_cast<std::uint32_t>(M_plus.f >> -one.e); // p1 = f div 2^-e (Since -e >= 32, p1 fits into a 32-bit int.)
-    std::uint64_t p2 = M_plus.f & (one.f - 1);                    // p2 = f mod 2^-e
+    auto p2 = M_plus.f & (one.f - 1);                    // p2 = f mod 2^-e
 
     // 1)
     //
@@ -17534,7 +17534,7 @@ inline void grisu2_digit_gen(char* buffer, int& length, int& decimal_exponent,
     JSON_ASSERT(p1 > 0);
 
     std::uint32_t pow10{};
-    const int k = find_largest_pow10(p1, pow10);
+    const auto k = find_largest_pow10(p1, pow10);
 
     //      10^(k-1) <= p1 < 10^k, pow10 = 10^(k-1)
     //
@@ -17554,15 +17554,15 @@ inline void grisu2_digit_gen(char* buffer, int& length, int& decimal_exponent,
     //
     //      rest * 2^e = (d[n-1]...d[0] * 2^-e + p2) * 2^e <= delta * 2^e
 
-    int n = k;
+    auto n = k;
     while (n > 0)
     {
         // Invariants:
         //      M+ = buffer * 10^n + (p1 + p2 * 2^e)    (buffer = 0 for n = k)
         //      pow10 = 10^(n-1) <= p1 < 10^n
         //
-        const std::uint32_t d = p1 / pow10;  // d = p1 div 10^(n-1)
-        const std::uint32_t r = p1 % pow10;  // r = p1 mod 10^(n-1)
+        const auto d = p1 / pow10;  // d = p1 div 10^(n-1)
+        const auto r = p1 % pow10;  // r = p1 mod 10^(n-1)
         //
         //      M+ = buffer * 10^n + (d * 10^(n-1) + r) + p2 * 2^e
         //         = (buffer * 10 + d) * 10^(n-1) + (r + p2 * 2^e)
@@ -17587,7 +17587,7 @@ inline void grisu2_digit_gen(char* buffer, int& length, int& decimal_exponent,
         // Note:
         // Since rest and delta share the same exponent e, it suffices to
         // compare the significands.
-        const std::uint64_t rest = (std::uint64_t{p1} << -one.e) + p2;
+        const auto rest = (std::uint64_t{p1} << -one.e) + p2;
         if (rest <= delta)
         {
             // V = buffer * 10^n, with M- <= V <= M+.
@@ -17603,7 +17603,7 @@ inline void grisu2_digit_gen(char* buffer, int& length, int& decimal_exponent,
             //
             //      10^n = (10^n * 2^-e) * 2^e = ulp * 2^e
             //
-            const std::uint64_t ten_n = std::uint64_t{pow10} << -one.e;
+            const auto ten_n = std::uint64_t{pow10} << -one.e;
             grisu2_round(buffer, length, dist, delta, rest, ten_n);
 
             return;
@@ -17656,7 +17656,7 @@ inline void grisu2_digit_gen(char* buffer, int& length, int& decimal_exponent,
 
     JSON_ASSERT(p2 > delta);
 
-    int m = 0;
+    auto m = 0;
     for (;;)
     {
         // Invariant:
@@ -17667,8 +17667,8 @@ inline void grisu2_digit_gen(char* buffer, int& length, int& decimal_exponent,
         //
         JSON_ASSERT(p2 <= (std::numeric_limits<std::uint64_t>::max)() / 10);
         p2 *= 10;
-        const std::uint64_t d = p2 >> -one.e;     // d = (10 * p2) div 2^-e
-        const std::uint64_t r = p2 & (one.f - 1); // r = (10 * p2) mod 2^-e
+        const auto d = p2 >> -one.e;     // d = (10 * p2) div 2^-e
+        const auto r = p2 & (one.f - 1); // r = (10 * p2) mod 2^-e
         //
         //      M+ = buffer * 10^-m + 10^-m * (1/10 * (d * 2^-e + r) * 2^e
         //         = buffer * 10^-m + 10^-m * (1/10 * (d + r * 2^e))
@@ -17708,7 +17708,7 @@ inline void grisu2_digit_gen(char* buffer, int& length, int& decimal_exponent,
     //
     //      10^m * 10^-m = 1 = 2^-e * 2^e = ten_m * 2^e
     //
-    const std::uint64_t ten_m = one.f;
+    const auto ten_m = one.f;
     grisu2_round(buffer, length, dist, delta, p2, ten_m);
 
     // By construction this algorithm generates the shortest possible decimal
@@ -17747,14 +17747,14 @@ inline void grisu2(char* buf, int& len, int& decimal_exponent,
     // First scale v (and m- and m+) such that the exponent is in the range
     // [alpha, gamma].
 
-    const cached_power cached = get_cached_power_for_binary_exponent(m_plus.e);
+    const auto cached = get_cached_power_for_binary_exponent(m_plus.e);
 
     const diyfp c_minus_k(cached.f, cached.e); // = c ~= 10^-k
 
     // The exponent of the products is = v.e + c_minus_k.e + q and is in the range [alpha,gamma]
-    const diyfp w       = diyfp::mul(v,       c_minus_k);
-    const diyfp w_minus = diyfp::mul(m_minus, c_minus_k);
-    const diyfp w_plus  = diyfp::mul(m_plus,  c_minus_k);
+    const auto w       = diyfp::mul(v,       c_minus_k);
+    const auto w_minus = diyfp::mul(m_minus, c_minus_k);
+    const auto w_plus  = diyfp::mul(m_plus,  c_minus_k);
 
     //  ----(---+---)---------------(---+---)---------------(---+---)----
     //          w-                      w                       w+
@@ -17890,8 +17890,8 @@ inline char* format_buffer(char* buf, int len, int decimal_exponent,
     JSON_ASSERT(min_exp < 0);
     JSON_ASSERT(max_exp > 0);
 
-    const int k = len;
-    const int n = len + decimal_exponent;
+    const auto k = len;
+    const auto n = len + decimal_exponent;
 
     // v = buf * 10^(n-k)
     // k is the length of the buffer (number of decimal digits)
@@ -18003,14 +18003,14 @@ char* to_chars(char* first, const char* last, FloatType value)
     // The decimal digits are stored in the buffer, which needs to be interpreted
     // as an unsigned decimal integer.
     // len is the length of the buffer, i.e. the number of decimal digits.
-    int len = 0;
-    int decimal_exponent = 0;
+    auto len = 0;
+    auto decimal_exponent = 0;
     dtoa_impl::grisu2(first, len, decimal_exponent, value);
 
     JSON_ASSERT(len <= std::numeric_limits<FloatType>::max_digits10);
 
     // Format the buffer like printf("%.*g", prec, value)
-    constexpr int kMinExp = -4;
+    constexpr auto kMinExp = -4;
     // Use digits10 here to increase compatibility with version 2.
     constexpr int kMaxExp = std::numeric_limits<FloatType>::digits10;
 
@@ -18399,7 +18399,7 @@ class serializer
     void dump_escaped(const string_t& s, const bool ensure_ascii)
     {
         std::uint32_t codepoint{};
-        std::uint8_t state = UTF8_ACCEPT;
+        auto state = UTF8_ACCEPT;
         std::size_t bytes = 0;  // number of bytes written to string_buffer
 
         // number of bytes written at the point of the last valid byte
@@ -18685,7 +18685,7 @@ class serializer
     static std::string hex_bytes(std::uint8_t byte)
     {
         std::string result = "FF";
-        constexpr const char* nibble_to_hex = "0123456789ABCDEF";
+        constexpr auto nibble_to_hex = "0123456789ABCDEF";
         result[0] = nibble_to_hex[byte / 16];
         result[1] = nibble_to_hex[byte % 16];
         return result;
@@ -18928,13 +18928,13 @@ class serializer
         };
 
         JSON_ASSERT(byte < utf8d.size());
-        const std::uint8_t type = utf8d[byte];
+        const auto type = utf8d[byte];
 
         codep = (state != UTF8_ACCEPT)
                 ? (byte & 0x3fu) | (codep << 6u)
                 : (0xFFu >> type) & (byte);
 
-        const std::size_t index = 256u + static_cast<size_t>(state) * 16u + static_cast<size_t>(type);
+        const auto index = 256u + static_cast<size_t>(state) * 16u + static_cast<size_t>(type);
         JSON_ASSERT(index < utf8d.size());
         state = utf8d[index];
         return state;
@@ -23277,7 +23277,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
     friend std::ostream& operator<<(std::ostream& o, const basic_json& j)
     {
         // read width member and use it as indentation parameter if nonzero
-        const bool pretty_print = o.width() > 0;
+        const auto pretty_print = o.width() > 0;
         const auto indentation = pretty_print ? o.width() : 0;
 
         // reset width to 0 for subsequent calls to this stream
@@ -24234,8 +24234,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
                 }
 
                 case patch_operations::test:
-                {
-                    bool success = false;
+                { auto success = false;
                     JSON_TRY
                     {
                         // check if "value" matches the one at "path"

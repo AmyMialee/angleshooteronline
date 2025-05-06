@@ -96,21 +96,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="main\cpp\angleshooter\resources\Map.cpp" />
-    <ClCompile Include="main\cpp\angleshooter\resources\MapLoader.cpp" />
-    <ClCompile Include="main\cpp\angleshooter\util\EventHandler.cpp" />
     <ClCompile Include="main\cpp\angleshooter\util\Identifier.cpp" />
     <ClCompile Include="main\cpp\angleshooter\util\Logger.cpp" />
     <ClCompile Include="main\cpp\angleshooter\util\Util.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main\cpp\angleshooter\PreCompiledHeaders.h" />
-    <ClInclude Include="main\cpp\angleshooter\resources\Map.h" />
-    <ClInclude Include="main\cpp\angleshooter\resources\MapLoader.h" />
-    <ClInclude Include="main\cpp\angleshooter\util\EventHandler.h" />
     <ClInclude Include="main\cpp\angleshooter\util\Identifier.h" />
     <ClInclude Include="main\cpp\angleshooter\util\Logger.h" />
-    <ClInclude Include="main\cpp\angleshooter\util\StackMove.h" />
     <ClInclude Include="main\cpp\angleshooter\util\Util.h" />
     <ClInclude Include="main\cpp\nlohmann\json.hpp" />
   </ItemGroup>
