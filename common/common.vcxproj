@@ -101,6 +101,7 @@
     <ClCompile Include="main\cpp\angleshooter\util\Util.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="main\cpp\angleshooter\AngleShooterCommon.h" />
     <ClInclude Include="main\cpp\angleshooter\PreCompiledHeaders.h" />
     <ClInclude Include="main\cpp\angleshooter\util\Identifier.h" />
     <ClInclude Include="main\cpp\angleshooter\util\Logger.h" />

@@ -27,6 +27,8 @@
 #include <SFML/Graphics/Sprite.hpp>
 #include <SFML/Graphics/Text.hpp>
 #include <SFML/Graphics/Texture.hpp>
+#include <SFML/Network/UdpSocket.hpp>
+#include <SFML/Network/Packet.hpp>
 #include <SFML/System/Vector2.hpp>
 #include <SFML/Window/Event.hpp>
 
@@ -35,3 +37,4 @@
 #include "util/Identifier.h"
 #include "util/Logger.h"
 #include "util/Util.h"
+#include "AngleShooterCommon.h"
