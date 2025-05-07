@@ -23,13 +23,13 @@ AngleShooterClient::AngleShooterClient() :
 	if (socket.bind(sf::Socket::AnyPort) != sf::Socket::Status::Done) throw std::runtime_error("Failed to bind to port, no ports are remaining???");
 	Logger::info("Client started on port " + std::to_string(socket.getLocalPort()));
 	registerPacket(NetworkProtocol::PING, [this](sf::Packet&, NetworkPair* sender) {
-		Logger::debug("Ping! from " + sender->getPortedIP()->toString());
-		auto pong = NetworkProtocol::PONG->getPacket(sender);
+		Logger::debug("Ping! from " + sender->getPortedIP().toString());
+		auto pong = NetworkProtocol::PONG->getPacket();
 		send(pong);
 	});
 	registerPacket(NetworkProtocol::PONG, [this](sf::Packet&, NetworkPair* sender) {
 		const auto rtt = sender->stopRoundTripTimer();
-		Logger::debug("Pong! from " + sender->getPortedIP()->toString() + " in " + Util::toRoundedString(rtt * 1000, 0) + "ms");
+		Logger::debug("Pong! from " + sender->getPortedIP().toString() + " in " + Util::toRoundedString(rtt * 1000, 0) + "ms");
 	});
 	registerPacket(NetworkProtocol::ACK, [this](sf::Packet& packet, NetworkPair* sender) {
 		uint32_t sequence;
@@ -51,17 +51,16 @@ void AngleShooterClient::handlePacket(sf::Packet& packet, NetworkPair* sender) {
 		uint32_t sequence;
 		packet >> sequence;
 		if (sequence < sender->getAcknowledgedSequence()) {
-			auto ack = NetworkProtocol::ACK->getPacket(sender);
+			auto ack = NetworkProtocol::ACK->getPacket();
 			ack << sequence;
 			send(ack);
-			Logger::debug("Received redundant sequence: " + std::to_string(sequence) + " from " + sender->getPortedIP()->toString());
+			Logger::debug("Received redundant sequence: " + std::to_string(sequence) + " from " + sender->getPortedIP().toString());
 			return;
 		}
 		if (!sender->setAcknowledgedSequence(sequence)) {
-
-			Logger::debug("Received premature sequence: " + std::to_string(sequence) + " expected " + std::to_string(sender->getAcknowledgedSequence()) + " from " + sender->getPortedIP()->toString());
+			Logger::debug("Received premature sequence: " + std::to_string(sequence) + " expected " + std::to_string(sender->getAcknowledgedSequence()) + " from " + sender->getPortedIP().toString());
 		} else {
-			auto ack = NetworkProtocol::ACK->getPacket(sender);
+			auto ack = NetworkProtocol::ACK->getPacket();
 			ack << sequence;
 			send(ack);
 		}
@@ -74,7 +73,7 @@ void AngleShooterClient::handlePacket(sf::Packet& packet, NetworkPair* sender) {
 		}
 		return;
 	}
-	Logger::error("Received unknown packet id: " + std::to_string(packetType) + " from " + sender->getPortedIP()->toString());
+	Logger::error("Received unknown packet id: " + std::to_string(packetType) + " from " + sender->getPortedIP().toString());
 }
 
 void AngleShooterClient::registerPacket(PacketIdentifier* packetType, const std::function<void(sf::Packet& packet, NetworkPair* sender)>& handler) {
@@ -173,8 +172,8 @@ void AngleShooterClient::runReceiver() {
 		unsigned short port;
 		if (sf::Packet packet; socket.receive(packet, sender, port) == sf::Socket::Status::Done) {
 			if (!sender.has_value()) continue;
-			if (auto pip = PortedIP{.ip= sender.value(), .port= port}; pip != *this->server->getPortedIP()) {
-				Logger::warn("Received packet from non-server address: " + pip.toString());
+			if (auto recievedPip = PortedIP{.ip= sender.value(), .port= port}; recievedPip != this->server->getPortedIP()) {
+				Logger::warn("Received packet from non-server address: " + recievedPip.toString());
 				continue;
 			}
 			handlePacket(packet, this->server);
@@ -182,7 +181,7 @@ void AngleShooterClient::runReceiver() {
 		}
 		this->server->update();
 		if (this->server->shouldDisconnect()) {
-			Logger::info("Disconnected from server " + this->server->getPortedIP()->toString());
+			Logger::info("Disconnected from server " + this->server->getPortedIP().toString());
 			//TODO: Send disconnect packet
 			delete(this->server);
 			this->server = nullptr;

@@ -10,7 +10,7 @@ void InputManager::handleInput(sf::RenderWindow& window) {
 		if (!optional.has_value()) continue;
 		auto event = optional.value();
 		if (const auto* keyPressed = event.getIf<sf::Event::KeyPressed>()) {
-			auto packet = NetworkProtocol::CHAT_MESSAGE->getPacket(AngleShooterClient::get().server);
+			auto packet = NetworkProtocol::CHAT_MESSAGE->getPacket();
 			packet << static_cast<std::string>("Key pressed: " + getDescription(keyPressed->scancode));
 			AngleShooterClient::get().send(packet);
 		} else if (const auto* keyReleased = event.getIf<sf::Event::KeyReleased>()) {

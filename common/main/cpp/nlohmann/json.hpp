@@ -6258,7 +6258,7 @@ class input_stream_adapter
     // end up as the same value, e.g. 0xFFFFFFFF.
     std::char_traits<char>::int_type get_character()
     {
-        auto res = sb->sbumpc();
+        const auto res = sb->sbumpc();
         // set eof manually, as we don't use the istream interface.
         if (JSON_HEDLEY_UNLIKELY(res == std::char_traits<char>::eof()))
         {
@@ -6587,7 +6587,7 @@ template < typename CharT,
                int >::type = 0 >
 contiguous_bytes_input_adapter input_adapter(CharT b)
 {
-    auto length = std::strlen(reinterpret_cast<const char*>(b));
+    const auto length = std::strlen(reinterpret_cast<const char*>(b));
     const auto* ptr = reinterpret_cast<const char*>(b);
     return input_adapter(ptr, ptr + length);
 }
@@ -11311,7 +11311,7 @@ class binary_reader
                 }
                 if (!dim.empty())  // if ndarray, convert to an object in JData annotated array format
                 {
-                    for (auto i : dim) // test if any dimension in an ndarray is 0, if so, return a 1D empty container
+                    for (const auto i : dim) // test if any dimension in an ndarray is 0, if so, return a 1D empty container
                     {
                         if ( i == 0 )
                         {
@@ -12800,7 +12800,7 @@ class primitive_iterator_t
 
     primitive_iterator_t operator++(int)& noexcept // NOLINT(cert-dcl21-cpp)
     {
-        auto result = *this;
+        const auto result = *this;
         ++m_it;
         return result;
     }
@@ -12813,7 +12813,7 @@ class primitive_iterator_t
 
     primitive_iterator_t operator--(int)& noexcept // NOLINT(cert-dcl21-cpp)
     {
-        auto result = *this;
+        const auto result = *this;
         --m_it;
         return result;
     }

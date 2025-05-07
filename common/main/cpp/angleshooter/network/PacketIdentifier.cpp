@@ -36,14 +36,9 @@ bool PacketIdentifier::isReliable() const {
 	return this->reliable;
 }
 
-sf::Packet PacketIdentifier::getPacket(NetworkPair* target) const {
+sf::Packet PacketIdentifier::getPacket() const {
 	sf::Packet packet;
 	packet << this->id;
-	if (this->isReliable()) {
-		const auto next = target->getNextSequence();
-		packet << next;
-		Logger::debug("Sending packet " + this->toString() + " with sequence: " + std::to_string(next) + " to " + target->getPortedIP()->toString());
-	}
 	return packet;
 }
 

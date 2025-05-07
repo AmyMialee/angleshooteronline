@@ -1,8 +1,8 @@
 #include "main/cpp/angleshooter/PreCompiledHeaders.h"
 #include "NetworkPair.h"
 
-NetworkPair::NetworkPair(SocketHolder& socketHolder, PortedIP& pip) : socketHolder(socketHolder), pip(pip) {
-	auto packet = NetworkProtocol::PING->getPacket(this);
+NetworkPair::NetworkPair(SocketHolder& socketHolder, PortedIP pip) : socketHolder(socketHolder), pip(pip) {
+	auto packet = NetworkProtocol::PING->getPacket();
 	this->send(packet);
 	this->lastResponse.restart();
 }
@@ -19,10 +19,17 @@ void NetworkPair::update() {
 
 void NetworkPair::send(sf::Packet& packet) {
 	const auto bytes = static_cast<const uint8_t*>(packet.getData());
+	const auto type = bytes[0];
 	if (const auto id = PacketIdentifier::fromId(bytes[0]); id->isReliable()) {
-		uint32_t sequence;
-		std::memcpy(&sequence, bytes + 1, sizeof(uint32_t));
-		sentPackets[Util::swapBytes32(sequence)] = {packet, std::chrono::steady_clock::now()};
+		const auto body = static_cast<const uint8_t*>(packet.getData()) + 1;
+		const auto bodySize = packet.getDataSize() - 1;
+		sf::Packet updated;
+		updated << type;
+		const auto sequence = this->getNextSequence();
+		updated << sequence;
+		updated.append(body, bodySize);
+		packet = updated;
+		sentPackets[sequence] = {packet, std::chrono::steady_clock::now()};
 	}
 	sendPacketInternal(packet);
 }
@@ -66,8 +73,8 @@ bool NetworkPair::shouldDisconnect() const {
 	return this->lastResponse.getElapsedTime().asSeconds() > AngleShooterCommon::TIMEOUT;
 }
 
-PortedIP* NetworkPair::getPortedIP() const {
-	return &pip;
+PortedIP NetworkPair::getPortedIP() const {
+	return pip;
 }
 
 void NetworkPair::sendPacketInternal(sf::Packet& packet) {

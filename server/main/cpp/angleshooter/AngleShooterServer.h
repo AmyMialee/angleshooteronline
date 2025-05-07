@@ -1,14 +1,14 @@
 #pragma once
 
 class AngleShooterServer final : public SocketHolder {
-	std::map<uint8_t, std::function<void(sf::Packet& packet, NetworkPair* pair)>> packetHandlers;
+	std::map<uint8_t, std::function<void(sf::Packet& packet, const std::unique_ptr<NetworkPair>& pair)>> packetHandlers;
 	std::map<uint8_t, PacketIdentifier*> packetIds;
-	std::map<PortedIP, NetworkPair*> clients;
+	std::map<PortedIP, std::unique_ptr<NetworkPair>> clients;
 	sf::UdpSocket listenerSocket;
 	bool running = true;
 
-	void handlePacket(sf::Packet& packet, NetworkPair* sender);
-	void registerPacket(PacketIdentifier* packetType, const std::function<void(sf::Packet& packet, NetworkPair* sender)>& handler);
+	void handlePacket(sf::Packet& packet, const std::unique_ptr<NetworkPair>& sender);
+	void registerPacket(PacketIdentifier* packetType, const std::function<void(sf::Packet& packet, const std::unique_ptr<NetworkPair>& sender)>& handler);
 
 protected:
 	AngleShooterServer();
@@ -21,8 +21,8 @@ public:
 	void run();
 	void runReceiver();
 
-	void sendToAll(sf::Packet& packet, const std::function<bool(NetworkPair*)>& predicate = [](NetworkPair*) { return true; });
-	void send(sf::Packet& packet, NetworkPair* pair);
+	void sendToAll(const sf::Packet& packet, const std::function<bool(const std::unique_ptr<NetworkPair>&)>& predicate = [](const std::unique_ptr<NetworkPair>&) { return true; });
+	void send(sf::Packet packet, const std::unique_ptr<NetworkPair>& pair);
 
 	sf::UdpSocket& getSocket() override;
 	AngleShooterServer(const AngleShooterServer&) = delete;
