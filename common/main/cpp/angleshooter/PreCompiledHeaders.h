@@ -15,6 +15,7 @@
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
+#include <thread>
 
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio/SoundBuffer.hpp>
@@ -34,7 +35,12 @@
 
 #include "../nlohmann/json.hpp"
 
+#include "network/SocketHolder.h"
 #include "util/Identifier.h"
 #include "util/Logger.h"
 #include "util/Util.h"
+#include "network/PortedIP.h"
+#include "network/NetworkPair.h"
+#include "network/PacketIdentifier.h"
+#include "NetworkProtocol.hpp"
 #include "AngleShooterCommon.h"

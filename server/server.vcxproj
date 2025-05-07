@@ -101,13 +101,14 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="main\cpp\angleshooter\AngleShooterServer.cpp" />
     <ClCompile Include="main\cpp\angleshooter\PreCompiledServer.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
       <PrecompiledHeaderOutputFile>$(IntDir)server.pch</PrecompiledHeaderOutputFile>
     </ClCompile>
-    <ClCompile Include="main\cpp\angleshooter\AngleShooterServer.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="main\cpp\angleshooter\AngleShooterServer.h" />
     <ClInclude Include="main\cpp\angleshooter\PreCompiledServer.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

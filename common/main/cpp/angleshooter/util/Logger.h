@@ -12,6 +12,7 @@ class Logger {
     std::unordered_set<size_t> loggedMessages;
     void log(Severity level, const std::string& message);
     void logOnce(Severity level, const std::string& message);
+
 public:
     static Logger& getInstance();
     static void debug(const std::string& message);

@@ -11,6 +11,6 @@ public:
 	static float randomFloat();
 	static float randomFloat(float min, float max);
 	static float randomNormalFloat(float scale);
-	static std::string toRoundedString(float value, int decimals = 0);
-	static std::string toRoundedString(double value, int decimals = 0);
+	static std::string toRoundedString(float value, int decimals = 2);
+	static std::string toRoundedString(double value, int decimals = 2);
 };

@@ -108,6 +108,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="main\cpp\angleshooter\AngleShooterClient.h" />
     <ClInclude Include="main\cpp\angleshooter\PreCompiledClient.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
