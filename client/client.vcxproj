@@ -102,6 +102,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main\cpp\angleshooter\AngleShooterClient.cpp" />
+    <ClCompile Include="main\cpp\angleshooter\managers\FontHolder.cpp" />
+    <ClCompile Include="main\cpp\angleshooter\managers\InputManager.cpp" />
     <ClCompile Include="main\cpp\angleshooter\PreCompiledClient.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
       <PrecompiledHeaderOutputFile>$(IntDir)client.pch</PrecompiledHeaderOutputFile>
@@ -109,7 +111,14 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main\cpp\angleshooter\AngleShooterClient.h" />
+    <ClInclude Include="main\cpp\angleshooter\managers\FontHolder.h" />
+    <ClInclude Include="main\cpp\angleshooter\managers\InputManager.h" />
     <ClInclude Include="main\cpp\angleshooter\PreCompiledClient.h" />
+    <ClInclude Include="main\cpp\angleshooter\util\ResourceHolder.h" />
+    <ClInclude Include="main\cpp\angleshooter\util\ResourceHolder.tpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="main\resources\assets\angleshooter\fonts\ubuntu-m.ttf" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

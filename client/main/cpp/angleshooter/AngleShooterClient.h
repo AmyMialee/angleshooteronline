@@ -3,7 +3,6 @@
 class AngleShooterClient final : public SocketHolder {
 	std::map<uint8_t, std::function<void(sf::Packet& packet, NetworkPair* pair)>> packetHandlers;
 	std::map<uint8_t, PacketIdentifier*> packetIds;
-	NetworkPair* server = nullptr;
 	sf::UdpSocket socket;
 	bool running = true;
 
@@ -15,11 +14,16 @@ protected:
 	~AngleShooterClient() override = default;
 
 public:
+	NetworkPair* server = nullptr;
+	sf::RenderWindow window;
+	sf::RenderTexture renderTexture;
 	double fps;
 	double tps;
 	double lps;
 
 	void run();
+	void tick();
+	void render(float deltaTime);
 	void runReceiver();
 
 	void send(sf::Packet& packet);

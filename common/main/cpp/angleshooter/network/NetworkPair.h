@@ -26,7 +26,9 @@ public:
 	[[nodiscard]] float getTimeoutRemaining() const;
 	void resetTimeout();
 
+	uint32_t getAcknowledgedSequence() const;
 	bool setAcknowledgedSequence(uint32_t sequence);
+
 	[[nodiscard]] uint32_t getNextSequence();
 	[[nodiscard]] bool shouldDisconnect() const;
 	[[nodiscard]] PortedIP* getPortedIP() const;

@@ -31,6 +31,16 @@ AngleShooterServer::AngleShooterServer() {
 		packet >> sequence;
 		sender->acceptAcknowledgment(sequence);
 	});
+	registerPacket(NetworkProtocol::CHAT_MESSAGE, [this](sf::Packet& packet, const NetworkPair* sender) {
+		std::string message;
+		packet >> message;
+		Logger::info("Received Chat Message Packet from " + sender->getPortedIP()->toString() + ": " + message);
+		for (const auto& client : clients | std::views::values) {
+			auto broadcastPacket = NetworkProtocol::CHAT_MESSAGE->getPacket(client);
+			broadcastPacket << ("<" + sender->getPortedIP()->toString() + "> " + message);
+			send(broadcastPacket, client);
+		}
+	});
 }
 
 void AngleShooterServer::handlePacket(sf::Packet& packet, NetworkPair* sender) {
@@ -40,9 +50,21 @@ void AngleShooterServer::handlePacket(sf::Packet& packet, NetworkPair* sender) {
 	if (PacketIdentifier::fromId(packetType)->isReliable()) {
 		uint32_t sequence;
 		packet >> sequence;
-		auto ack = NetworkProtocol::ACK->getPacket(sender);
-		ack << sequence;
-		send(ack, sender);
+		if (sequence < sender->getAcknowledgedSequence()) {
+			auto ack = NetworkProtocol::ACK->getPacket(sender);
+			ack << sequence;
+			send(ack, sender);
+			Logger::debug("Received redundant sequence: " + std::to_string(sequence) + " from " + sender->getPortedIP()->toString());
+			return;
+		}
+		if (sender->setAcknowledgedSequence(sequence)) {
+			auto ack = NetworkProtocol::ACK->getPacket(sender);
+			ack << sequence;
+			send(ack, sender);
+		} else {
+			Logger::debug("Received premature sequence: " + std::to_string(sequence) + " from " + sender->getPortedIP()->toString());
+			return;
+		}
 	}
     if (packetHandlers.contains(packetType)) {
         packetHandlers[packetType](packet, sender);
@@ -67,7 +89,6 @@ void AngleShooterServer::run() {
     sf::Clock deltaClock;
     auto tickTime = 0.;
     auto secondTime = 0.;
-    auto statusTime = 0.;
     auto ticks = 0;
 	auto loops = 0;
     Logger::info("Starting Server Game Loop");
@@ -75,7 +96,6 @@ void AngleShooterServer::run() {
         const auto deltaTime = deltaClock.restart().asSeconds();
         tickTime += deltaTime;
         secondTime += deltaTime;
-    	statusTime += deltaTime;
         if (tickTime > 1.) {
             Logger::warn("AngleShooter::run: Lagging behind by " + Util::toRoundedString(tickTime / AngleShooterCommon::TIME_PER_TICK) + " ticks (" + Util::toRoundedString(tickTime) + " seconds), skipping ahead");
             tickTime = AngleShooterCommon::TIME_PER_TICK;
@@ -94,10 +114,6 @@ void AngleShooterServer::run() {
             loops = 0;
             secondTime = 0;
         }
-    	if (statusTime >= 8.f) {
-    		statusTime = 0;
-    		Logger::debug("Server Status: " + Util::toRoundedString(tps) + " TPS, " + Util::toRoundedString(lps) + " LPS, Connected Clients: " + std::to_string(clients.size()));
-    	}
         std::this_thread::sleep_for(std::chrono::milliseconds(6));
     }
 }
@@ -131,13 +147,6 @@ void AngleShooterServer::runReceiver() {
 		}
 		pendingDisconnects.clear();
 		sleep(sf::milliseconds(6));
-    }
-}
-
-void AngleShooterServer::sendToAll(sf::Packet& packet, const std::function<bool(NetworkPair*)>& predicate) {
-    for (const auto& pair : clients | std::views::values) {
-        if (!predicate(pair)) continue;
-        send(packet, pair);
     }
 }
 

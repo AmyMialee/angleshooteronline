@@ -10,12 +10,12 @@ void Logger::log(Severity level, const std::string& message) {
     const auto now = std::chrono::system_clock::now();
     const auto time = std::chrono::system_clock::to_time_t(now);
     tm localTime;
-    if (localtime_s(&localTime, &time) != 0) {
-        std::cerr << "Failed to get local time" << '\n';
-        return;
-    }
     std::stringstream timeStream;
-    timeStream << std::put_time(&localTime, "[%H:%M:%S]");
+    if (localtime_s(&localTime, &time) != 0) {
+        timeStream << "[??:??:??]";
+    } else {
+        timeStream << std::put_time(&localTime, "[%H:%M:%S]");
+    }
     const auto string = severityToColour(level) + timeStream.str() + " [" + severityToString(level) + "] \033[38;5;252m" + message + '\n';
     std::cout << string;
     std::cout.flush();

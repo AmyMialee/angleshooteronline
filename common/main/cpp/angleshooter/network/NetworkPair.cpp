@@ -18,10 +18,11 @@ void NetworkPair::update() {
 }
 
 void NetworkPair::send(sf::Packet& packet) {
-	if (const auto bytes = static_cast<const uint8_t*>(packet.getData()); PacketIdentifier::fromId(bytes[0])->isReliable()) {
+	const auto bytes = static_cast<const uint8_t*>(packet.getData());
+	if (const auto id = PacketIdentifier::fromId(bytes[0]); id->isReliable()) {
 		uint32_t sequence;
 		std::memcpy(&sequence, bytes + 1, sizeof(uint32_t));
-		sentPackets[sequence] = {packet, std::chrono::steady_clock::now()};
+		sentPackets[Util::swapBytes32(sequence)] = {packet, std::chrono::steady_clock::now()};
 	}
 	sendPacketInternal(packet);
 }
@@ -47,9 +48,13 @@ void NetworkPair::resetTimeout() {
 	this->lastResponse.restart();
 }
 
+uint32_t NetworkPair::getAcknowledgedSequence() const {
+	return this->acknowledgedSequence;
+}
+
 bool NetworkPair::setAcknowledgedSequence(uint32_t sequence) {
-	if (this->acknowledgedSequence != sequence - 1) return false;
-	this->acknowledgedSequence = sequence;
+	if (this->acknowledgedSequence != sequence) return false;
+	this->acknowledgedSequence++;
 	return true;
 }
 
